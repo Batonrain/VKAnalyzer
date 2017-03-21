@@ -9,6 +9,12 @@ namespace VKAnalyzer.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public void Result(string code, string state)
+        {
+
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
