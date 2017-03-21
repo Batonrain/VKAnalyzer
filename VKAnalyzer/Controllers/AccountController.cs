@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
+using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models;
+using VKAnalyzer.Models.EFModels;
 
 namespace VKAnalyzer.Controllers
 {
@@ -18,7 +15,7 @@ namespace VKAnalyzer.Controllers
     public class AccountController : Controller
     {
         public AccountController()
-            : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+            : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new IdentityDb())))
         {
         }
 
@@ -199,7 +196,6 @@ namespace VKAnalyzer.Controllers
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
             var result = await AuthenticationManager.AuthenticateAsync(DefaultAuthenticationTypes.ExternalCookie);
-            var ee = result.Description.Properties;
             if (result == null || result.Identity == null)
             {
                 return RedirectToAction("Login");
@@ -211,13 +207,29 @@ namespace VKAnalyzer.Controllers
                 return RedirectToAction("Login");
             }
 
+            
+
             var login = new UserLoginInfo(idClaim.Issuer, idClaim.Value);
             var name = result.Identity.Name == null ? "" : result.Identity.Name.Replace(" ", "");
 
             // Sign in the user with this external login provider if the user already has a login
             var user = await UserManager.FindAsync(login);
+
             if (user != null)
             {
+                var vkClaim = result.Identity.FindFirst("VKAccessToken");
+                using (var context = new BaseDb())
+                {
+                    var userAccess = new UserAccessToken()
+                    {
+                        AccessToken = vkClaim.Value,
+                        VkUserId = user.Id
+                    };
+
+                    context.UserAccessTokens.Add(userAccess);
+                    context.SaveChanges();
+                }
+
                 await SignInAsync(user, isPersistent: false);
                 return RedirectToLocal(returnUrl);
             }
@@ -412,6 +424,7 @@ namespace VKAnalyzer.Controllers
                 {
                     properties.Dictionary[XsrfKey] = UserId;
                 }
+
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
         }

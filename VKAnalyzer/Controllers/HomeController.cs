@@ -7,13 +7,7 @@ namespace VKAnalyzer.Controllers
         public ActionResult Index()
         {
             return View();
-        }
-
-        [AllowAnonymous]
-        public void Result(string code, string state)
-        {
-
-        }
+        }     
 
         public ActionResult About()
         {
