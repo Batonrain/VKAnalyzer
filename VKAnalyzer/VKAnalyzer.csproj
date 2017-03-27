@@ -177,6 +177,10 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\EFModels\AccessTokenUserModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\VKModels\CohortAnalysisModel.cs" />
+    <Compile Include="Models\VKModels\CohortAnalysisResultModel.cs" />
+    <Compile Include="Models\VKModels\CohortAnalysysInputModel.cs" />
+    <Compile Include="Models\VKModels\PostDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -229,6 +233,7 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Vk\CohortAnalysis.cshtml" />
+    <Content Include="Views\Vk\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

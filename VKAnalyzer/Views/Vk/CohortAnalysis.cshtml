@@ -1,5 +1,25 @@
-﻿@{
-    ViewBag.Title = "Cohort analysis";
+﻿@model VKAnalyzer.Models.VKModels.CohortAnalysisResultModel
+@{
+    ViewBag.Title = "Когортный анализ";
 }
 
 <h2>@ViewBag.Title</h2>
+
+<table style="width: 100%;">
+    @for (var r = 0; r < Model.TableLength; r++)
+    {
+        <tr style="border: 1px solid black; empty-cells: show; text-align: center;">
+            @for (var c = 0; c < Model.TableLength; c++)
+            {
+                <th style="border: 1px solid black; empty-cells: show; text-align: center;">
+                    @if (!string.IsNullOrEmpty(Model.ResultMatrix[r, c]))
+                    {
+                        @Model.ResultMatrix[r, c]
+                    }
+                </th>
+
+            }
+        </tr>
+    }
+</table>
+
