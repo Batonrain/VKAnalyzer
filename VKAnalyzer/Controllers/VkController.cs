@@ -25,23 +25,9 @@ namespace VKAnalyzer.Controllers
         {
             if (ModelState.IsValid)
             {
-                //var accessToken = string.Empty;
-                //using (var context = new BaseDb())
-                //{
-                //    var userid = User.Identity.GetUserId();
-                //    accessToken = context.UserAccessTokens.First(u => u.VkUserId == userid).AccessToken;
-                //}
-
-                // const string groupId = "116839698"; //D&D в Лесу
+                // const string groupId = "77390912";
 
                 var posts = GetWallPosts(Convert.ToInt32(model.DaysCount + 30), model.GroupId);
-
-                //var rawData = posts.Select(post => new CohortAnalysisModel()
-                //{
-                //    PostId = post.Id,
-                //    PostDate = post.Date,
-                //    LikedIds = GetListOfLikedUsers(model.GroupId, post.Id)
-                //}).ToList();
 
                 var rawData = PrepareDataForCohortAnalyse(posts, Convert.ToInt32(model.DaysCount), model.GroupId);
 
