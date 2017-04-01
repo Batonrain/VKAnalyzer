@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace VKAnalyzer
 {
@@ -26,6 +25,12 @@ namespace VKAnalyzer
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            //Кастомные бандлы для спецаильных страниц
+
+            //Cohort analyse
+            bundles.Add(new ScriptBundle("~/bundles/cohortanalyse").Include(
+                      "~/Scripts/jquery-ui-1.12.1.min.js"));
         }
     }
 }
