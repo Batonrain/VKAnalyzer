@@ -12,9 +12,9 @@
             @for (var c = 0; c < Model.TableLength; c++)
             {
                 <th style="border: 1px solid black; empty-cells: show; text-align: center;">
-                    @if (!string.IsNullOrEmpty(Model.ResultMatrix[r, c]))
+                    @if (Model.ResultMatrix[r, c] != null)
                     {
-                        @Model.ResultMatrix[r, c]
+                        @Model.ResultMatrix[r, c].Count()
                     }
                 </th>
 

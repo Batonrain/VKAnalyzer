@@ -4,11 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml.Linq;
-using Microsoft.AspNet.Identity;
 using NLog;
 using VKAnalyzer.BusinessLogic.CohortAnalyser;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
-using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels;
 
 namespace VKAnalyzer.Controllers
@@ -27,7 +25,6 @@ namespace VKAnalyzer.Controllers
         {
             if (ModelState.IsValid)
             {
-                // const string groupId = "77390912";
 
                 var posts = GetWallPosts(Convert.ToInt32(model.DaysCount + 30), model.GroupId);
 
@@ -84,7 +81,7 @@ namespace VKAnalyzer.Controllers
             try
             {
                 // получить список всех постов на стене сообщества
-                posts = XDocument.Load(string.Format("https://api.vk.com/api.php?oauth=1&method=wall.get.xml&count={0}&owner_id=-{1}", count, groupId)); 
+                posts = XDocument.Load(string.Format("https://api.vk.com/api.php?oauth=1&method=wall.get.xml&count={0}&owner_id=-{1}", count, groupId));
             }
             catch (Exception exception)
             {
@@ -107,7 +104,7 @@ namespace VKAnalyzer.Controllers
             try
             {
                 // получить список людей лайкнувших пост
-                users = XDocument.Load(string.Format("https://api.vk.com/api.php?oauth=1&method=likes.getList.xml&owner_id=-{0}&item_id={1}&type=post", groupId, postId)); 
+                users = XDocument.Load(string.Format("https://api.vk.com/api.php?oauth=1&method=likes.getList.xml&owner_id=-{0}&item_id={1}&type=post", groupId, postId));
             }
             catch (Exception exception)
             {
@@ -130,23 +127,8 @@ namespace VKAnalyzer.Controllers
             return dtDateTime;
         }
 
-       
 
-        public List<T> IntersectAll<T>(IEnumerable<IEnumerable<T>> lists)
-        {
-            HashSet<T> hashSet = null;
-            foreach (var list in lists)
-            {
-                if (hashSet == null)
-                {
-                    hashSet = new HashSet<T>(list);
-                }
-                else
-                {
-                    hashSet.IntersectWith(list);
-                }
-            }
-            return hashSet == null ? new List<T>() : hashSet.ToList();
-        }
+
+
     }
 }
