@@ -28,7 +28,7 @@ namespace VKAnalyzer.Controllers
 
                 var posts = GetWallPosts(Convert.ToInt32(model.DaysCount + 30), model.GroupId);
 
-                var rawData = PrepareDataForCohortAnalyse(posts, Convert.ToInt32(model.DaysCount), model.GroupId);
+                var rawData = PrepareDataForCohortAnalyse(posts, Convert.ToInt32(model.DaysCount), model.GroupId).OrderBy(d => d.PostDate).ToList();
 
                 var analyser = new CohortAnalyser();
 
@@ -47,7 +47,7 @@ namespace VKAnalyzer.Controllers
             return RedirectToAction("Index");
         }
 
-        private List<CohortAnalysisModel> PrepareDataForCohortAnalyse(IEnumerable<PostDataModel> posts, int daysCount, string groupId)
+        private IEnumerable<CohortAnalysisModel> PrepareDataForCohortAnalyse(IEnumerable<PostDataModel> posts, int daysCount, string groupId)
         {
             var result = new List<CohortAnalysisModel>();
 
@@ -75,6 +75,21 @@ namespace VKAnalyzer.Controllers
             return result;
         }
 
+        private void GetPosts(string groupId, AnalyseStep step, DateTime startDate, DateTime endDate)
+        {
+            // Внутренний шаг для поиска постов, параметр count
+            var innerStep = (endDate - startDate).Days + 20;
+
+            // Внешний шаг для пропуска ненужных постов, параметр offset
+            var outerStep = (DateTime.Now - endDate).Days;
+
+            double cycleCount = 1;
+            if (innerStep > 100)
+            {
+                cycleCount = Math.Round((double) (innerStep/100), MidpointRounding.AwayFromZero);
+            }
+        }
+
         private IEnumerable<PostDataModel> GetWallPosts(int count, string groupId)
         {
             XDocument posts;
@@ -97,6 +112,8 @@ namespace VKAnalyzer.Controllers
                 Date = UnixTimeStampToDateTime(Convert.ToDouble(p.Element("date").Value))
             }).ToList();
         }
+
+        
 
         private IEnumerable<string> GetListOfLikedUsers(string groupId, string postId)
         {

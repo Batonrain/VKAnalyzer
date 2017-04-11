@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="CohortAnalyser\AnalyseStep.cs" />
     <Compile Include="CohortAnalyser\CohortAnalyser.cs" />
     <Compile Include="CohortAnalyser\Models\CohortAnalysisModel.cs" />
     <Compile Include="Extensions\AnalyserExtensions.cs" />
