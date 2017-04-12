@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Xml.Linq;
 using NLog;
+using NLog.Fluent;
 using VKAnalyzer.BusinessLogic.CohortAnalyser;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.Models.VKModels;
