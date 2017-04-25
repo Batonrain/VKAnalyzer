@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -27,46 +28,57 @@ namespace VKAnalyzer.Controllers
             if (ModelState.IsValid)
             {
                 // Создание модели с параметрами для запроса всех постов за определённую дату
-                var parametersModel = PrepareGetParameters(model.GroupId, AnalyseStep.Day, model.DateOfTheBeginning, model.DateOfTheEnd);
+                var parametersModel = PrepareGetParameters(model.GroupId, model.DateOfTheBeginning, model.DateOfTheEnd);
 
                 // Получение постов
                 var postsXDoc = GetPosts(parametersModel);
 
                 // Извлечение из постов ID и Date для последующей обработки
-                var allRawPosts = new List<PostDataModel>();
-                foreach (var xDocument in postsXDoc)
-                {
-                    var innerPosts = xDocument.Descendants("post").Select(p => new PostDataModel()
-                     {
-                         Id = p.Element("id").Value,
-                         Date = UnixTimeStampToDateTime(Convert.ToDouble(p.Element("date").Value))
-                     }).ToList();
-
-                    allRawPosts.AddRange(innerPosts);
-                }
+                var allRawPosts = GetRawPostsFromXml(postsXDoc);
 
                 // Получение лайков по Id постов и по датам
-                var analyzeModels = new List<CohortAnalysisModel>();
-                foreach (var post in allRawPosts.Where(arp => arp.Date >= model.DateOfTheBeginning && arp.Date <= model.DateOfTheEnd))
-                {
-                    analyzeModels.Add(new CohortAnalysisModel
-                    {
-                        PostId = post.Id,
-                        PostDate = post.Date,
-                        LikedIds = GetListOfLikedUsers(model.GroupId, post.Id)
-                    });
-                }
+                var analyzeModels = GetLikesByIdAndDates(allRawPosts, model.DateOfTheBeginning, model.DateOfTheEnd, model.GroupId);
 
                 // Сортировка данных для последующей обработки когортного анализатора
-                var preparedData = PrepareDataForCohortAnalyse(analyzeModels, AnalyseStep.Day).OrderBy(d => d.PostDate).ToList();
+                var preparedData = PrepareDataForCohortAnalyse(analyzeModels, model.Step, model.DateOfTheBeginning, model.DateOfTheEnd).OrderBy(d => d.PostDate).ToList();
 
-                var analyser = new CohortAnalyser();
-                var result = new CohortAnalysisResultModel
+                var result = Analyse(preparedData, model.GroupId);
+
+                result.Dates = new List<string>();
+                if (model.Step == 1)
                 {
-                    ResultMatrix = analyser.BuildCohortAnalyseData(preparedData),
-                    TableLength = preparedData.Count,
-                    GroupId = model.GroupId
-                };
+                    for (var dt = model.DateOfTheBeginning; dt < model.DateOfTheEnd; dt = dt.AddDays(1))
+                    {
+                        result.Dates.Add(dt.ToShortDateString());
+                    }
+                }
+                if (model.Step == 2)
+                {
+                    var allDays = (model.DateOfTheEnd - model.DateOfTheBeginning).TotalDays;
+                    var st = 7;
+                    var countOfSteps = Math.Ceiling(allDays / st);
+                    for (var i = 0; i < countOfSteps; i++)
+                    {
+                        var startDate = model.DateOfTheBeginning.AddDays(i * st);
+                        var endDate = model.DateOfTheBeginning.AddDays((i + 1) * st);
+
+                        result.Dates.Add(string.Format("{0} - {1}", startDate.ToShortDateString(), endDate.ToShortDateString()));
+                    }
+                }
+                if (model.Step == 3)
+                {
+                    var allDays = (model.DateOfTheEnd - model.DateOfTheBeginning).TotalDays;
+                    var st = 30;
+                    var countOfSteps = Math.Ceiling(allDays / st);
+                    for (var i = 0; i < countOfSteps; i++)
+                    {
+                        var startDate = model.DateOfTheBeginning.AddDays(i * st);
+                        var endDate = model.DateOfTheBeginning.AddDays((i + 1) * st);
+
+                        result.Dates.Add(string.Format("{0} - {1}", startDate.ToShortDateString(), endDate.ToShortDateString()));
+                    }
+                }
+
 
                 ViewBag.Message = "Cohort analysis";
 
@@ -76,11 +88,107 @@ namespace VKAnalyzer.Controllers
             return RedirectToAction("Index");
         }
 
-        private List<CohortAnalysisModel> PrepareDataForCohortAnalyse(List<CohortAnalysisModel> posts, AnalyseStep step)
+        private IEnumerable<PostDataModel> GetRawPostsFromXml(IEnumerable<XDocument> postsXDoc)
+        {
+            var allRawPosts = new List<PostDataModel>();
+
+            foreach (var xDocument in postsXDoc)
+            {
+                var innerPosts = xDocument.Descendants("post").Select(p => new PostDataModel()
+                {
+                    Id = p.Element("id").Value,
+                    Date = UnixTimeStampToDateTime(Convert.ToDouble(p.Element("date").Value))
+                }).ToList();
+
+                allRawPosts.AddRange(innerPosts);
+            }
+
+            return allRawPosts;
+        }
+
+        private List<CohortAnalysisModel> GetLikesByIdAndDates(IEnumerable<PostDataModel> allRawPosts, DateTime dateOfTheBeginning, DateTime dateOfTheEnd, string groupId)
+        {
+
+            var analyzeModels = new List<CohortAnalysisModel>();
+
+            foreach (var post in allRawPosts.Where(arp => arp.Date >= dateOfTheBeginning && arp.Date <= dateOfTheEnd))
+            {
+                analyzeModels.Add(new CohortAnalysisModel
+                {
+                    PostId = post.Id,
+                    PostDate = post.Date,
+                    LikedIds = GetListOfLikedUsers(groupId, post.Id)
+                });
+            }
+
+            return analyzeModels;
+        }
+
+        private CohortAnalysisResultModel Analyse(List<CohortAnalysisModel> preparedData, string groupId, int step = 1)
+        {
+            var analyser = new CohortAnalyser();
+
+            var result = new CohortAnalysisResultModel
+            {
+                ResultMatrix = analyser.BuildCohortAnalyseData(preparedData),
+                TableLength = preparedData.Count,
+                GroupId = groupId
+            };
+
+            result.TotalHorizontal = CountTotalHorizontal(result.ResultMatrix);
+            result.TotalVertical = CountTotalVertical(result.ResultMatrix);
+
+            return result;
+        }
+
+        private List<int> CountTotalHorizontal(List<string>[,] resultMatrix)
+        {
+            var result = new List<int>();
+
+            for (var i = 0; i < resultMatrix.GetLength(0); i++) // for 1
+            {
+                var summ = 0;
+
+                for (var j = 0; j < resultMatrix.GetLength(0); j++) // for 2
+                {
+                    if (resultMatrix[i, j] != null && resultMatrix[i, j].Count > 0)
+                        summ += resultMatrix[i, j].Count;
+                } // for 2
+
+                result.Add(summ);
+
+            } // for 1
+
+            return result;
+        }
+
+        private List<int> CountTotalVertical(List<string>[,] resultMatrix)
+        {
+            var result = new List<int>();
+
+            // Обсчитываем массив
+            for (var i = 0; i < resultMatrix.GetLength(0); i++) // for 1
+            {
+                var summ = 0;
+
+                for (var j = 0; j < resultMatrix.GetLength(0); j++) // for 2
+                {
+                    if (resultMatrix[j, i] != null && resultMatrix[j, i].Count > 0)
+                        summ += resultMatrix[j, i].Count;
+                } // for 2
+
+                result.Add(summ);
+
+            } // for 1
+
+            return result;
+        }
+
+        private IEnumerable<CohortAnalysisModel> PrepareDataForCohortAnalyse(List<CohortAnalysisModel> posts, int step, DateTime dateOfTheBeginning, DateTime dateOfTheEnd)
         {
             var result = new List<CohortAnalysisModel>();
 
-            if (step == AnalyseStep.Day)
+            if (step == 1)
             {
                 var getAllDays = posts.Select(p => p.PostDate.Date).Distinct();
                 foreach (var day in getAllDays)
@@ -94,11 +202,50 @@ namespace VKAnalyzer.Controllers
                     result.Add(res);
                 }
             }
+            if (step == 2)
+            {
+                var allDays = (dateOfTheEnd - dateOfTheBeginning).TotalDays;
+                var st = 7;
+                var countOfSteps = Math.Ceiling(allDays / st);
+                for (var i = 0; i < countOfSteps; i++)
+                {
+                    var startDate = dateOfTheBeginning.AddDays(i * st);
+                    var endDate = dateOfTheBeginning.AddDays((i + 1) * st);
+
+                    var res = new CohortAnalysisModel
+                    {
+                        PostDate = dateOfTheBeginning.AddDays(i),
+                        LikedIds = posts.Where(p => startDate <= p.PostDate.Date && p.PostDate.Date < endDate).SelectMany(s => s.LikedIds).Distinct().ToList()
+                    };
+
+                    result.Add(res);
+                }
+            }
+
+            if (step == 3)
+            {
+                var allDays = (dateOfTheEnd - dateOfTheBeginning).TotalDays;
+                var st = 30;
+                var countOfSteps = Math.Ceiling(allDays / st);
+                for (var i = 0; i < countOfSteps; i++)
+                {
+                    var startDate = dateOfTheBeginning.AddDays(i * st);
+                    var endDate = dateOfTheBeginning.AddDays((i + 1) * st);
+
+                    var res = new CohortAnalysisModel
+                    {
+                        PostDate = dateOfTheBeginning.AddDays(i),
+                        LikedIds = posts.Where(p => startDate <= p.PostDate.Date && p.PostDate.Date < endDate).SelectMany(s => s.LikedIds).Distinct().ToList()
+                    };
+
+                    result.Add(res);
+                }
+            }
 
             return result;
         }
 
-        private GetWallPostsParametersModel PrepareGetParameters(string groupId, AnalyseStep step, DateTime startDate, DateTime endDate)
+        private GetWallPostsParametersModel PrepareGetParameters(string groupId, DateTime startDate, DateTime endDate)
         {
             var parametersModel = new GetWallPostsParametersModel
             {
@@ -142,7 +289,6 @@ namespace VKAnalyzer.Controllers
             return posts;
         }
 
-
         private List<string> GetListOfLikedUsers(string groupId, string postId)
         {
             XDocument users;
@@ -164,34 +310,6 @@ namespace VKAnalyzer.Controllers
             return result;
         }
 
-        private IEnumerable<CohortAnalysisModel> PrepareDataForCohortAnalyse(IEnumerable<PostDataModel> posts, int daysCount, string groupId)
-        {
-            var result = new List<CohortAnalysisModel>();
-
-            for (var i = 1; i <= daysCount; i++)
-            {
-                var pDate = DateTime.Now.AddDays(-i);
-                if (posts.Count(p => p.Date.Date == pDate.Date) > 0)
-                {
-                    var postsForDay = posts.Where(p => p.Date.Date == pDate.Date).Select(p => p.Id);
-                    var likesIds = new List<string>();
-
-                    foreach (var post in postsForDay)
-                    {
-                        likesIds.AddRange(GetListOfLikedUsers(groupId, post));
-                    }
-
-                    result.Add(new CohortAnalysisModel
-                    {
-                        PostDate = pDate,
-                        LikedIds = likesIds.Distinct().ToList()
-                    });
-                }
-            }
-
-            return result;
-        }
-
         private static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch
@@ -199,20 +317,5 @@ namespace VKAnalyzer.Controllers
             dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
         }
-
-
-        //var posts = GetWallPosts(model.GroupId, Convert.ToInt32(30));
-
-        //var rawData = PrepareDataForCohortAnalyse(posts, Convert.ToInt32(30), model.GroupId).OrderBy(d => d.PostDate).ToList();
-
-        //var analyser = new CohortAnalyser();
-
-        //var result = new CohortAnalysisResultModel
-        //{
-        //    ResultMatrix = analyser.BuildCohortAnalyseData(rawData),
-        //    TableLength = rawData.Count,
-        //    GroupId = model.GroupId
-        //};
-
     }
 }

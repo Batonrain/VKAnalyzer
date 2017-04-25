@@ -6,20 +6,49 @@
 <h2>@ViewBag.Title</h2>
 
 <table style="width: 100%;">
+    <tr class="table-border-analyze">
+        <th></th>
+        @foreach (var date in Model.Dates)
+        {
+            <th class="table-border-analyze">
+                @date
+            </th>
+        }
+        <th class="table-border-analyze">
+            Итого:
+        </th>
+    </tr>
     @for (var r = 0; r < Model.TableLength; r++)
     {
-        <tr style="border: 1px solid black; empty-cells: show; text-align: center;">
+        <tr class="table-border-analyze">
+            <th class="table-border-analyze">
+                @Model.Dates[r]
+            </th>
             @for (var c = 0; c < Model.TableLength; c++)
             {
-                <th style="border: 1px solid black; empty-cells: show; text-align: center;">
+                <th class="table-border-analyze">
                     @if (Model.ResultMatrix[r, c] != null)
                     {
                         @Model.ResultMatrix[r, c].Count()
                     }
                 </th>
-
             }
+            <th class="table-border-analyze">
+                @Model.TotalHorizontal[r]
+            </th>
         </tr>
     }
+    <tr class="table-border-analyze">
+        <th class="table-border-analyze">
+            Итого:
+        </th>
+        @foreach (var varticalSum in Model.TotalVertical)
+        {
+            <th class="table-border-analyze">
+                @varticalSum
+            </th>
+        }
+    </tr>
+
 </table>
 

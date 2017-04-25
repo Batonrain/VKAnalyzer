@@ -26,10 +26,10 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
 
                         var allPreviuosUsers = new List<string>();
 
-                        for (var i = v; i >= v; i--)
+                        for (var i = v; i > 0; i--)
                         {
                             //конкатинация всех пользователей за предыдущие дни для последующего вычисления новых уникальных
-                            allPreviuosUsers = allPreviuosUsers.Concat(data[i - 1].LikedIds).ToList();
+                            allPreviuosUsers.AddRange(result[i - 1, i - 1]);
                         }
 
                         //Новые уникальные пользователи

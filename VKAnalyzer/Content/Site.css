@@ -40,3 +40,9 @@ input[type="checkbox"].input-validation-error {
 .validation-summary-valid {
     display: none;
 }
+
+.table-border-analyze {
+    border: 1px solid black; 
+    empty-cells: show; 
+    text-align: center;
+}
