@@ -61,6 +61,10 @@ namespace VKAnalyzer.Controllers
                     {
                         var startDate = model.DateOfTheBeginning.AddDays(i * st);
                         var endDate = model.DateOfTheBeginning.AddDays((i + 1) * st);
+                        if (endDate > model.DateOfTheEnd)
+                        {
+                            endDate = model.DateOfTheEnd;
+                        }
 
                         result.Dates.Add(string.Format("{0} - {1}", startDate.ToShortDateString(), endDate.ToShortDateString()));
                     }
@@ -73,7 +77,11 @@ namespace VKAnalyzer.Controllers
                     for (var i = 0; i < countOfSteps; i++)
                     {
                         var startDate = model.DateOfTheBeginning.AddDays(i * st);
-                        var endDate = model.DateOfTheBeginning.AddDays((i + 1) * st);
+                        var endDate = model.DateOfTheBeginning.AddDays((i + 1) * st) ;
+                        if (endDate > model.DateOfTheEnd)
+                        {
+                            endDate = model.DateOfTheEnd;
+                        }
 
                         result.Dates.Add(string.Format("{0} - {1}", startDate.ToShortDateString(), endDate.ToShortDateString()));
                     }
