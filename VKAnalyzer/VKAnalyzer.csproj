@@ -188,10 +188,9 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\EFModels\AccessTokenUserModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\VKModels\CohortAnalysisResultModel.cs" />
     <Compile Include="Models\VKModels\CohortAnalysysInputModel.cs" />
-    <Compile Include="Models\VKModels\PostDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\VkService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
