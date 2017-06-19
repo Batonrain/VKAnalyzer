@@ -1,10 +1,15 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Data.Entity;
+using System.Data.Entity.Migrations;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
+using NLog;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models;
 using VKAnalyzer.Models.EFModels;
@@ -14,6 +19,8 @@ namespace VKAnalyzer.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
+
         public AccountController()
             : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new IdentityDb())))
         {
@@ -200,14 +207,14 @@ namespace VKAnalyzer.Controllers
             {
                 return RedirectToAction("Login");
             }
-            
+
             var idClaim = result.Identity.FindFirst(ClaimTypes.NameIdentifier);
             if (idClaim == null)
             {
                 return RedirectToAction("Login");
             }
 
-            
+
 
             var login = new UserLoginInfo(idClaim.Issuer, idClaim.Value);
             var name = result.Identity.Name == null ? "" : result.Identity.Name.Replace(" ", "");
@@ -217,18 +224,37 @@ namespace VKAnalyzer.Controllers
 
             if (user != null)
             {
-                var vkClaim = result.Identity.FindFirst("VKAccessToken");
-                using (var context = new BaseDb())
+                try
                 {
-                    var userAccess = new UserAccessToken()
+                    var vkClaim = result.Identity.FindFirst("VKAccessToken");
+                    using (var context = new BaseDb())
                     {
-                        AccessToken = vkClaim.Value,
-                        VkUserId = user.Id
-                    };
+                        var userAccess = new UserAccessToken()
+                        {
+                            AccessToken = vkClaim.Value,
+                            VkUserId = user.Id
+                        };
 
-                    context.UserAccessTokens.Add(userAccess);
-                    context.SaveChanges();
+                        if (context.UserAccessTokens.Count(us => us.VkUserId == user.Id) > 0)
+                        {
+                            var userToken = context.UserAccessTokens.FirstOrDefault(us => us.VkUserId == user.Id);
+                            userToken.AccessToken = vkClaim.Value;
+                            context.Entry(userToken).State = EntityState.Modified;
+                        }
+                        else
+                        {
+                            context.UserAccessTokens.Add(userAccess);
+                        }
+
+                        context.SaveChanges();
+                    }
                 }
+                catch (Exception ex)
+                {
+                    _logger.Error("Error during working with Entity: {0}", ex.Message);
+                    _logger.Error("Error during working with Entity: {0}", ex.InnerException);
+                }
+
 
                 await SignInAsync(user, isPersistent: false);
                 return RedirectToLocal(returnUrl);
@@ -402,7 +428,8 @@ namespace VKAnalyzer.Controllers
 
         private class ChallengeResult : HttpUnauthorizedResult
         {
-            public ChallengeResult(string provider, string redirectUri) : this(provider, redirectUri, null)
+            public ChallengeResult(string provider, string redirectUri)
+                : this(provider, redirectUri, null)
             {
             }
 

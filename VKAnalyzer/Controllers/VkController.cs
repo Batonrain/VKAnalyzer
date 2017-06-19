@@ -1,6 +1,9 @@
-﻿using System.Web.Mvc;
+﻿using System.Linq;
+using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
 using NLog;
 using VKAnalyzer.BusinessLogic.CohortAnalyser;
+using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels;
 using VKAnalyzer.Services;
 
@@ -16,6 +19,7 @@ namespace VKAnalyzer.Controllers
         public VkController()
         {
             vkService = new VkService();
+
             cohortAnalyser = new CohortAnalyser();
         }
 
@@ -29,6 +33,7 @@ namespace VKAnalyzer.Controllers
         {
             if (ModelState.IsValid)
             {
+                vkService.AccessToken = GetCurrentUserAccessToken();
                 var analyzeModels = vkService.GetPostsForAnalyze(model.GroupId, model.StartDate, model.EndDate);
 
                 var result = cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
@@ -42,7 +47,14 @@ namespace VKAnalyzer.Controllers
             return RedirectToAction("Index");
         }
 
-        
+        private string GetCurrentUserAccessToken()
+        {
+            var context = new BaseDb();
+            var userId = User.Identity.GetUserId();
+            var result = context.UserAccessTokens.FirstOrDefault(us => us.VkUserId == userId);
+
+            return result.AccessToken;
+        }
 
     }
 }
