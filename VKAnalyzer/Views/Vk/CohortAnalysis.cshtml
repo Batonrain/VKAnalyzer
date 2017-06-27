@@ -1,54 +1,124 @@
-﻿@model VKAnalyzer.Models.VKModels.CohortAnalysisResultModel
+﻿@model VKAnalyzer.BusinessLogic.CohortAnalyser.Models.CohortAnalysisResultModel
 @{
     ViewBag.Title = "Когортный анализ";
 }
 
-<h2>@ViewBag.Title</h2>
-
-<table style="width: 100%;">
-    <tr class="table-border-analyze">
-        <th></th>
-        @foreach (var date in Model.Dates)
-        {
-            <th class="table-border-analyze">
-                @date
-            </th>
-        }
-        <th class="table-border-analyze">
-            Итого:
-        </th>
-    </tr>
-    @for (var r = 0; r < Model.TableLength; r++)
-    {
+<h2>@ViewBag.Title: абсолютные значения</h2>
+<div class="table-responsive">
+    <table style="width: 100%;">
         <tr class="table-border-analyze">
-            <th class="table-border-analyze">
-                @Model.Dates[r]
-            </th>
-            @for (var c = 0; c < Model.TableLength; c++)
+            <th></th>
+            @foreach (var date in Model.Dates)
             {
                 <th class="table-border-analyze">
-                    @if (Model.ResultMatrix[r, c] != null)
-                    {
-                        @Model.ResultMatrix[r, c].Count()
-                    }
+                    @date
                 </th>
             }
             <th class="table-border-analyze">
-                @Model.TotalHorizontal[r]
+                Итого:
             </th>
         </tr>
-    }
-    <tr class="table-border-analyze">
-        <th class="table-border-analyze">
-            Итого:
-        </th>
-        @foreach (var varticalSum in Model.TotalVertical)
+        @for (var r = 0; r < Model.TableLength; r++)
         {
-            <th class="table-border-analyze">
-                @varticalSum
-            </th>
+            <tr class="table-border-analyze">
+                <th class="table-border-analyze">
+                    @Model.Dates[r]
+                </th>
+                @for (var c = 0; c < Model.TableLength; c++)
+                {
+                    <th class="table-border-analyze">
+                        @if (Model.AbsoluteValues[r, c] != null)
+                        {
+                            @Model.AbsoluteValues[r, c].Count()
+                        }
+                    </th>
+                }
+                <th class="table-border-analyze">
+                    @Model.TotalHorizontal[r]
+                </th>
+            </tr>
         }
-    </tr>
+        <tr class="table-border-analyze">
+            <th class="table-border-analyze">
+                Итого:
+            </th>
+            @foreach (var verticalSum in Model.TotalVertical)
+            {
+                <th class="table-border-analyze">
+                    @verticalSum
+                </th>
+            }
+        </tr>
 
-</table>
+    </table>
+</div>
 
+<h2>Когортный анализ: отоносительные значения</h2>
+<div class="table-responsive">
+    <table style="width: 100%;">
+        <tr class="table-border-analyze">
+            <th></th>
+            @foreach (var date in Model.Dates)
+            {
+                <th class="table-border-analyze">
+                    @date
+                </th>
+            }
+            <th class="table-border-analyze">
+                Итого:
+            </th>
+        </tr>
+        @for (var r = 0; r < Model.TableLength; r++)
+        {
+            <tr class="table-border-analyze">
+                <th class="table-border-analyze">
+                    @Model.Dates[r]
+                </th>
+                @for (var c = 0; c < Model.TableLength; c++)
+                {
+                    <th class="table-border-analyze">
+                        @if (!string.IsNullOrEmpty(Model.RelativeValues[r, c]))
+                        {
+                            @Model.RelativeValues[r, c]
+                        }
+                    </th>
+                }
+                <th class="table-border-analyze">
+                    @Model.TotalHorizontal[r]
+                </th>
+            </tr>
+        }
+    </table>
+</div>
+
+<h2>Когортный анализ: отоносительные значения со сдвигом</h2>
+<div class="table-responsive">
+    <table style="width: 100%;">
+        <tr class="table-border-analyze">
+            <th></th>
+            @foreach (var date in Model.Dates)
+            {
+                <th class="table-border-analyze">
+                    @date
+                </th>
+            }
+        </tr>
+        @for (var r = 0; r < Model.TableLength; r++)
+        {
+            <tr class="table-border-analyze">
+                <th class="table-border-analyze">
+                    @Model.Dates[r]
+                </th>
+                @for (var c = 0; c < Model.TableLength; c++)
+                {
+                    <th class="table-border-analyze">
+                        @if (!string.IsNullOrEmpty(Model.RelativeValuesWithShift[r, c]))
+                        {
+                            @Model.RelativeValuesWithShift[r, c]
+                        }
+                    </th>
+                }
+            </tr>
+        }
+    </table>
+</div>

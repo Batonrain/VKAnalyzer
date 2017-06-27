@@ -190,6 +190,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\VKModels\CohortAnalysysInputModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\VkAuthService.cs" />
     <Compile Include="Services\VkService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

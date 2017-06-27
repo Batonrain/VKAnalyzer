@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
-using VKAnalyzer.Models.VKModels;
 
 namespace VKAnalyzer.BusinessLogic.CohortAnalyser
 {
@@ -15,10 +14,6 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
             var preparedData = PrepareDataForCohortAnalyse(models, step, dateOfTheBeginning, dateOfTheEnd).OrderBy(d => d.PostDate).ToList();
 
             result = Analyse(preparedData, groupId);
-
-
-            //TODO fix this
-            result.Dates = new List<string>();
 
             if (step == 1)
             {
@@ -71,15 +66,21 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
         {
             var analyser = new CohortAnalyser();
 
+            var absoluteData = analyser.BuildCohortAnalyseData(preparedData);
+            var relativeData = analyser.BuildRelativeValues(absoluteData);
+            var relativeDataWithShift = analyser.BuildRelativeValuesWithShift(absoluteData);
+
             var result = new CohortAnalysisResultModel
             {
-                ResultMatrix = analyser.BuildCohortAnalyseData(preparedData),
+                AbsoluteValues = absoluteData,
+                RelativeValues = relativeData,
+                RelativeValuesWithShift = relativeDataWithShift,
                 TableLength = preparedData.Count,
                 GroupId = groupId
             };
 
-            result.TotalHorizontal = CountTotalHorizontal(result.ResultMatrix);
-            result.TotalVertical = CountTotalVertical(result.ResultMatrix);
+            result.TotalHorizontal = CountTotalHorizontal(result.AbsoluteValues);
+            result.TotalVertical = CountTotalVertical(result.AbsoluteValues);
 
             return result;
         }
@@ -119,10 +120,63 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
                         for (var i = v; i > 0; i--)
                         {
                             //конкатинация всех пользователей за предыдущие дни
-                            //var previusCohort = invertedData[i - 1].LikedIds;
                             var previusCohortCell = result[i - 1, i - 1];
-                            //result[i - 1, v] = currentCohort.Where(previusCohortCell.Contains).ToList();
+                            
                             result[i - 1, v] = previusCohortCell.Intersect(currentCohort).ToList();
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private string[,] BuildRelativeValues(List<string>[,] data)
+        {
+            var arrayLength = data.GetLength(1);
+            var result = new string[arrayLength, arrayLength];
+
+            for (var h = 0; h < arrayLength; h++)
+            {
+                for (var v = 0; v < arrayLength; v++)
+                {
+                    if (h == v)
+                    {
+                        result[h, v] = "100%";
+
+                        for (var i = v + 1; i < arrayLength; i++)
+                        {
+                            var percentResult = Math.Truncate((double)data[h, i].Count() / data[h, v].Count() * 100);
+
+                            result[h, i] = string.Format("{0}%", percentResult);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private string[,] BuildRelativeValuesWithShift(List<string>[,] data)
+        {
+            var arrayLength = data.GetLength(1);
+            var result = new string[arrayLength, arrayLength];
+
+            for (var h = 0; h < arrayLength; h++)
+            {
+                for (var v = 0; v < arrayLength; v++)
+                {
+                    if (h == v)
+                    {
+                        result[h, 0] = "100%";
+
+                        var vert = 1;
+                        for (var i = v + 1; i < arrayLength; i++)
+                        {
+                            var percentResult = Math.Truncate((double)data[h, i].Count() / data[h, v].Count() * 100);
+
+                            result[h, vert] = string.Format("{0}%", percentResult);
+                            vert++;
                         }
                     }
                 }

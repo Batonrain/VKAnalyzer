@@ -13,6 +13,7 @@ using NLog;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models;
 using VKAnalyzer.Models.EFModels;
+using VKAnalyzer.Services;
 
 namespace VKAnalyzer.Controllers
 {
@@ -214,8 +215,6 @@ namespace VKAnalyzer.Controllers
                 return RedirectToAction("Login");
             }
 
-
-
             var login = new UserLoginInfo(idClaim.Issuer, idClaim.Value);
             var name = result.Identity.Name == null ? "" : result.Identity.Name.Replace(" ", "");
 
@@ -224,37 +223,10 @@ namespace VKAnalyzer.Controllers
 
             if (user != null)
             {
-                try
-                {
-                    var vkClaim = result.Identity.FindFirst("VKAccessToken");
-                    using (var context = new BaseDb())
-                    {
-                        var userAccess = new UserAccessToken()
-                        {
-                            AccessToken = vkClaim.Value,
-                            VkUserId = user.Id
-                        };
+                var vkClaim = result.Identity.FindFirst("VKAccessToken");
 
-                        if (context.UserAccessTokens.Count(us => us.VkUserId == user.Id) > 0)
-                        {
-                            var userToken = context.UserAccessTokens.FirstOrDefault(us => us.VkUserId == user.Id);
-                            userToken.AccessToken = vkClaim.Value;
-                            context.Entry(userToken).State = EntityState.Modified;
-                        }
-                        else
-                        {
-                            context.UserAccessTokens.Add(userAccess);
-                        }
-
-                        context.SaveChanges();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error("Error during working with Entity: {0}", ex.Message);
-                    _logger.Error("Error during working with Entity: {0}", ex.InnerException);
-                }
-
+                var vkAuthService = new VkAuthService();
+                vkAuthService.CreateOrUpdateUserAccessToken(vkClaim.Value, user.Id);
 
                 await SignInAsync(user, isPersistent: false);
                 return RedirectToLocal(returnUrl);
@@ -302,6 +274,8 @@ namespace VKAnalyzer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
         {
+            var vkClaimCookies = await AuthenticationManager.AuthenticateAsync(DefaultAuthenticationTypes.ExternalCookie);
+
             if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Manage");
@@ -319,9 +293,13 @@ namespace VKAnalyzer.Controllers
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    var vkClaim = vkClaimCookies.Identity.FindFirst("VKAccessToken");
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
                     if (result.Succeeded)
                     {
+                        var vkAuthService = new VkAuthService();
+                        vkAuthService.CreateOrUpdateUserAccessToken(vkClaim.Value, user.Id);
+
                         await SignInAsync(user, isPersistent: false);
                         return RedirectToLocal(returnUrl);
                     }

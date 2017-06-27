@@ -1,11 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace VKAnalyzer.Models.VKModels
+namespace VKAnalyzer.BusinessLogic.CohortAnalyser.Models
 {
     public class CohortAnalysisResultModel
     {
-        public List<string>[,] ResultMatrix { get; set; }
+        public List<string>[,] AbsoluteValues { get; set; }
+
+        public string[,] RelativeValues { get; set; }
+
+        public List<string>[,] AbsoluteValuesWithShift { get; set; }
+
+        public string[,] RelativeValuesWithShift { get; set; }
 
         public int TableLength { get; set; }
 
@@ -19,5 +24,10 @@ namespace VKAnalyzer.Models.VKModels
 
         public List<string> TotalNews { get; set; }
         public List<string> TotalOld { get; set; }
+
+        public CohortAnalysisResultModel()
+        {
+            Dates = new List<string>();
+        }
     }
 }
