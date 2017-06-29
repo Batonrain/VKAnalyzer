@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Xml.Linq;
 using NLog;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
@@ -161,7 +162,7 @@ namespace VKAnalyzer.Services
                 _logger.Error("Error in GetListOfLikedUsers {0}: {1}", postId, exception.Message);
                 _logger.Error("Error in GetListOfLikedUsers {0}: {1}", postId, exception.InnerException);
 
-                //throw new HttpException(500, "Во время скачивания лайков произошла ошибка");
+                throw new HttpException(500, "Во время скачивания лайков произошла ошибка");
             }
 
             var result = users.Descendants("users").Elements("uid").Select(p => p.Value);
@@ -182,7 +183,7 @@ namespace VKAnalyzer.Services
             catch (Exception exception)
             {
                 _logger.Error("Error in GetPostsCount: {0}", exception.Message);
-                _logger.Error("Error in GetPostsCount: {0}", exception.InnerException);
+                _logger.Error(string.Format("Error in GetPostsCount: {0}", exception.InnerException));
             }
 
             return 10000;

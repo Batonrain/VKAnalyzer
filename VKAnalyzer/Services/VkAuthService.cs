@@ -47,7 +47,7 @@ namespace VKAnalyzer.Services
             catch (Exception ex)
             {
                 _logger.Error("Error during working with Entity: {0}", ex.Message);
-                _logger.Error("Error during working with Entity: {0}", ex.InnerException);
+                _logger.Error(string.Format("Error during working with Entity: {0}", ex.InnerException));
             }
         }
     }

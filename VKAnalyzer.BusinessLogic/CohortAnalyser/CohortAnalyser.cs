@@ -66,13 +66,15 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
         {
             var analyser = new CohortAnalyser();
 
-            var absoluteData = analyser.BuildCohortAnalyseData(preparedData);
+            var absoluteData = analyser.BuildAbsoluteValues(preparedData);
+            //var absoluteDataWithShift = analyser.BuildAbsoluteValuesWithShift(preparedData);
             var relativeData = analyser.BuildRelativeValues(absoluteData);
             var relativeDataWithShift = analyser.BuildRelativeValuesWithShift(absoluteData);
 
             var result = new CohortAnalysisResultModel
             {
                 AbsoluteValues = absoluteData,
+                //AbsoluteValuesWithShift = absoluteDataWithShift,
                 RelativeValues = relativeData,
                 RelativeValuesWithShift = relativeDataWithShift,
                 TableLength = preparedData.Count,
@@ -86,7 +88,7 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
         }
 
         //Главный когоротный анализатор. Построение матрицы, высчитывание результатов.
-        private List<string>[,] BuildCohortAnalyseData(List<CohortAnalysisModel> data)
+        private List<string>[,] BuildAbsoluteValues(List<CohortAnalysisModel> data)
         {
             var dataCount = data.Count();
             var result = new List<string>[dataCount, dataCount];
@@ -113,7 +115,7 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
                         }
 
                         //Новые уникальные пользователи
-                        var newUsersCount = currentCohort.Where(q => !allPreviuosUsers.Contains(q));
+                        var newUsersCount = currentCohort.Where(q => !allPreviuosUsers.Contains(q)).ToList();
                         result[v, v] = newUsersCount.ToList(); // запись в таблицу самых новых пользователей
 
                         //Пользователи за предыдущие дни
@@ -122,6 +124,51 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
                             //конкатинация всех пользователей за предыдущие дни
                             var previusCohortCell = result[i - 1, i - 1];
                             
+                            result[i - 1, v] = previusCohortCell.Intersect(currentCohort).ToList();
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private List<string>[,] BuildAbsoluteValuesWithShift(List<CohortAnalysisModel> data)
+        {
+            var dataCount = data.Count();
+            var result = new List<string>[dataCount, dataCount];
+
+            for (var h = 0; h < dataCount; h++)
+            {
+                for (var v = 0; v < dataCount; v++)
+                {
+                    if (h == 0 && v == 0)
+                    {
+                        //Первая запись в матрице
+                        result[0, 0] = data[0].LikedIds.ToList();
+                    }
+                    if (h == v && v > 0)
+                    {
+                        var currentCohort = data[v].LikedIds.ToList();
+
+                        var allPreviuosUsers = new List<string>();
+
+                        for (var i = v; i > 0; i--)
+                        {
+                            //конкатинация всех пользователей за предыдущие дни для последующего вычисления новых уникальных
+                            allPreviuosUsers.AddRange(result[i - 1, i - 1]);
+                        }
+
+                        //Новые уникальные пользователи
+                        var newUsersCount = currentCohort.Where(q => !allPreviuosUsers.Contains(q)).ToList();
+                        result[v, v] = newUsersCount.ToList(); // запись в таблицу самых новых пользователей
+
+                        //Пользователи за предыдущие дни
+                        for (var i = v; i > 0; i--)
+                        {
+                            //конкатинация всех пользователей за предыдущие дни
+                            var previusCohortCell = result[i - 1, i - 1];
+
                             result[i - 1, v] = previusCohortCell.Intersect(currentCohort).ToList();
                         }
                     }
