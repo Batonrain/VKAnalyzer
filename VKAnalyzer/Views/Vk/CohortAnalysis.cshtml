@@ -82,7 +82,86 @@
     </table>
 </div>
 
-<h2>Когортный анализ: отоносительные значения</h2>
+<h2>@ViewBag.Title: абсолютные значения со сдвигом</h2>
+<div>
+    <table class="table table-responsive table-bordered">
+        <thead class="thead-default">
+            <tr>
+                <th></th>
+                @for (var r = 1; r <= Model.TableLength; r++)
+                {
+                    <th>
+                        @r
+                    </th>
+                }
+                <th>
+                    Итого:
+                </th>
+            </tr>
+        </thead>
+        @for (var r = 0; r < Model.TableLength; r++)
+        {
+            <tr>
+                <th>
+                    @Model.Dates[r]
+                </th>
+                @for (var c = 0; c < Model.TableLength; c++)
+                {
+                    <th>
+                        @if (Model.AbsoluteValues[r, c] != null)
+                        {
+                            @Model.AbsoluteValues[r, c].Count()
+                        }
+                    </th>
+                }
+                <th>
+                    @Model.TotalHorizontal[r]
+                </th>
+            </tr>
+        }
+        <tr>
+            <th>
+                Итого:
+            </th>
+            @foreach (var verticalSum in Model.TotalVertical)
+            {
+                <th>
+                    @verticalSum
+                </th>
+            }
+        </tr>
+        <tr>
+            <th>
+                Новые:
+            </th>
+            @for (var c = 0; c < Model.TableLength; c++)
+            {
+                <th class="success">
+                    @if (Model.AbsoluteValues[c, c] != null)
+                    {
+                        @Model.AbsoluteValues[c, c].Count()
+                    }
+                </th>
+            }
+        </tr>
+        <tr>
+            <th>
+                Старые:
+            </th>
+            @for (var c = 0; c < Model.TableLength; c++)
+            {
+                <th class="info">
+                    @if (Model.AbsoluteValues[c, c] != null)
+                    {
+                        @(Model.TotalVertical[c] - Model.AbsoluteValues[c, c].Count())
+                    }
+                </th>
+            }
+        </tr>
+    </table>
+</div>
+
+<h2>Когортный анализ: относительные значения</h2>
 <div>
     <table class="table table-responsive table-bordered">
         <thead class="thead-default">
@@ -122,16 +201,16 @@
     </table>
 </div>
 
-<h2>Когортный анализ: отоносительные значения со сдвигом</h2>
+<h2>Когортный анализ: относительные значения со сдвигом</h2>
 <div>
     <table class="table table-responsive table-bordered">
         <thead class="thead-default">
             <tr>
                 <th></th>
-                @foreach (var date in Model.Dates)
+                @for (var r = 1; r <= Model.TableLength; r++)
                 {
                     <th>
-                        @date
+                        @r
                     </th>
                 }
             </tr>
