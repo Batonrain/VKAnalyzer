@@ -28,6 +28,11 @@ namespace VKAnalyzer.Controllers
             return View();
         }
 
+        public ActionResult Result(string code, string state)
+        {
+            return View();
+        }
+
         [HttpPost]
         public ActionResult CohortAnalysis(CohortAnalysysInputModel model)
         {
@@ -39,7 +44,7 @@ namespace VKAnalyzer.Controllers
                 var result = cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
                     model.EndDate, model.GroupId);
                 
-                ViewBag.Message = "Cohort analysis";
+                ViewBag.Message = "Когортный анализ активностей";
 
                 return View(result);
             }

@@ -101,6 +101,36 @@
             <param name="context"></param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the completed operation.</returns>
         </member>
+        <member name="M:Microsoft.Owin.Security.Twitter.ITwitterAuthenticationProvider.ApplyRedirect(Microsoft.Owin.Security.Twitter.TwitterApplyRedirectContext)">
+            <summary>
+            Called when a Challenge causes a redirect to authorize endpoint in the Twitter middleware
+            </summary>
+            <param name="context">Contains redirect URI and <see cref="T:Microsoft.Owin.Security.AuthenticationProperties"/> of the challenge </param>
+        </member>
+        <member name="T:Microsoft.Owin.Security.Twitter.TwitterApplyRedirectContext">
+            <summary>
+            Context passed when a Challenge causes a redirect to authorize endpoint in the Twitter middleware
+            </summary>
+        </member>
+        <member name="M:Microsoft.Owin.Security.Twitter.TwitterApplyRedirectContext.#ctor(Microsoft.Owin.IOwinContext,Microsoft.Owin.Security.Twitter.TwitterAuthenticationOptions,Microsoft.Owin.Security.AuthenticationProperties,System.String)">
+            <summary>
+            Creates a new context object.
+            </summary>
+            <param name="context">The OWIN request context</param>
+            <param name="options">The Facebook middleware options</param>
+            <param name="properties">The authenticaiton properties of the challenge</param>
+            <param name="redirectUri">The initial redirect URI</param>
+        </member>
+        <member name="P:Microsoft.Owin.Security.Twitter.TwitterApplyRedirectContext.RedirectUri">
+            <summary>
+            Gets the URI used for the redirect operation.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Owin.Security.Twitter.TwitterApplyRedirectContext.Properties">
+            <summary>
+            Gets the authenticaiton properties of the challenge
+            </summary>
+        </member>
         <member name="T:Microsoft.Owin.Security.Twitter.TwitterAuthenticatedContext">
             <summary>
             Contains information about the login session as well as the user <see cref="T:System.Security.Claims.ClaimsIdentity"/>.
@@ -170,6 +200,12 @@
             <param name="context"></param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the completed operation.</returns>
         </member>
+        <member name="M:Microsoft.Owin.Security.Twitter.TwitterAuthenticationProvider.ApplyRedirect(Microsoft.Owin.Security.Twitter.TwitterApplyRedirectContext)">
+            <summary>
+            Called when a Challenge causes a redirect to authorize endpoint in the Twitter middleware
+            </summary>
+            <param name="context">Contains redirect URI and <see cref="T:Microsoft.Owin.Security.AuthenticationProperties"/> of the challenge </param>
+        </member>
         <member name="P:Microsoft.Owin.Security.Twitter.TwitterAuthenticationProvider.OnAuthenticated">
             <summary>
             Gets or sets the function that is invoked when the Authenticated method is invoked.
@@ -178,6 +214,11 @@
         <member name="P:Microsoft.Owin.Security.Twitter.TwitterAuthenticationProvider.OnReturnEndpoint">
             <summary>
             Gets or sets the function that is invoked when the ReturnEndpoint method is invoked.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Owin.Security.Twitter.TwitterAuthenticationProvider.OnApplyRedirect">
+            <summary>
+            Gets or sets the delegate that is invoked when the ApplyRedirect method is invoked.
             </summary>
         </member>
         <member name="T:Microsoft.Owin.Security.Twitter.TwitterReturnEndpointContext">
@@ -332,6 +373,11 @@
         <member name="P:Microsoft.Owin.Security.Twitter.TwitterAuthenticationOptions.Provider">
             <summary>
             Gets or sets the <see cref="T:Microsoft.Owin.Security.Twitter.ITwitterAuthenticationProvider"/> used to handle authentication events.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Owin.Security.Twitter.TwitterAuthenticationOptions.CookieManager">
+            <summary>
+            An abstraction for reading and setting cookies during the authentication process.
             </summary>
         </member>
     </members>
