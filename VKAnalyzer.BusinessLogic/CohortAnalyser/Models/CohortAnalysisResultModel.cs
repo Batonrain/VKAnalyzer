@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace VKAnalyzer.BusinessLogic.CohortAnalyser.Models
 {
+    [Serializable]
     public class CohortAnalysisResultModel
     {
         public List<string>[,] AbsoluteValues { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System.Data.Entity;
 using VKAnalyzer.Models.EFModels;
+using VKAnalyzer.Models.VKModels;
 
 namespace VKAnalyzer.DBContexts
 {
@@ -12,5 +13,6 @@ namespace VKAnalyzer.DBContexts
         }
 
         public DbSet<UserAccessToken> UserAccessTokens { get; set; }
+        public DbSet<VkCohortAnalyseResult> VkCohortAnalyseResults { get; set; }
     }
 }

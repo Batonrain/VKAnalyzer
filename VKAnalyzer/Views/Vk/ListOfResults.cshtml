@@ -1,0 +1,30 @@
+﻿@model List<VKAnalyzer.Models.VKModels.AnalyseResultsViewModel>
+
+@{
+    ViewBag.Title = "Результаты";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Доступные результаты</h2>
+
+<table class="table table-responsive table-bordered">
+    <tbody>
+        @foreach (var result in Model)
+        {
+            <tr>
+                <th>
+                    @result.DateOfCollection
+                </th>
+                <th>
+                    @result.GroupId
+                </th>
+                <th>
+                    Когортный анализ
+                </th>
+                <th>
+                    @Html.ActionLink("Результаты", "Result", new { id = result.Id })
+                </th>
+            </tr>
+        }
+    </tbody>
+</table>
