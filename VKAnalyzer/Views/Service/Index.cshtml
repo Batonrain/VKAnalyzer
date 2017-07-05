@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewBag.Title = "Сервисы";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Доступные сервисы</h2>
+<h3>
+    Вконтакте
+</h3>
+<table class="table table-responsive table-bordered">
+    <tbody>
+        <tr>
+            <th>
+                @Html.ActionLink("Когортный анализ активностей", "Index", "Vk")
+            </th>
+            <th>
+                <p>
+                    Когортный анализ активности позволит Вам наглядно продемонстрировать активность новых пользователей в выбранном вами паблике или группе.
+                </p>
+            </th>
+        </tr>
+    </tbody>
+</table>
+

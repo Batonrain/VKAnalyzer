@@ -189,6 +189,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Controllers\ServicesController.cs" />
     <Compile Include="DBContexts\BaseDb.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -319,6 +320,7 @@
     <Content Include="Views\Vk\Index.cshtml" />
     <Content Include="Views\Vk\ListOfResults.cshtml" />
     <Content Include="Views\Vk\Result.cshtml" />
+    <Content Include="Views\Service\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

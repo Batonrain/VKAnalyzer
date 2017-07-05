@@ -25,8 +25,8 @@
                 @if (Request.IsAuthenticated)
                 {
                     <ul class="nav navbar-nav">
-                        <li>@Html.ActionLink("Когортный анализ", "Index", "Vk")</li>
-                        <li>@Html.ActionLink("Список результатов", "ListOfResults", "Vk")</li>
+                        <li>@Html.ActionLink("Сервисы", "Index", "Service")</li>
+                        <li>@Html.ActionLink("Результаты", "ListOfResults", "Vk")</li>
                     </ul>
                 }
                 @Html.Partial("_LoginPartial")

@@ -3,9 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
-using System.Xml;
-using System.Xml.Serialization;
 using Hangfire;
 using Microsoft.AspNet.Identity;
 using NLog;
@@ -69,7 +66,7 @@ namespace VKAnalyzer.Controllers
             }
             catch (Exception ex)
             {
-                // removed error handling logic!
+                _logger.Error(string.Format("Error: {0}",ex));
             }
 
             return View(result);
@@ -80,36 +77,42 @@ namespace VKAnalyzer.Controllers
         {
             if (ModelState.IsValid)
             {
-                vkService.AccessToken = GetCurrentUserAccessToken();
-                var analyzeModels = vkService.GetPostsForAnalyze(model.GroupId, model.StartDate, model.EndDate);
-
-                var result = cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
-                    model.EndDate, model.GroupId);
-
-                var binaryFormatter = new BinaryFormatter();
-
-                using (var ms = new MemoryStream())
-                {
-                    binaryFormatter.Serialize(ms, result);
-                    byte[] rr = ms.GetBuffer();
-
-                    var cntx = new BaseDb();
-                    cntx.VkCohortAnalyseResults.Add(new VkCohortAnalyseResult
-                    {
-                        UserId = User.Identity.GetUserId(),
-                        CollectionDate = DateTime.Now,
-                        GroupId = model.GroupId,
-                        Result = rr
-                    });
-                    cntx.SaveChanges();
-                }
+                var accessToken = GetCurrentUserAccessToken();
+                var userId = User.Identity.GetUserId();
+                BackgroundJob.Enqueue(() => AnalyzeAndSaveData(model, accessToken, userId));
 
                 ViewBag.Message = "Когортный анализ активностей";
 
-                return View(result);
+                return View();
             }
 
             return RedirectToAction("Index");
+        }
+
+        public void AnalyzeAndSaveData(CohortAnalysysInputModel model, string accessToken, string userId)
+        {
+            vkService.AccessToken = accessToken;
+            var analyzeModels = vkService.GetPostsForAnalyze(model.GroupId, model.StartDate, model.EndDate);
+
+            var result = cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
+                model.EndDate, model.GroupId);
+
+            using (var ms = new MemoryStream())
+            {
+                var binaryFormatter = new BinaryFormatter();
+                binaryFormatter.Serialize(ms, result);
+                byte[] rr = ms.GetBuffer();
+
+                var cntx = new BaseDb();
+                cntx.VkCohortAnalyseResults.Add(new VkCohortAnalyseResult
+                {
+                    UserId = userId,
+                    CollectionDate = DateTime.Now,
+                    GroupId = model.GroupId,
+                    Result = rr
+                });
+                cntx.SaveChanges();
+            }
         }
 
         private string GetCurrentUserAccessToken()
