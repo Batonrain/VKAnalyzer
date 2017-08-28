@@ -22,18 +22,25 @@ namespace VKAnalyzer.Services
 
 
             //Получение всеъ постов, чтобы исключить ранее неактивных пользователей
-            var excludeList = GetExcludeUserList(groupId, startDate);
+            List<string> excludeList;
 
             if (excludeUsers)
             {
+                excludeList = GetExcludeUserList(groupId, startDate).ToList();
+
                 var allUsers = GetAllGroupUsers(parametersModel).ToList();
 
-                var usersNotFromGroup = excludeList.Where(i => !allUsers.Any(i.Contains));
+                var usersNotFromGroup = excludeList.Where(i => !allUsers.Any(i.Contains)).ToList();
 
-                if (usersNotFromGroup.Any())
+                var notFromGroup = usersNotFromGroup as IList<string> ?? usersNotFromGroup.ToList();
+                if (notFromGroup.Any())
                 {
-                    excludeList = excludeList.Where(i => !usersNotFromGroup.Any(i.Contains));
+                    excludeList = excludeList.Where(i => !notFromGroup.Any(i.Contains)).ToList();
                 }
+            }
+            else
+            {
+                excludeList = GetExcludeUserList(groupId, startDate).ToList();
             }
 
             // Получение постов
