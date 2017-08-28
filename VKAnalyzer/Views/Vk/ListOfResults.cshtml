@@ -8,12 +8,24 @@
 <h2>Доступные результаты</h2>
 
 <table class="table table-responsive table-bordered">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Дата агрегации</th>
+            <th>Id группы</th>
+            <th>Сервис</th>
+            <th></th>
+        </tr>
+    </thead>
     <tbody>
         @foreach (var result in Model)
         {
             <tr>
                 <th>
-                    @result.DateOfCollection
+                    @result.Name
+                </th>
+                <th>
+                    @result.DateOfCollection.ToString("dd-MM-yyyy HH:mm")
                 </th>
                 <th>
                     @result.GroupId

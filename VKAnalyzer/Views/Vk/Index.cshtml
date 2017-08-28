@@ -28,9 +28,21 @@
         @Html.Label("Куркин: 70468135", new { @class = "col-md-2 control-label" })
     </div>
     <div class="form-group">
+        @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
         @Html.LabelFor(m => m.GroupId, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.GroupId, new { @class = "form-control", @value = "116839698" })
+            @Html.TextBoxFor(m => m.GroupId, new { @class = "form-control"})
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.ExcludeUsers, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.CheckBoxFor(m => m.ExcludeUsers, new { @class = "form-control" })
         </div>
     </div>
     <div class="form-group">

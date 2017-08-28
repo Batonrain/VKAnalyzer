@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -43,7 +44,8 @@ namespace VKAnalyzer.Controllers
                 .Select(rest => new AnalyseResultsViewModel()
                 {
                     Id = rest.Id,
-                    DateOfCollection = rest.CollectionDate.ToString(),
+                    Name = rest.Name,
+                    DateOfCollection = rest.CollectionDate,
                     AnalyseType = "Когортный анализ",
                     GroupId = rest.GroupId
                 })
@@ -92,7 +94,7 @@ namespace VKAnalyzer.Controllers
         public void AnalyzeAndSaveData(CohortAnalysysInputModel model, string accessToken, string userId)
         {
             vkService.AccessToken = accessToken;
-            var analyzeModels = vkService.GetPostsForAnalyze(model.GroupId, model.StartDate, model.EndDate);
+            var analyzeModels = vkService.GetPostsForAnalyze(model.GroupId, model.StartDate, model.EndDate, model.ExcludeUsers);
 
             var result = cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
                 model.EndDate, model.GroupId);
@@ -107,6 +109,7 @@ namespace VKAnalyzer.Controllers
                 cntx.VkCohortAnalyseResults.Add(new VkCohortAnalyseResult
                 {
                     UserId = userId,
+                    Name = model.Name,
                     CollectionDate = DateTime.Now,
                     GroupId = model.GroupId,
                     Result = rr

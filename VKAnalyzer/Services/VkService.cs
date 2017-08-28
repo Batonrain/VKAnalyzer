@@ -14,13 +14,27 @@ namespace VKAnalyzer.Services
         private static Logger _logger = LogManager.GetCurrentClassLogger();
         public string AccessToken { get; set; }
 
-        public List<CohortAnalysisModel> GetPostsForAnalyze(string groupId, DateTime startDate, DateTime endDate)
+        public List<CohortAnalysisModel> GetPostsForAnalyze(string groupId, DateTime startDate, DateTime endDate, bool excludeUsers = false)
         {
             // Создание модели с параметрами для запроса всех постов за определённую дату
             var parametersModel = PrepareGetParameters(groupId, startDate, endDate);
 
+
+
             //Получение всеъ постов, чтобы исключить ранее неактивных пользователей
             var excludeList = GetExcludeUserList(groupId, startDate);
+
+            if (excludeUsers)
+            {
+                var allUsers = GetAllGroupUsers(parametersModel).ToList();
+
+                var usersNotFromGroup = excludeList.Where(i => !allUsers.Any(i.Contains));
+
+                if (usersNotFromGroup.Any())
+                {
+                    excludeList = excludeList.Where(i => !usersNotFromGroup.Any(i.Contains));
+                }
+            }
 
             // Получение постов
             var postsXDoc = GetPosts(parametersModel);
@@ -49,9 +63,9 @@ namespace VKAnalyzer.Services
 
             var allRawPosts = GetRawPostsFromXml(allPostsXDoc);
 
-            var allActiveUsers = GetAlreadyActiveUsers(allRawPosts, startDate, groupId);
+            var allActiveUsers = GetAlreadyActiveUsers(allRawPosts, startDate, groupId).Distinct().ToList();
 
-            return allActiveUsers.Distinct().ToList();
+            return allActiveUsers;
         }
 
         private GetWallPostsParametersModel PrepareGetParameters(string groupId, DateTime startDate, DateTime endDate)
@@ -200,6 +214,56 @@ namespace VKAnalyzer.Services
             }
 
             return result;
+        }
+
+        private int GetAllGroupUsersCount(string groupId)
+        {
+            var xml = new XDocument();
+
+            // получить список всех постов на стене сообщества
+            try
+            {
+                xml = XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=groups.getMembers.xml&offset=0&count=1&group_id={0}&access_token={1}", groupId, AccessToken));
+                return Convert.ToInt32(xml.Document.Element("response").Element("count").Value);
+            }
+            catch (Exception exception)
+            {
+                _logger.Error("Error in GetAllGroupUsersCount: {0}", exception.Message);
+                _logger.Error(string.Format("Error in GetAllGroupUsersCount: {0}", exception.InnerException));
+            }
+
+            return 500000;
+        }
+
+        private IEnumerable<string> GetAllGroupUsers(GetWallPostsParametersModel model)
+        {
+            var users = new List<string>();
+            var userCounts = GetAllGroupUsersCount(model.GroupId);
+
+            var cyclesCount = userCounts / 1000 + 1;
+
+            // получить список всех постов на стене сообщества
+            for (var cycleNumber = 0; cycleNumber < cyclesCount; cycleNumber++)
+            {
+                try
+                {
+                    var currentIteration = XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=groups.getMembers.xml&offset={0}&count={1}&group_id={2}&access_token={3}", cycleNumber * 1000, 1000, model.GroupId, AccessToken));
+                    var usersList =
+                        currentIteration.Document.Element("response")
+                            .Element("users")
+                            .Elements("uid")
+                            .Select(element => element.Value);
+                    users.AddRange(usersList);
+                }
+                catch (Exception exception)
+                {
+                    _logger.Error("Error in GetAllGroupUsers: {0}", exception.Message);
+
+                    //throw new HttpException(500, "Во время скачивания постов произошла ошибка");
+                }
+            }
+
+            return users;
         }
 
         private static DateTime UnixTimeStampToDateTime(double unixTimeStamp)

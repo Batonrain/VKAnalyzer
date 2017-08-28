@@ -10,6 +10,14 @@ namespace VKAnalyzer.Models.VKModels
         public string GroupId { get; set; }
 
         [Required]
+        [Display(Name = "Название анализа")]
+        public string Name { get; set; }
+
+        [Required]
+        [Display(Name = "Учитывать сторонних пользователей")]
+        public bool ExcludeUsers { get; set; }
+
+        [Required]
         [Display(Name = "Шаг анализа")]
         public int Step { get; set; }
 
