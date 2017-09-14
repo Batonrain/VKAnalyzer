@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Xml.Linq;
 using NLog;
@@ -19,8 +20,6 @@ namespace VKAnalyzer.Services
             // Создание модели с параметрами для запроса всех постов за определённую дату
             var parametersModel = PrepareGetParameters(groupId, startDate, endDate);
 
-
-
             //Получение всеъ постов, чтобы исключить ранее неактивных пользователей
             List<string> excludeList;
 
@@ -30,9 +29,8 @@ namespace VKAnalyzer.Services
 
                 var allUsers = GetAllGroupUsers(parametersModel).ToList();
 
-                var usersNotFromGroup = excludeList.Where(i => !allUsers.Any(i.Contains)).ToList();
-
-                var notFromGroup = usersNotFromGroup as IList<string> ?? usersNotFromGroup.ToList();
+                var notFromGroup = excludeList.Where(i => !allUsers.Any(i.Contains)).ToList();
+                
                 if (notFromGroup.Any())
                 {
                     excludeList = excludeList.Where(i => !notFromGroup.Any(i.Contains)).ToList();
@@ -252,21 +250,26 @@ namespace VKAnalyzer.Services
             // получить список всех постов на стене сообщества
             for (var cycleNumber = 0; cycleNumber < cyclesCount; cycleNumber++)
             {
-                try
+                var tryAgain = true;
+                while (tryAgain)
                 {
-                    var currentIteration = XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=groups.getMembers.xml&offset={0}&count={1}&group_id={2}&access_token={3}", cycleNumber * 1000, 1000, model.GroupId, AccessToken));
-                    var usersList =
-                        currentIteration.Document.Element("response")
-                            .Element("users")
-                            .Elements("uid")
-                            .Select(element => element.Value);
-                    users.AddRange(usersList);
-                }
-                catch (Exception exception)
-                {
-                    _logger.Error("Error in GetAllGroupUsers: {0}", exception.Message);
+                    try
+                    {
+                        var currentIteration = XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=groups.getMembers.xml&offset={0}&count={1}&group_id={2}&access_token={3}", cycleNumber * 1000, 1000, model.GroupId, AccessToken));
+                        var usersList =
+                            currentIteration.Document.Element("response")
+                                .Element("users")
+                                .Elements("uid")
+                                .Select(element => element.Value);
+                        users.AddRange(usersList);
+                        tryAgain = false;
+                        Thread.Sleep(1000);
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.Error("Error in GetAllGroupUsers: {0}", exception.Message);
 
-                    //throw new HttpException(500, "Во время скачивания постов произошла ошибка");
+                    }
                 }
             }
 

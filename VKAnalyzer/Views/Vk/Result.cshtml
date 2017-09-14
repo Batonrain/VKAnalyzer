@@ -13,9 +13,9 @@
                 <th></th>
                 @foreach (var date in Model.Dates)
                 {
-                <th>
-                    @date
-                </th>
+                    <th>
+                        @date
+                    </th>
                 }
                 <th>
                     Итого:
@@ -24,23 +24,23 @@
         </thead>
         @for (var r = 0; r < Model.TableLength; r++)
         {
-        <tr>
-            <th>
-                @Model.Dates[r]
-            </th>
-            @for (var c = 0; c < Model.TableLength; c++)
-                {
+            <tr>
                 <th>
-                    @if (Model.AbsoluteValues[r, c] != null)
-                        {
-                        @Model.AbsoluteValues[r, c].Count()
-                        }
+                    @Model.Dates[r]
                 </th>
+                @for (var c = 0; c < Model.TableLength; c++)
+                {
+                    <th>
+                        @if (Model.AbsoluteValues[r, c] != null)
+                        {
+                            @Model.AbsoluteValues[r, c].Count()
+                        }
+                    </th>
                 }
-            <th>
-                @Model.TotalHorizontal[r]
-            </th>
-        </tr>
+                <th>
+                    @Model.TotalHorizontal[r]
+                </th>
+            </tr>
         }
         <tr>
             <th>
@@ -48,9 +48,9 @@
             </th>
             @foreach (var verticalSum in Model.TotalVertical)
             {
-            <th>
-                @verticalSum
-            </th>
+                <th>
+                    @verticalSum
+                </th>
             }
         </tr>
         <tr>
@@ -59,12 +59,12 @@
             </th>
             @for (var c = 0; c < Model.TableLength; c++)
             {
-            <th class="success">
-                @if (Model.AbsoluteValues[c, c] != null)
+                <th class="success">
+                    @if (Model.AbsoluteValues[c, c] != null)
                     {
-                    @Model.AbsoluteValues[c, c].Count()
+                        @Model.AbsoluteValues[c, c].Count()
                     }
-            </th>
+                </th>
             }
         </tr>
         <tr>
@@ -73,12 +73,12 @@
             </th>
             @for (var c = 0; c < Model.TableLength; c++)
             {
-            <th class="info">
-                @if (Model.AbsoluteValues[c, c] != null)
+                <th class="info">
+                    @if (Model.AbsoluteValues[c, c] != null)
                     {
-                    @(Model.TotalVertical[c] - Model.AbsoluteValues[c, c].Count())
+                        @(Model.TotalVertical[c] - Model.AbsoluteValues[c, c].Count())
                     }
-            </th>
+                </th>
             }
         </tr>
     </table>
@@ -92,9 +92,9 @@
                 <th></th>
                 @for (var r = 1; r <= Model.TableLength; r++)
                 {
-                <th>
-                    @r
-                </th>
+                    <th>
+                        @r
+                    </th>
                 }
                 <th>
                     Итого:
@@ -103,23 +103,23 @@
         </thead>
         @for (var r = 0; r < Model.TableLength; r++)
         {
-        <tr>
-            <th>
-                @Model.Dates[r]
-            </th>
-            @for (var c = 0; c < Model.TableLength; c++)
-                {
+            <tr>
                 <th>
-                    @if (Model.AbsoluteValues[r, c] != null)
-                        {
-                        @Model.AbsoluteValues[r, c].Count()
-                        }
+                    @Model.Dates[r]
                 </th>
+                @for (var c = 0; c < Model.TableLength; c++)
+                {
+                    <th>
+                        @if (Model.AbsoluteValues[r, c] != null)
+                        {
+                            @Model.AbsoluteValues[r, c].Count()
+                        }
+                    </th>
                 }
-            <th>
-                @Model.TotalHorizontal[r]
-            </th>
-        </tr>
+                <th>
+                    @Model.TotalHorizontal[r]
+                </th>
+            </tr>
         }
         <tr>
             <th>
@@ -127,9 +127,9 @@
             </th>
             @foreach (var verticalSum in Model.TotalVertical)
             {
-            <th>
-                @verticalSum
-            </th>
+                <th>
+                    @verticalSum
+                </th>
             }
         </tr>
         <tr>
@@ -138,12 +138,12 @@
             </th>
             @for (var c = 0; c < Model.TableLength; c++)
             {
-            <th class="success">
-                @if (Model.AbsoluteValues[c, c] != null)
+                <th class="success">
+                    @if (Model.AbsoluteValues[c, c] != null)
                     {
-                    @Model.AbsoluteValues[c, c].Count()
+                        @Model.AbsoluteValues[c, c].Count()
                     }
-            </th>
+                </th>
             }
         </tr>
         <tr>
@@ -152,12 +152,12 @@
             </th>
             @for (var c = 0; c < Model.TableLength; c++)
             {
-            <th class="info">
-                @if (Model.AbsoluteValues[c, c] != null)
+                <th class="info">
+                    @if (Model.AbsoluteValues[c, c] != null)
                     {
-                    @(Model.TotalVertical[c] - Model.AbsoluteValues[c, c].Count())
+                        @(Model.TotalVertical[c] - Model.AbsoluteValues[c, c].Count())
                     }
-            </th>
+                </th>
             }
         </tr>
     </table>
@@ -171,9 +171,9 @@
                 <th></th>
                 @foreach (var date in Model.Dates)
                 {
-                <th>
-                    @date
-                </th>
+                    <th>
+                        @date
+                    </th>
                 }
                 <th>
                     Итого:
@@ -182,23 +182,23 @@
         </thead>
         @for (var r = 0; r < Model.TableLength; r++)
         {
-        <tr>
-            <th>
-                @Model.Dates[r]
-            </th>
-            @for (var c = 0; c < Model.TableLength; c++)
-                {
+            <tr>
                 <th>
-                    @if (!string.IsNullOrEmpty(Model.RelativeValues[r, c]))
-                        {
-                        @Model.RelativeValues[r, c]
-                        }
+                    @Model.Dates[r]
                 </th>
+                @for (var c = 0; c < Model.TableLength; c++)
+                {
+                    <th>
+                        @if (!string.IsNullOrEmpty(Model.RelativeValues[r, c]))
+                        {
+                            @Model.RelativeValues[r, c]
+                        }
+                    </th>
                 }
-            <th>
-                @Model.TotalHorizontal[r]
-            </th>
-        </tr>
+                <th>
+                    @Model.TotalHorizontal[r]
+                </th>
+            </tr>
         }
     </table>
 </div>
@@ -211,28 +211,28 @@
                 <th></th>
                 @for (var r = 1; r <= Model.TableLength; r++)
                 {
-                <th>
-                    @r
-                </th>
+                    <th>
+                        @r
+                    </th>
                 }
             </tr>
         </thead>
         @for (var r = 0; r < Model.TableLength; r++)
         {
-        <tr>
-            <th>
-                @Model.Dates[r]
-            </th>
-            @for (var c = 0; c < Model.TableLength; c++)
-                {
+            <tr>
                 <th>
-                    @if (!string.IsNullOrEmpty(Model.RelativeValuesWithShift[r, c]))
-                        {
-                        @Model.RelativeValuesWithShift[r, c]
-                        }
+                    @Model.Dates[r]
                 </th>
+                @for (var c = 0; c < Model.TableLength; c++)
+                {
+                    <th>
+                        @if (!string.IsNullOrEmpty(Model.RelativeValuesWithShift[r, c]))
+                        {
+                            @Model.RelativeValuesWithShift[r, c]
+                        }
+                    </th>
                 }
-        </tr>
+            </tr>
         }
     </table>
 </div>
@@ -265,6 +265,21 @@
                             @if (!string.IsNullOrEmpty(Model.MediumValuesWithShift[r, c]))
                             {
                                 @Model.MediumValuesWithShift[r, c]
+                            }
+                        </th>
+                    }
+                </tr>
+            }
+            @if (Model.MediumValues != null)
+            {
+                <tr>
+                    <th>Среднее значение</th>
+                    @for (var c = 0; c < Model.TableLength; c++)
+                    {
+                        <th class="success">
+                            @if (!string.IsNullOrEmpty(Model.MediumValues[c]))
+                            {
+                                @Model.MediumValues[c]
                             }
                         </th>
                     }

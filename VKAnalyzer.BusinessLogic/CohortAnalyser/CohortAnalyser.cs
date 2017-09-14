@@ -70,6 +70,7 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
             var relativeData = analyser.BuildRelativeValues(absoluteData);
             var relativeDataWithShift = analyser.BuildRelativeValuesWithShift(absoluteData);
             var mediumDataWithShift = analyser.BuildMediumValuesWithShift(absoluteData);
+            var mediumData = analyser.MediumValuesWithShift(absoluteData).ToList();
 
             var result = new CohortAnalysisResultModel
             {
@@ -77,6 +78,7 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
                 RelativeValues = relativeData,
                 RelativeValuesWithShift = relativeDataWithShift,
                 MediumValuesWithShift = mediumDataWithShift,
+                MediumValues = mediumData,
                 TableLength = preparedData.Count,
                 GroupId = groupId
             };
@@ -221,6 +223,38 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
                             result[h, vert] = string.Format("{0}%", percentResult);
                             vert++;
                         }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private IEnumerable<string> MediumValuesWithShift(List<string>[,] data)
+        {
+            var arrayLength = data.GetLength(1);
+            var result = new string[arrayLength];
+
+            for (var h = 0; h < arrayLength; h++)
+            {
+                for (var v = 0; v < arrayLength; v++)
+                {
+                    if (h == v)
+                    {
+                        result[0] = "100%";
+
+                        var allValues = new List<double>();
+                        for (var i = v + 1; i < arrayLength; i++)
+                        {
+                            var percentResult = Math.Truncate((double)data[h, i].Count() / data[h, v].Count() * 100);
+
+                            allValues.Add(percentResult);
+                        }
+
+                        var sum = allValues.Sum();
+                        var cnt = allValues.Count;
+
+                        result[v] = string.Format("{0}%", sum / cnt);
                     }
                 }
             }

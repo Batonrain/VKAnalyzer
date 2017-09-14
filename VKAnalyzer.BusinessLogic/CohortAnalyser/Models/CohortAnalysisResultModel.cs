@@ -16,6 +16,8 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser.Models
 
         public string[,] MediumValuesWithShift { get; set; }
 
+        public List<string> MediumValues { get; set; }
+
         public int TableLength { get; set; }
 
         public string GroupId { get; set; }
