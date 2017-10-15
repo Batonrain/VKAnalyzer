@@ -8,14 +8,20 @@ using NLog;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.BusinessLogic.VK.Models;
 
-namespace VKAnalyzer.Services
+namespace VKAnalyzer.Services.VK
 {
     public class VkService
     {
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public string AccessToken { get; set; }
+        private VkRequestService RequestService { get; set; }
 
-        public List<CohortAnalysisModel> GetPostsForAnalyze(string groupId, DateTime startDate, DateTime endDate, bool excludeUsers = false)
+        public VkService()
+        {
+            RequestService = new VkRequestService();
+        }
+
+        public List<CohortAnalysisModel> GetPostsForAnalyze(string groupId, DateTime startDate, DateTime endDate,IEnumerable<string> buyers = null, bool excludeUsers = false)
         {
             // Создание модели с параметрами для запроса всех постов за определённую дату
             var parametersModel = PrepareGetParameters(groupId, startDate, endDate);
@@ -48,7 +54,17 @@ namespace VKAnalyzer.Services
             var allRawPosts = GetRawPostsFromXml(postsXDoc);
 
             // Получение лайков по Id постов и по датам
+            if (buyers != null)
+            {
+                return GetLikesByIdAndDatesForSales(allRawPosts, startDate, endDate, groupId,buyers, excludeList);
+            }
+
             return GetLikesByIdAndDates(allRawPosts, startDate, endDate, groupId, excludeList);
+        }
+
+        public void GetMemasPosts()
+        {
+
         }
 
         private IEnumerable<string> GetExcludeUserList(string groupId, DateTime startDate)
@@ -109,15 +125,12 @@ namespace VKAnalyzer.Services
             {
                 try
                 {
-                    var currentIteration = XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=wall.get.xml&offset={0}&count={1}&owner_id=-{2}&access_token={3}", cycleNumber * count, count, model.GroupId, AccessToken));
+                    var currentIteration = RequestService.GetWallPosts(cycleNumber * count, count, model.GroupId, AccessToken);
                     posts.Add(currentIteration);
                 }
                 catch (Exception exception)
                 {
-                    _logger.Error("Error in GetPosts: {0}", exception.Message);
-                    _logger.Error("Error in GetPosts: {0}", exception.InnerException);
-
-                    //throw new HttpException(500, "Во время скачивания постов произошла ошибка");
+                    Logger.Error("Error in GetPosts: {0}", exception.Message);
                 }
             }
 
@@ -142,8 +155,8 @@ namespace VKAnalyzer.Services
                 }
                 catch (Exception exception)
                 {
-                    _logger.Error("Error in GetRawPostsFromXml: {0}", exception.Message);
-                    _logger.Error("Error in GetRawPostsFromXml", exception.InnerException);
+                    Logger.Error("Error in GetRawPostsFromXml: {0}", exception.Message);
+                    Logger.Error("Error in GetRawPostsFromXml", exception.InnerException);
                 }
 
             }
@@ -168,23 +181,42 @@ namespace VKAnalyzer.Services
             return analyzeModels;
         }
 
+        private List<CohortAnalysisModel> GetLikesByIdAndDatesForSales(IEnumerable<PostDataModel> allRawPosts, DateTime dateOfTheBeginning, DateTime dateOfTheEnd, string groupId, IEnumerable<string> buyers, IEnumerable<string> excludeUserList)
+        {
+            var analyzeModels = new List<CohortAnalysisModel>();
+
+            foreach (var post in allRawPosts.Where(arp => arp.Date >= dateOfTheBeginning && arp.Date <= dateOfTheEnd))
+            {
+                var listOfLiked = GetListOfLikedUsers(groupId, post.Id).Except(excludeUserList).ToList();
+                var result = listOfLiked.Where(buyers.Contains).ToList();
+                analyzeModels.Add(new CohortAnalysisModel
+                {
+                    PostId = post.Id,
+                    PostDate = post.Date,
+                    LikedIds = result
+                });
+            }
+
+            return analyzeModels;
+        }
+
         private IEnumerable<string> GetListOfLikedUsers(string groupId, string postId)
         {
             var users = new XDocument();
+            var result = new List<string>();
             try
             {
                 // получить список людей лайкнувших пост
-                users = XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=likes.getList.xml&owner_id=-{0}&item_id={1}&type=post", groupId, postId));
+                users = RequestService.GetListOfLikedUsers(groupId, postId);
+                result = users.Descendants("users").Elements("uid").Select(p => p.Value).ToList();
             }
             catch (Exception exception)
             {
-                _logger.Error("Error in GetListOfLikedUsers {0}: {1}", postId, exception.Message);
-                _logger.Error("Error in GetListOfLikedUsers {0}: {1}", postId, exception.InnerException);
+                Logger.Error("Error in GetListOfLikedUsers {0}: {1}", postId, exception.Message);
+                Logger.Error("Error in GetListOfLikedUsers {0}: {1}", postId, exception.InnerException);
 
                 throw new HttpException(500, "Во время скачивания лайков произошла ошибка");
             }
-
-            var result = users.Descendants("users").Elements("uid").Select(p => p.Value);
 
             return result;
         }
@@ -196,13 +228,13 @@ namespace VKAnalyzer.Services
             // получить список всех постов на стене сообщества
             try
             {
-                xml = XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=wall.get.xml&offset=0&count=1&owner_id=-{0}&access_token={1}", groupId, AccessToken));
+                xml = RequestService.GetPostsCount(groupId, AccessToken);
                 return Convert.ToInt32(xml.Document.Element("response").Element("count").Value);
             }
             catch (Exception exception)
             {
-                _logger.Error("Error in GetPostsCount: {0}", exception.Message);
-                _logger.Error(string.Format("Error in GetPostsCount: {0}", exception.InnerException));
+                Logger.Error("Error in GetPostsCount: {0}", exception.Message);
+                Logger.Error(string.Format("Error in GetPostsCount: {0}", exception.InnerException));
             }
 
             return 10000;
@@ -228,13 +260,13 @@ namespace VKAnalyzer.Services
             // получить список всех постов на стене сообщества
             try
             {
-                xml = XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=groups.getMembers.xml&offset=0&count=1&group_id={0}&access_token={1}", groupId, AccessToken));
+                xml = RequestService.GetGroupUsersCount(groupId, AccessToken);
                 return Convert.ToInt32(xml.Document.Element("response").Element("count").Value);
             }
             catch (Exception exception)
             {
-                _logger.Error("Error in GetAllGroupUsersCount: {0}", exception.Message);
-                _logger.Error(string.Format("Error in GetAllGroupUsersCount: {0}", exception.InnerException));
+                Logger.Error("Error in GetAllGroupUsersCount: {0}", exception.Message);
+                Logger.Error(string.Format("Error in GetAllGroupUsersCount: {0}", exception.InnerException));
             }
 
             return 500000;
@@ -255,7 +287,7 @@ namespace VKAnalyzer.Services
                 {
                     try
                     {
-                        var currentIteration = XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=groups.getMembers.xml&offset={0}&count={1}&group_id={2}&access_token={3}", cycleNumber * 1000, 1000, model.GroupId, AccessToken));
+                        var currentIteration = RequestService.GetGroupUsers(cycleNumber * 1000, 1000, model.GroupId, AccessToken);
                         var usersList =
                             currentIteration.Document.Element("response")
                                 .Element("users")
@@ -267,7 +299,7 @@ namespace VKAnalyzer.Services
                     }
                     catch (Exception exception)
                     {
-                        _logger.Error("Error in GetAllGroupUsers: {0}", exception.Message);
+                        Logger.Error("Error in GetAllGroupUsers: {0}", exception.Message);
 
                     }
                 }

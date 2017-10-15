@@ -1,0 +1,143 @@
+﻿@model VKAnalyzer.Models.VKModels.Memas.MemasAnalyzeResultModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Анализ мемасиков</h2>
+
+<h3>ТОП-10: Лайки</h3>
+<div>
+    <table class="table table-responsive table-bordered">
+        @foreach (var post in Model.TopByLikes)
+        {
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <img src="@post.MainPicture"/>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>
+                                        Лайки: @post.Likes
+                                    </li>
+                                    <li>
+                                        Комментарии:@post.Comments
+                                    </li>
+                                    <li>
+                                        Репосты: @post.Reposts
+                                    </li>
+                                    <li>
+                                         <a href="@string.Format("https://vk.com/feed?w=wall{0}_{1}", post.OwnerId, post.Id)">Ссылка на пост</a>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<h3>ТОП-10: Комментарии</h3>
+<div>
+    <table class="table table-responsive table-bordered">
+        @foreach (var post in Model.TopByComments)
+        {
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <img src="@post.MainPicture" />
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>
+                                        Лайки: @post.Likes
+                                    </li>
+                                    <li>
+                                        Комментарии:@post.Comments
+                                    </li>
+                                    <li>
+                                        Репосты: @post.Reposts
+                                    </li>
+                                    <li>
+                                        <a href="@string.Format("https://vk.com/feed?w=wall{0}_{1}", post.OwnerId, post.Id)">Ссылка на пост</a>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<h3>ТОП-10: Репосты</h3>
+<div>
+    <table class="table table-responsive table-bordered">
+        @foreach (var post in Model.TopByReposts)
+        {
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <img src="@post.MainPicture" />
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>
+                                        Лайки: @post.Likes
+                                    </li>
+                                    <li>
+                                        Комментарии:@post.Comments
+                                    </li>
+                                    <li>
+                                        Репосты: @post.Reposts
+                                    </li>
+                                    <li>
+                                        <a href="@string.Format("https://vk.com/feed?w=wall{0}_{1}", post.OwnerId, post.Id)">Ссылка на пост</a>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+@*<script type="text/javascript">
+        $(document).ready(function() {
+            jQuery.ajax({
+                url: 'https://vk.com/dev.php',
+                type: "POST",
+                dataType: 'jsonp',
+                data: {
+                    act: 'a_get_post_hash',
+                    al: 1,
+                    post: '@string.Format("{0}_{1}", likes.OwnerId, likes.Id)'
+            },
+                success:function(data){
+                    console.log('data is ' + data);
+                },
+                error: function(data){
+                    console.log('request failed ' + JSON.stringify(data));
+                }
+            });
+        });
+    </script>
+    <div id="@string.Format("vk_post_{0}_{1}", likes.OwnerId, likes.Id)"></div>
+    <script type="text/javascript">
+        (function(d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = "https://vk.com/js/api/openapi.js?150"; fjs.parentNode.insertBefore(js, fjs); }(document, 'script', 'vk_openapi_js'));
+        (function() { window.VK && VK.Widgets && VK.Widgets.Post && VK.Widgets.Post('@string.Format("vk_post_{0}_{1}", likes.OwnerId, likes.Id)', @likes.OwnerId, @likes.Id, 'bTwHDlWtjAAUqdb-5Cf8NW5aUA', {width: 500}) || setTimeout(arguments.callee, 50);  }());
+    </script>*@

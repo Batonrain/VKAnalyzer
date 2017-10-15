@@ -200,13 +200,21 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\EFModels\AccessTokenUserModel.cs" />
+    <Compile Include="Models\EFModels\Groups.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\VKModels\AnalyseResultsViewModel.cs" />
     <Compile Include="Models\VKModels\CohortAnalysysInputModel.cs" />
+    <Compile Include="Models\VKModels\ListOfResults.cs" />
+    <Compile Include="Models\VKModels\Memas\MemasAnalyzeResultModel.cs" />
+    <Compile Include="Models\VKModels\VkCohortAnalyseOfSalesModel.cs" />
     <Compile Include="Models\VKModels\VKCohortAnalyseResult.cs" />
+    <Compile Include="Models\VKModels\VkMemasAnalyzeResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\VkAuthService.cs" />
-    <Compile Include="Services\VkService.cs" />
+    <Compile Include="Services\VK\VkAuthService.cs" />
+    <Compile Include="Services\VK\VkMemasService.cs" />
+    <Compile Include="Services\VK\VkRequestService.cs" />
+    <Compile Include="Services\VK\VkService.cs" />
+    <Compile Include="Services\VK\VkXMLService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -321,10 +329,14 @@
     <Content Include="Views\Vk\ListOfResults.cshtml" />
     <Content Include="Views\Vk\Result.cshtml" />
     <Content Include="Views\Service\Index.cshtml" />
+    <Content Include="Views\Vk\CohortAnalyseOfSales\Index.cshtml" />
+    <Content Include="Views\Vk\Memas\Index.cshtml" />
+    <Content Include="Views\Vk\Memas\Result.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Logs\" />
+    <Folder Include="Views\Vk\CohortAnalyse\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

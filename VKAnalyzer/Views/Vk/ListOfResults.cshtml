@@ -1,4 +1,4 @@
-﻿@model List<VKAnalyzer.Models.VKModels.AnalyseResultsViewModel>
+﻿@model VKAnalyzer.Models.VKModels.ListOfResults
 
 @{
     ViewBag.Title = "Результаты";
@@ -7,6 +7,7 @@
 
 <h2>Доступные результаты</h2>
 
+<h3>Когортный анализ</h3>
 <table class="table table-responsive table-bordered">
     <thead>
         <tr>
@@ -18,7 +19,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var result in Model)
+        @foreach (var result in Model.CohortAnalyseResults)
         {
             <tr>
                 <th>
@@ -35,6 +36,33 @@
                 </th>
                 <th>
                     @Html.ActionLink("Результаты", "Result", new { id = result.Id })
+                </th>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Анализ мемасиков</h3>
+<table class="table table-responsive table-bordered">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Дата агрегации</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in Model.MemasAnalyzeResults)
+        {
+            <tr>
+                <th>
+                    @result.Name
+                </th>
+                <th>
+                    @result.DateOfCollection.ToString("dd-MM-yyyy HH:mm")
+                </th>
+                <th>
+                    @Html.ActionLink("Результаты", "MemasResult", new { id = result.Id })
                 </th>
             </tr>
         }

@@ -14,6 +14,7 @@ using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models;
 using VKAnalyzer.Models.EFModels;
 using VKAnalyzer.Services;
+using VKAnalyzer.Services.VK;
 
 namespace VKAnalyzer.Controllers
 {

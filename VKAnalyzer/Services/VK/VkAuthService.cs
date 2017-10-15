@@ -5,7 +5,7 @@ using NLog;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.EFModels;
 
-namespace VKAnalyzer.Services
+namespace VKAnalyzer.Services.VK
 {
     public class VkAuthService
     {
