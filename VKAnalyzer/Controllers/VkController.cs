@@ -100,6 +100,7 @@ namespace VKAnalyzer.Controllers
                 {
                     result = (MemasAnalyzeResultModel)formatter.Deserialize(ms);
                 }
+
             }
             catch (Exception ex)
             {
@@ -107,6 +108,13 @@ namespace VKAnalyzer.Controllers
             }
 
             return View("~/Views/Vk/Memas/Result.cshtml", result);
+        }
+
+        public FileResult Download(string path)
+        {
+            byte[] fileBytes = System.IO.File.ReadAllBytes(path);
+            string fileName = "Список пользователей.txt";
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
         }
 
         [HttpPost]

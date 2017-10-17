@@ -29,7 +29,10 @@
                                         Репосты: @post.Reposts
                                     </li>
                                     <li>
-                                         <a href="@string.Format("https://vk.com/feed?w=wall{0}_{1}", post.OwnerId, post.Id)">Ссылка на пост</a>
+                                        <a href="@string.Format("https://vk.com/feed?w=wall{0}_{1}", post.OwnerId, post.Id)">Ссылка на пост</a>
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Скачать список лайкнувших", "Download", "VK", new { path = post.ListOfLikeIds }, new { @target = "_blank" })
                                     </li>
                                 </ul>
                             </td>

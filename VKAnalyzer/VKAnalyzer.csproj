@@ -336,6 +336,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Logs\" />
+    <Folder Include="Results\Memas\" />
     <Folder Include="Views\Vk\CohortAnalyse\" />
   </ItemGroup>
   <ItemGroup>

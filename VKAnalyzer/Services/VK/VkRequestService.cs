@@ -20,6 +20,11 @@ namespace VKAnalyzer.Services.VK
             return XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=likes.getList.xml&owner_id=-{0}&item_id={1}&type=post", groupId, postId));
         }
 
+        public XDocument GetListOfLikedUsers(string groupId, string postId, int offset, int count)
+        {
+            return XDocument.Load(string.Format("https://api.vk.com/api.php?oauth=1&method=likes.getList.xml&owner_id={0}&item_id={1}&type=post&offset={2}&count={3}", groupId, postId, offset, count));
+        }
+
         public XDocument GetPostsCount(string groupId, string accessToken)
         {
            return XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=wall.get.xml&offset=0&count=1&owner_id=-{0}&access_token={1}", groupId, accessToken));

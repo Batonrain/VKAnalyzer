@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Web;
 using System.Xml.Linq;
+using NLog;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels.Memas;
 
@@ -12,6 +16,7 @@ namespace VKAnalyzer.Services.VK
     {
         private VkRequestService RequestService { get; set; }
         private BaseDb _dbContext;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public VkMemasService()
         {
@@ -40,9 +45,25 @@ namespace VKAnalyzer.Services.VK
             }
 
             result.TopByLikes = memasPosts.OrderByDescending(p => p.Likes).Take(10).ToList();
+            foreach (var likes in result.TopByLikes)
+            {
+                Thread.Sleep(1000);
+                var likeIds = GetUsersIds(likes.OwnerId, likes.Id, likes.Likes).ToList();
+                var path = string.Format(@"{0}\Results\Memas\{1}_{2}_{3}_{4}.txt", AppDomain.CurrentDomain.BaseDirectory, accessToken, DateTime.Now.ToString("yyyy.MM.dd.mm.ss"), likes.OwnerId, likes.Id);
+                using (var sw = File.AppendText(path))
+                {
+                    foreach (var like in likeIds)
+                    {
+                        sw.WriteLine("{0};", like);
+                    }
+                }
+
+                likes.ListOfLikeIds = path;
+            }
+
             result.TopByComments = memasPosts.OrderByDescending(p => p.Comments).Take(10).ToList();
+
             result.TopByReposts = memasPosts.OrderByDescending(p => p.Reposts).Take(10).ToList();
-            result.TopByViews = memasPosts.OrderByDescending(p => p.Views).Take(10).ToList();
 
             return result;
         }
@@ -77,7 +98,7 @@ namespace VKAnalyzer.Services.VK
                 var elementId = xElement.Element("id");
                 if (elementId != null)
                 {
-                    memasPost.Id = elementId.Value.Replace(";","");
+                    memasPost.Id = elementId.Value.Replace(";", "");
                 }
 
                 var elementOwnerId = xElement.Element("to_id");
@@ -126,6 +147,32 @@ namespace VKAnalyzer.Services.VK
             return posts;
         }
 
+        private IEnumerable<string> GetUsersIds(string groupId, string postId, int countOfLikes)
+        {
+            var users = new XDocument();
+            var result = new List<string>();
+
+            // получить список людей лайкнувших пост
+            const int step = 1000;
+            try
+            {
+                for (var offset = 0; offset * step < countOfLikes; offset++)
+                {
+                    Thread.Sleep(1000);
+                    users = RequestService.GetListOfLikedUsers(groupId, postId, offset * step, 1000);
+                    result.AddRange(users.Descendants("users").Elements("uid").Select(p => p.Value).ToList());
+                }
+
+            }
+            catch (Exception exception)
+            {
+                Logger.Error("Error in GetListOfLikedUsers {0}: {1}", postId, exception.InnerException);
+
+                throw new HttpException(500, "Во время скачивания лайков произошла ошибка");
+            }
+
+            return result;
+        }
     }
 
     [Serializable]
@@ -137,7 +184,7 @@ namespace VKAnalyzer.Services.VK
         public int Likes { get; set; }
         public int Reposts { get; set; }
         public int Views { get; set; }
-
         public string MainPicture { get; set; }
+        public string ListOfLikeIds { get; set; }
     }
 }
