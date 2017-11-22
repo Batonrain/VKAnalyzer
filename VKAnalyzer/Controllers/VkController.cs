@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -7,7 +6,6 @@ using System.Web.Mvc;
 using Hangfire;
 using Microsoft.AspNet.Identity;
 using NLog;
-using VKAnalyzer.BusinessLogic.CohortAnalyser;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels;
@@ -18,19 +16,15 @@ namespace VKAnalyzer.Controllers
 {
     public class VkController : Controller
     {
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private VkService vkService;
-        private VkMemasService _vkMemasService;
-        private CohortAnalyser cohortAnalyser;
-        private BaseDb _dbContext;
+        private readonly VkService _vkService;
+        private readonly BaseDb _dbContext;
 
         public VkController()
         {
-            vkService = new VkService();
-            _vkMemasService = new VkMemasService();
+            _vkService = new VkService();
             _dbContext = new BaseDb();
-            cohortAnalyser = new CohortAnalyser();
         }
 
         public ActionResult Index()
@@ -118,13 +112,13 @@ namespace VKAnalyzer.Controllers
         }
 
         [HttpPost]
-        public ActionResult CohortAnalysis(CohortAnalysysInputModel model)
+        public ActionResult AnalyzeActivities(CohortAnalysysInputModel model)
         {
             if (ModelState.IsValid)
             {
                 var accessToken = GetCurrentUserAccessToken();
                 var userId = User.Identity.GetUserId();
-                BackgroundJob.Enqueue(() => AnalyzeAndSaveData(model, accessToken, userId));
+                BackgroundJob.Enqueue(() => _vkService.AnalyzeActivities(model, accessToken, userId));
 
                 ViewBag.Message = "Когортный анализ активностей";
 
@@ -134,46 +128,19 @@ namespace VKAnalyzer.Controllers
             return RedirectToAction("Index");
         }
 
-        public void AnalyzeAndSaveData(CohortAnalysysInputModel model, string accessToken, string userId)
-        {
-            vkService.AccessToken = accessToken;
-            var analyzeModels = vkService.GetPostsForAnalyze(model.GroupId, model.StartDate, model.EndDate, null, false);
-
-            var result = cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
-                model.EndDate, model.GroupId);
-
-            using (var ms = new MemoryStream())
-            {
-                var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(ms, result);
-                byte[] rr = ms.GetBuffer();
-
-                var cntx = new BaseDb();
-                cntx.VkCohortAnalyseResults.Add(new VkCohortAnalyseResult
-                {
-                    UserId = userId,
-                    Name = model.Name,
-                    CollectionDate = DateTime.Now,
-                    GroupId = model.GroupId,
-                    Result = rr
-                });
-                cntx.SaveChanges();
-            }
-        }
-
         public ActionResult VkCohortAnalyseOfSales()
         {
             return View("~/Views/Vk/CohortAnalyseOfSales/Index.cshtml");
         }
 
         [HttpPost]
-        public ActionResult VkCohortAnalyseOfSales(VkCohortAnalyseOfSalesModel model)
+        public ActionResult VkCohortAnalyseOfSales(VkAnalyseSalesModel model)
         {
             if (ModelState.IsValid)
             {
                 var accessToken = GetCurrentUserAccessToken();
                 var userId = User.Identity.GetUserId();
-                BackgroundJob.Enqueue(() => AnalyzeSalesAndSaveData(model, accessToken, userId));
+                BackgroundJob.Enqueue(() => _vkService.AnalyzeSales(model, accessToken, userId));
 
                 ViewBag.Message = "Когортный анализ продаж";
 
@@ -181,35 +148,6 @@ namespace VKAnalyzer.Controllers
             }
 
             return RedirectToAction("Index");
-        }
-
-        public void AnalyzeSalesAndSaveData(VkCohortAnalyseOfSalesModel model, string accessToken, string userId)
-        {
-            vkService.AccessToken = accessToken;
-            var listOfBuyers = ConvertstringToList(model.ListOfBuyers);
-            var analyzeModels = vkService.GetPostsForAnalyze(model.GroupId, model.StartDate, model.EndDate, listOfBuyers, false);
-
-
-            var result = cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
-                model.EndDate, model.GroupId);
-
-            using (var ms = new MemoryStream())
-            {
-                var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(ms, result);
-                byte[] rr = ms.GetBuffer();
-
-                var cntx = new BaseDb();
-                cntx.VkCohortAnalyseResults.Add(new VkCohortAnalyseResult
-                {
-                    UserId = userId,
-                    Name = model.Name,
-                    CollectionDate = DateTime.Now,
-                    GroupId = model.GroupId,
-                    Result = rr
-                });
-                cntx.SaveChanges();
-            }
         }
 
         public ActionResult MemasAnalyze()
@@ -224,7 +162,7 @@ namespace VKAnalyzer.Controllers
             {
                 var accessToken = GetCurrentUserAccessToken();
                 var userId = User.Identity.GetUserId();
-                BackgroundJob.Enqueue(() => AnalyzeAndSaveMemasData(accessToken, userId));
+                BackgroundJob.Enqueue(() => _vkService.AnalyzeMemas(accessToken, userId));
 
                 ViewBag.Message = "Анализатор мемасов";
 
@@ -232,34 +170,6 @@ namespace VKAnalyzer.Controllers
             }
 
             return RedirectToAction("Index");
-        }
-
-        public void AnalyzeAndSaveMemasData(string accessToken, string userId)
-        {
-            vkService.AccessToken = accessToken;
-            var result = _vkMemasService.Analyze(accessToken);
-
-            using (var ms = new MemoryStream())
-            {
-                var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(ms, result);
-                byte[] rr = ms.GetBuffer();
-
-                var cntx = new BaseDb();
-                cntx.VkMemasAnalyzeResults.Add(new VkMemasAnalyzeResult
-                {
-                    UserId = userId,
-                    Name = string.Format("Анализатор мемасов за {0}", DateTime.Now),
-                    CollectionDate = DateTime.Now,
-                    Result = rr
-                });
-                cntx.SaveChanges();
-            }
-        }
-
-        private IEnumerable<string> ConvertstringToList(string input)
-        {
-            return input.Replace("\r\n","").Split(';').ToList();
         }
 
         private string GetCurrentUserAccessToken()
@@ -270,6 +180,5 @@ namespace VKAnalyzer.Controllers
 
             return result.AccessToken;
         }
-
     }
 }

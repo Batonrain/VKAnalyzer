@@ -5,23 +5,65 @@ using System.Threading;
 using System.Web;
 using System.Xml.Linq;
 using NLog;
+using VKAnalyzer.BusinessLogic.CohortAnalyser;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.BusinessLogic.VK.Models;
+using VKAnalyzer.Models.VKModels;
 
 namespace VKAnalyzer.Services.VK
 {
     public class VkService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public string AccessToken { get; set; }
+        private string AccessToken { get; set; }
+
         private VkRequestService RequestService { get; set; }
+        private readonly CohortAnalyser _cohortAnalyser;
+        private readonly VkMemasService _vkMemasService;
+        private readonly VkDatabaseService _vkDatabaseService;
 
         public VkService()
         {
+            _vkDatabaseService = new VkDatabaseService();
+            _vkMemasService = new VkMemasService();
             RequestService = new VkRequestService();
+            _cohortAnalyser = new CohortAnalyser();
         }
 
-        public List<CohortAnalysisModel> GetPostsForAnalyze(string groupId, DateTime startDate, DateTime endDate,IEnumerable<string> buyers = null, bool excludeUsers = false)
+        public void AnalyzeActivities(CohortAnalysysInputModel model, string accessToken, string userId)
+        {
+            AccessToken = accessToken;
+            var analyzeModels = GetPostsForAnalyze(model.GroupId, model.StartDate, model.EndDate, null, false);
+
+            var result = _cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
+                model.EndDate, model.GroupId);
+
+            _vkDatabaseService.SaveCohortAnalyze(result, userId, model.Name, model.GroupId);
+        }
+
+        public void AnalyzeSales(VkAnalyseSalesModel model, string accessToken, string userId)
+        {
+            AccessToken = accessToken;
+
+            var listOfBuyers = model.ListOfBuyers.Any() ? ConvertstringToList(model.ListOfBuyers).ToList() : null;
+
+            var analyzeModels = GetPostsForAnalyze(model.GroupId, model.StartDate, model.EndDate, listOfBuyers, false);
+
+            var result = _cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
+                model.EndDate, model.GroupId);
+
+            _vkDatabaseService.SaveCohortAnalyze(result, userId, model.Name, model.GroupId);
+        }
+
+        public void AnalyzeMemas(string accessToken, string userId)
+        {
+            AccessToken = accessToken;
+            var result = _vkMemasService.Analyze(accessToken);
+
+            _vkDatabaseService.SaveMemas(result, userId);
+        }
+
+        private List<CohortAnalysisModel> GetPostsForAnalyze(string groupId, DateTime startDate, DateTime endDate,IEnumerable<string> buyers = null, bool excludeUsers = false)
         {
             // Создание модели с параметрами для запроса всех постов за определённую дату
             var parametersModel = PrepareGetParameters(groupId, startDate, endDate);
@@ -56,15 +98,10 @@ namespace VKAnalyzer.Services.VK
             // Получение лайков по Id постов и по датам
             if (buyers != null)
             {
-                return GetLikesByIdAndDatesForSales(allRawPosts, startDate, endDate, groupId,buyers, excludeList);
+                return GetLikesByIdAndDatesForSales(allRawPosts, startDate, endDate, groupId, buyers, excludeList);
             }
 
             return GetLikesByIdAndDates(allRawPosts, startDate, endDate, groupId, excludeList);
-        }
-
-        public void GetMemasPosts()
-        {
-
         }
 
         private IEnumerable<string> GetExcludeUserList(string groupId, DateTime startDate)
@@ -314,6 +351,12 @@ namespace VKAnalyzer.Services.VK
             var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
+        }
+
+        private IEnumerable<string> ConvertstringToList(string input)
+        {
+            var result = input.Split(new[] {"\r\n", ";"}, StringSplitOptions.RemoveEmptyEntries);
+            return input.Replace("\r\n", "").Split(';').ToList();
         }
     }
 }

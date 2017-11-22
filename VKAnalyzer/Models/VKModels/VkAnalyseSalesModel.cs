@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace VKAnalyzer.Models.VKModels
 {
-    public class VkCohortAnalyseOfSalesModel
+    public class VkAnalyseSalesModel
     {
         [Required]
         [Display(Name = "Название анализа")]
@@ -12,10 +12,6 @@ namespace VKAnalyzer.Models.VKModels
         [Required]
         [Display(Name = "Идентификатор группы")]
         public string GroupId { get; set; }
-
-        //[Required]
-        //[Display(Name = "Учитывать сторонних пользователей")]
-        //public bool ExcludeUsers { get; set; }
 
         [Required]
         [Display(Name = "Шаг анализа")]

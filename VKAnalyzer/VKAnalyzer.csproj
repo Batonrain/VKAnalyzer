@@ -206,11 +206,12 @@
     <Compile Include="Models\VKModels\CohortAnalysysInputModel.cs" />
     <Compile Include="Models\VKModels\ListOfResults.cs" />
     <Compile Include="Models\VKModels\Memas\MemasAnalyzeResultModel.cs" />
-    <Compile Include="Models\VKModels\VkCohortAnalyseOfSalesModel.cs" />
+    <Compile Include="Models\VKModels\VkAnalyseSalesModel.cs" />
     <Compile Include="Models\VKModels\VKCohortAnalyseResult.cs" />
     <Compile Include="Models\VKModels\VkMemasAnalyzeResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\VK\VkAuthService.cs" />
+    <Compile Include="Services\VK\VkDatabaseService.cs" />
     <Compile Include="Services\VK\VkMemasService.cs" />
     <Compile Include="Services\VK\VkRequestService.cs" />
     <Compile Include="Services\VK\VkService.cs" />

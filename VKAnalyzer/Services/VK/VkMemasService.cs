@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Web;
 using System.Xml.Linq;
 using NLog;
-using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels.Memas;
 
 namespace VKAnalyzer.Services.VK
@@ -15,64 +13,78 @@ namespace VKAnalyzer.Services.VK
     public class VkMemasService
     {
         private VkRequestService RequestService { get; set; }
-        private BaseDb _dbContext;
+        private VkDatabaseService DatabaseService { get; set; }
+
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public VkMemasService()
         {
             RequestService = new VkRequestService();
-            _dbContext = new BaseDb();
+            DatabaseService = new VkDatabaseService();
         }
 
         public MemasAnalyzeResultModel Analyze(string accessToken)
         {
             var result = new MemasAnalyzeResultModel();
-            var groups = GetListOfGroups();
+            var groups = DatabaseService.GetListOfGroups();
             var rawPosts = new List<XDocument>();
 
             var memasPosts = new List<MemasPost>();
 
-            foreach (var group in groups)
+            try
             {
-                var toAdd = GetGroupPosts(group, accessToken);
-                rawPosts.Add(toAdd);
+                foreach (var group in groups)
+                {
+                    var toAdd = GetGroupPosts(group, accessToken);
+                    rawPosts.Add(toAdd);
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(string.Format("Ошибка во время скачивания постов из групп: {0}", exception.InnerException));
             }
 
-            foreach (var rawPost in rawPosts)
+            try
             {
-                var toAdd = CreateModelPosts(rawPost);
-                memasPosts.AddRange(toAdd);
+                foreach (var rawPost in rawPosts)
+                {
+                    var toAdd = CreateModelPosts(rawPost);
+                    memasPosts.AddRange(toAdd);
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(string.Format("Ошибка во время создания моделей для групп: {0}", exception.InnerException));
             }
 
             result.TopByLikes = memasPosts.OrderByDescending(p => p.Likes).Take(10).ToList();
-            foreach (var likes in result.TopByLikes)
-            {
-                Thread.Sleep(1000);
-                var likeIds = GetUsersIds(likes.OwnerId, likes.Id, likes.Likes).ToList();
-                var path = string.Format(@"{0}\Results\Memas\{1}_{2}_{3}_{4}.txt", AppDomain.CurrentDomain.BaseDirectory, accessToken, DateTime.Now.ToString("yyyy.MM.dd.mm.ss"), likes.OwnerId, likes.Id);
-                using (var sw = File.AppendText(path))
-                {
-                    foreach (var like in likeIds)
-                    {
-                        sw.WriteLine("{0};", like);
-                    }
-                }
 
-                likes.ListOfLikeIds = path;
+            try
+            {
+                foreach (var likes in result.TopByLikes)
+                {
+                    Thread.Sleep(1000);
+                    var likeIds = GetUsersIds(likes.OwnerId, likes.Id, likes.Likes).ToList();
+                    var path = string.Format(@"{0}\Results\Memas\{1}_{2}_{3}_{4}.txt", AppDomain.CurrentDomain.BaseDirectory, accessToken, DateTime.Now.ToString("yyyy.MM.dd.mm.ss"), likes.OwnerId, likes.Id);
+                    using (var sw = File.AppendText(path))
+                    {
+                        foreach (var like in likeIds)
+                        {
+                            sw.WriteLine("{0};", like);
+                        }
+                    }
+
+                    likes.ListOfLikeIds = path;
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(string.Format("Ошибка во время анализа поство и получения лайкнувших пользователей: {0}", exception.InnerException));
             }
 
             result.TopByComments = memasPosts.OrderByDescending(p => p.Comments).Take(10).ToList();
 
             result.TopByReposts = memasPosts.OrderByDescending(p => p.Reposts).Take(10).ToList();
-
-            return result;
-        }
-
-        private IEnumerable<string> GetListOfGroups()
-        {
-            var result = new List<string>();
-
-            result = _dbContext.Groups.Take(3).Select(g => g.Link.Replace("https://vk.com/", "")).ToList();
 
             return result;
         }
