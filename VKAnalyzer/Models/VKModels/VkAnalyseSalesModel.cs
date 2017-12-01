@@ -14,6 +14,18 @@ namespace VKAnalyzer.Models.VKModels
         public string GroupId { get; set; }
 
         [Required]
+        [Display(Name = "Агентский номер")]
+        public string AccountId { get; set; }
+
+        [Required]
+        [Display(Name = "Номер рекламного кабинета")]
+        public string ClientId { get; set; }
+
+        [Required]
+        [Display(Name = "Группа ретаргета для исключения")]
+        public string ExcludeTargetGroup { get; set; }
+
+        [Required]
         [Display(Name = "Шаг анализа")]
         public int Step { get; set; }
 

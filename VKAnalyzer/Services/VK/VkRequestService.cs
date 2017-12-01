@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Xml.Linq;
+using Newtonsoft.Json;
 
 namespace VKAnalyzer.Services.VK
 {
@@ -27,7 +31,7 @@ namespace VKAnalyzer.Services.VK
 
         public XDocument GetPostsCount(string groupId, string accessToken)
         {
-           return XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=wall.get.xml&offset=0&count=1&owner_id=-{0}&access_token={1}", groupId, accessToken));
+            return XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=wall.get.xml&offset=0&count=1&owner_id=-{0}&access_token={1}", groupId, accessToken));
         }
 
         public XDocument GetGroupUsersCount(string groupId, string accessToken)
@@ -39,6 +43,11 @@ namespace VKAnalyzer.Services.VK
         {
             return XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=groups.getMembers.xml&offset={0}&count={1}&group_id={2}&access_token={3}", offset, count, groupId, accessToken));
         }
-        
+
+        public XDocument GetRandomUsers(string q, int count, string accessToken)
+        {
+            var result =  XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=users.search.xml&q={0}&count={1}&access_token={2}", q, count, accessToken));
+            return result;
+        }
     }
 }

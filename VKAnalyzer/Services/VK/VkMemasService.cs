@@ -106,6 +106,10 @@ namespace VKAnalyzer.Services.VK
 
             foreach (var xElement in rawRes)
             {
+                try
+                {
+
+                
                 var memasPost = new MemasPost();
                 var elementId = xElement.Element("id");
                 if (elementId != null)
@@ -146,14 +150,53 @@ namespace VKAnalyzer.Services.VK
                 var attachements = xElement.Element("attachments");
                 if (attachements != null)
                 {
-                    var photos = attachements.Descendants("photo").FirstOrDefault();
-                    if (photos != null)
+                    var type = attachements.Descendants("type").FirstOrDefault().Value;
+                    string imageElementName;
+                    XElement photos;
+                    if (type == "video")
                     {
-                        memasPost.MainPicture = photos.Element("src_big").Value;
+                        imageElementName = "image";
+                        photos = attachements.Descendants(type).FirstOrDefault();
+                        if (photos != null)
+                        {
+                            if (photos.Element(imageElementName) == null)
+                            {
+                                imageElementName = "first_frame_160";
+                                memasPost.MainPicture = photos.Element(imageElementName).Value;
+                            }
+                            else
+                            {
+                                memasPost.MainPicture = photos.Element(imageElementName).Value;
+                            }
+                        }
+                    }
+                    if (type == "photo")
+                    {
+                        imageElementName = "src_big";
+                        photos = attachements.Descendants(type).FirstOrDefault();
+                        if (photos != null)
+                        {
+                            memasPost.MainPicture = photos.Element(imageElementName).Value;
+                        }
+                    }
+                    if (type == "doc")
+                    {
+                        imageElementName = "thumb";
+                        photos = attachements.Descendants(type).FirstOrDefault();
+                        if (photos != null)
+                        {
+                            memasPost.MainPicture = photos.Element(imageElementName).Value;
+                        }
                     }
                 }
 
                 posts.Add(memasPost);
+
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
 
             return posts;

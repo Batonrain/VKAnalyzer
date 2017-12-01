@@ -9,10 +9,11 @@ using VKAnalyzer.BusinessLogic.CohortAnalyser;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.BusinessLogic.VK.Models;
 using VKAnalyzer.Models.VKModels;
+using VKAnalyzer.Models.VKModels.JsonModels;
 
 namespace VKAnalyzer.Services.VK
 {
-    public class VkService
+    public class VkService : VkBaseService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private string AccessToken { get; set; }
@@ -20,12 +21,15 @@ namespace VKAnalyzer.Services.VK
         private VkRequestService RequestService { get; set; }
         private readonly CohortAnalyser _cohortAnalyser;
         private readonly VkMemasService _vkMemasService;
+        private readonly VkSalesAnalysisService _vkSalesAnalysisService;
+
         private readonly VkDatabaseService _vkDatabaseService;
 
         public VkService()
         {
             _vkDatabaseService = new VkDatabaseService();
             _vkMemasService = new VkMemasService();
+            _vkSalesAnalysisService = new VkSalesAnalysisService();
             RequestService = new VkRequestService();
             _cohortAnalyser = new CohortAnalyser();
         }
@@ -45,14 +49,23 @@ namespace VKAnalyzer.Services.VK
         {
             AccessToken = accessToken;
 
-            var listOfBuyers = model.ListOfBuyers.Any() ? ConvertstringToList(model.ListOfBuyers).ToList() : null;
+            var listOfBuyers = model.ListOfBuyers != null ? ConvertstringToList(model.ListOfBuyers).ToList() : null;
 
+            //Список постов для анализа
             var analyzeModels = GetPostsForAnalyze(model.GroupId, model.StartDate, model.EndDate, listOfBuyers, false);
 
-            var result = _cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
+            if (listOfBuyers != null)
+            {
+                var result = _cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
                 model.EndDate, model.GroupId);
 
-            _vkDatabaseService.SaveCohortAnalyze(result, userId, model.Name, model.GroupId);
+                _vkDatabaseService.SaveCohortAnalyze(result, userId, model.Name, model.GroupId);
+            }
+            else
+            {
+                //Создание групп ретаргета для каждого поста
+                var retargetsInfo = _vkSalesAnalysisService.CreateRetargets(analyzeModels, model.AccountId, model.ClientId, model.ExcludeTargetGroup, AccessToken);
+            }
         }
 
         public void AnalyzeMemas(string accessToken, string userId)
@@ -345,18 +358,10 @@ namespace VKAnalyzer.Services.VK
             return users;
         }
 
-        private static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        public IEnumerable<AdsRetargetGroup> GetTargetsGroups(string accessToken)
         {
-            // Unix timestamp is seconds past epoch
-            var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
-            return dtDateTime;
-        }
-
-        private IEnumerable<string> ConvertstringToList(string input)
-        {
-            var result = input.Split(new[] {"\r\n", ";"}, StringSplitOptions.RemoveEmptyEntries);
-            return input.Replace("\r\n", "").Split(';').ToList();
+            AccessToken = accessToken;
+            return _vkSalesAnalysisService.GetTargetsGroups(AccessToken);
         }
     }
 }

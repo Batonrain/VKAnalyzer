@@ -130,6 +130,10 @@ namespace VKAnalyzer.Controllers
 
         public ActionResult VkCohortAnalyseOfSales()
         {
+            var accessToken = GetCurrentUserAccessToken();
+            var targets = _vkService.GetTargetsGroups(accessToken);
+            ViewData["AllTargetGroups"] = from target in targets select new SelectListItem { Text = target.name, Value = target.id };
+
             return View("~/Views/Vk/CohortAnalyseOfSales/Index.cshtml");
         }
 
@@ -144,7 +148,7 @@ namespace VKAnalyzer.Controllers
 
                 ViewBag.Message = "Когортный анализ продаж";
 
-                return View();
+                return View("~/Views/Vk/CohortAnalyseOfSales/AnalyseInProgress.cshtml");
             }
 
             return RedirectToAction("Index");
