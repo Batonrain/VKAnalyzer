@@ -6,6 +6,11 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser.Models
     [Serializable]
     public class CohortAnalysisResultModel
     {
+        public CohortAnalysisResultModel()
+        {
+            Dates = new List<string>();
+        }
+
         public List<string>[,] AbsoluteValues { get; set; }
 
         public string[,] RelativeValues { get; set; }
@@ -30,10 +35,5 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser.Models
 
         public List<string> TotalNews { get; set; }
         public List<string> TotalOld { get; set; }
-
-        public CohortAnalysisResultModel()
-        {
-            Dates = new List<string>();
-        }
     }
 }

@@ -59,12 +59,15 @@ namespace VKAnalyzer.Services.VK
                 var result = _cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
                 model.EndDate, model.GroupId);
 
-                _vkDatabaseService.SaveCohortAnalyze(result, userId, model.Name, model.GroupId);
+                _vkDatabaseService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);
             }
             else
             {
                 //Создание групп ретаргета для каждого поста
                 var retargetsInfo = _vkSalesAnalysisService.CreateRetargets(analyzeModels, model.AccountId, model.ClientId, model.ExcludeTargetGroup, AccessToken);
+                var result = _cohortAnalyser.AnalyzeAcitivitySalesWithRetargetsInfo(retargetsInfo, model.Step, model.StartDate, model.EndDate, model.GroupId);
+
+                _vkDatabaseService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);
             }
         }
 

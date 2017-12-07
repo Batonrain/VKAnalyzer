@@ -14,6 +14,7 @@ namespace VKAnalyzer.DBContexts
 
         public DbSet<UserAccessToken> UserAccessTokens { get; set; }
         public DbSet<VkCohortAnalyseResult> VkCohortAnalyseResults { get; set; }
+        public DbSet<VkCohortSalesAnalyseResults> VkCohortSalesAnalyseResults { get; set; }
         public DbSet<VkMemasAnalyzeResult> VkMemasAnalyzeResults { get; set; }
         public DbSet<Group> Groups { get; set; }
     }

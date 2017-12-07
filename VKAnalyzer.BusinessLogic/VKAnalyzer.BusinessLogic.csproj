@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CohortAnalyser\Models\CohortAnalysisResultModel.cs" />
+    <Compile Include="CohortAnalyser\Models\SalesActivitiesRetargetResult.cs" />
+    <Compile Include="CohortAnalyser\Models\VkAnalyseSalesResultModel.cs" />
     <Compile Include="VK\Models\PostDataModel.cs" />
     <Compile Include="CohortAnalyser\AnalyseStep.cs" />
     <Compile Include="CohortAnalyser\CohortAnalyser.cs" />

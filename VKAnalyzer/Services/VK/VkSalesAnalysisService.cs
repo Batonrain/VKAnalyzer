@@ -24,26 +24,17 @@ namespace VKAnalyzer.Services.VK
 
         
 
-        private void CleanupRetargets(string accountId, string clientId, string accessToken)
-        {
-            var retargetsXml = VkAdsRequestService.Request(CreateCleanupRetargetGroupUrl(accountId, clientId, accessToken));
+        
 
-            var ids = retargetsXml.Descendants("id")
-                .Where(s => s.Value.Contains("EvilMarketingServiceForPost"))
-                .Select(s => s.Value)
-                .ToList();
-
-            DeleteTargetGroup(accountId, clientId, ids, accessToken);
-        }
-
-        public List<VkAnalyseSalesResultModel> CreateRetargets(List<CohortAnalysisModel> posts, string accountId, string clientId, string excludeTargetGroupdId, string accessToken)
+        public IEnumerable<VkAnalyseSalesResultModel> CreateRetargets(List<CohortAnalysisModel> posts, string accountId, string clientId, string excludeTargetGroupdId, string accessToken)
         {
             //CleanupRetargets(accountId, clientId, accessToken);
 
             var results = new List<VkAnalyseSalesResultModel>();
             for (var i = 0; i < posts.Count(); i = i + 30)
             {
-                var items = posts.Skip(i).Take(30).ToList();
+                //TODO: Заменить на 30 в Take
+                var items = posts.Skip(i).Take(10).ToList();
                 var campaignIds = new List<string>();
                 var adIds = new List<string>();
                 var retargetGroupsIds = new List<string>();
@@ -141,7 +132,35 @@ namespace VKAnalyzer.Services.VK
             return results;
         }
 
+        public IEnumerable<AdsRetargetGroup> GetTargetsGroups(string accessToken)
+        {
+            var result = new List<AdsRetargetGroup>();
 
+            var accountsJson = VkAdsRequestService.GetAccounts(accessToken);
+
+            var accountsToDeserialize = GetJsonFromResponse(accountsJson);
+
+            var accsDeserialized = JsonConvert.DeserializeObject<List<AdsAccount>>(accountsToDeserialize);
+
+            foreach (var adsAccounts in accsDeserialized)
+            {
+                var clientsJson = VkAdsRequestService.GetClients(adsAccounts.account_id, accessToken);
+                var clientsToDeserialize = GetJsonFromResponse(clientsJson);
+                var clntsDeserialized = JsonConvert.DeserializeObject<List<AdsClient>>(clientsToDeserialize);
+
+                foreach (var adsClients in clntsDeserialized)
+                {
+                    var targetGroupsJson = VkAdsRequestService.GetTargetsGroups(adsAccounts.account_id, adsClients.id,
+                        accessToken);
+                    var targetGroupsToDeserialize = GetJsonFromResponse(targetGroupsJson);
+                    var targetGroupsDeserialized = JsonConvert.DeserializeObject<List<AdsRetargetGroup>>(targetGroupsToDeserialize);
+                    var correctTargetGroups =
+                        targetGroupsDeserialized.Where(g => !g.name.Contains("EvilMarketingServiceForPost"));
+                    result.AddRange(correctTargetGroups);
+                }
+            }
+            return result;
+        }
 
         private string UpdateAd(string accountId, string adId, string excludeTargetGroupId, string accessToken)
         {
@@ -173,6 +192,17 @@ namespace VKAnalyzer.Services.VK
         {
             VkAdsRequestService.DeleteAds(accountId, GenerateJsonArray(adsId), accessToken);
         }
+        private void CleanupRetargets(string accountId, string clientId, string accessToken)
+        {
+            var retargetsXml = VkAdsRequestService.Request(CreateCleanupRetargetGroupUrl(accountId, clientId, accessToken));
+
+            var ids = retargetsXml.Descendants("id")
+                .Where(s => s.Value.Contains("EvilMarketingServiceForPost"))
+                .Select(s => s.Value)
+                .ToList();
+
+            DeleteTargetGroup(accountId, clientId, ids, accessToken);
+        }
 
         private string CreateRetargetGroupUrl(string accountId, string clientId, string name, string accessToken)
         {
@@ -202,7 +232,7 @@ namespace VKAnalyzer.Services.VK
             });
 
             return string.Format("https://api.vk.com/api.php?oauth=1&method=ads.createCampaigns.xml&access_token={0}&account_id={1}&data={2}",
-                                  accessToken, accountId, json);
+                                  accessToken, accountId, string.Format("[{0}]", json));
         }
 
         private string CreateAdUrl(string accountId, string campaignId, string targetGroupId, string name, string accessToken)
@@ -229,36 +259,6 @@ namespace VKAnalyzer.Services.VK
             return string.Format(
                 "https://api.vk.com/api.php?oauth=1&method=ads.getAdsTargeting.xml&access_token={0}&account_id={1}&client_id={2}&ad_ids={3}",
                 accessToken, accountId, clientId, adsIds);
-        }
-
-        public IEnumerable<AdsRetargetGroup> GetTargetsGroups(string accessToken)
-        {
-            var result = new List<AdsRetargetGroup>();
-
-            var accountsJson = VkAdsRequestService.GetAccounts(accessToken);
-
-            var accountsToDeserialize = GetJsonFromResponse(accountsJson);
-
-            var accsDeserialized = JsonConvert.DeserializeObject<List<AdsAccount>>(accountsToDeserialize);
-
-            foreach (var adsAccounts in accsDeserialized)
-            {
-                var clientsJson = VkAdsRequestService.GetClients(adsAccounts.account_id, accessToken);
-                var clientsToDeserialize = GetJsonFromResponse(clientsJson);
-                var clntsDeserialized = JsonConvert.DeserializeObject<List<AdsClient>>(clientsToDeserialize);
-
-                foreach (var adsClients in clntsDeserialized)
-                {
-                    var targetGroupsJson = VkAdsRequestService.GetTargetsGroups(adsAccounts.account_id, adsClients.id,
-                        accessToken);
-                    var targetGroupsToDeserialize = GetJsonFromResponse(targetGroupsJson);
-                    var targetGroupsDeserialized = JsonConvert.DeserializeObject<List<AdsRetargetGroup>>(targetGroupsToDeserialize);
-                    var correctTargetGroups =
-                        targetGroupsDeserialized.Where(g => !g.name.Contains("EvilMarketingServiceForPost"));
-                    result.AddRange(correctTargetGroups);
-                }
-            }
-            return result;
         }
 
         private string GenerateJsonArray(IEnumerable<string> values)

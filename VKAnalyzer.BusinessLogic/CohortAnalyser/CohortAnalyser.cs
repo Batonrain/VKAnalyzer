@@ -2,11 +2,76 @@
 using System.Collections.Generic;
 using System.Linq;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
+using VKAnalyzer.Models.VKModels;
 
 namespace VKAnalyzer.BusinessLogic.CohortAnalyser
 {
     public class CohortAnalyser
     {
+        public SalesActivitiesRetargetResult AnalyzeAcitivitySalesWithRetargetsInfo(IEnumerable<VkAnalyseSalesResultModel> model, int step, DateTime dateOfTheBeginning, DateTime dateOfTheEnd, string groupId)
+        {
+            var result = new SalesActivitiesRetargetResult();
+            result.GroupId = groupId;
+
+            if (step == 1)
+            {
+                var ordered = model
+                .OrderBy(order => order.Date)
+                .GroupBy(data => data.Date.Day)
+                .Select(s => s.ToList())
+                .ToList();
+
+                for (var dt = dateOfTheBeginning; dt < dateOfTheEnd; dt = dt.AddDays(1))
+                {
+                    var stepResults = new SalesActivitiesRetargetStepData();
+
+                    foreach (var sr in ordered)
+                    {
+                        var dt1 = dt;
+                        foreach (var resultModel in sr.Where(s => s.Date == dt1))
+                        {
+                            stepResults.Values.Add(resultModel.Result);
+                        }
+                    }
+                    result.Results.Add(stepResults);
+                }
+
+            }
+            if (step == 3)
+            {
+                var ordered = model
+                .OrderBy(order => order.Date)
+                .GroupBy(data => data.Date.Month)
+                .Select(s => s.ToList())
+                .ToList();
+
+                var allDays = GetTotalDays(dateOfTheBeginning, dateOfTheEnd);
+                var st = 30;
+                var countOfSteps = Math.Ceiling(allDays / st);
+
+                for (var i = 0; i < countOfSteps; i++)
+                {
+                    var stepResults = new SalesActivitiesRetargetStepData();
+                    
+                    var startDate = dateOfTheBeginning.AddDays(i * st);
+                    var endDate = dateOfTheBeginning.AddDays((i + 1) * st);
+                    if (endDate > dateOfTheEnd)
+                    {
+                        endDate = dateOfTheEnd;
+                    }
+                    stepResults.Date = string.Format("{0} - {1}", startDate.ToShortDateString(),
+                        endDate.ToShortDateString());
+                    foreach (var sr in ordered[i])
+                    {
+                        stepResults.Values.Add(sr.Result);
+                    }
+                    result.Results.Add(stepResults);
+                }
+            }
+
+            return result;
+        }
+
         public CohortAnalysisResultModel Analyze(List<CohortAnalysisModel> models, int step, DateTime dateOfTheBeginning, DateTime dateOfTheEnd, string groupId)
         {
             var result = new CohortAnalysisResultModel();

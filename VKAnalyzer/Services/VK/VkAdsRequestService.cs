@@ -10,6 +10,7 @@ namespace VKAnalyzer.Services.VK
     public class VkAdsRequestService
     {
         private const int SleepTime = 1000;
+        private const int SleepTimeLong = 10000;
 
         public XDocument Request(string requestString)
         {
@@ -25,6 +26,11 @@ namespace VKAnalyzer.Services.VK
                 }
                 else
                 {
+                    var errorCode = result.Descendants("error_code").FirstOrDefault();
+                    if (errorCode != null && errorCode.Value == "9")
+                    {
+                        Thread.Sleep(SleepTimeLong);
+                    }
                     tryingCount--;
                     if (tryingCount == 0)
                     {

@@ -1,0 +1,28 @@
+﻿@model VKAnalyzer.BusinessLogic.CohortAnalyser.Models.SalesActivitiesRetargetResult
+
+
+@{
+    ViewBag.Title = "Результаты";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Когортный анализ продаж</h2>
+
+<div>
+    <table class="table table-responsive table-bordered">
+        <thead class="thead-default">
+            <tr>
+                <th></th>
+                @foreach (var date in Model.Results)
+                {
+                    <th>
+                        @date
+                    </th>
+                }
+                <th>
+                    Итого:
+                </th>
+            </tr>
+        </thead>
+    </table>
+</div>

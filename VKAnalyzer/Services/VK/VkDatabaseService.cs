@@ -64,5 +64,47 @@ namespace VKAnalyzer.Services.VK
                 cntx.SaveChanges();
             }
         }
+
+        public void SaveAnalyzeOfSalesWithRetarget(CohortAnalysisResultModel result, string userId, string name, string groupId)
+        {
+            using (var ms = new MemoryStream())
+            {
+                var binaryFormatter = new BinaryFormatter();
+                binaryFormatter.Serialize(ms, result);
+                byte[] rr = ms.GetBuffer();
+
+                var cntx = new BaseDb();
+                cntx.VkCohortAnalyseResults.Add(new VkCohortAnalyseResult
+                {
+                    UserId = userId,
+                    Name = name,
+                    CollectionDate = DateTime.Now,
+                    GroupId = groupId,
+                    Result = rr
+                });
+                cntx.SaveChanges();
+            }
+        }
+
+        public void SaveAnalyzeOfSalesWithRetarget(SalesActivitiesRetargetResult result, string userId, string name, string groupId)
+        {
+            using (var ms = new MemoryStream())
+            {
+                var binaryFormatter = new BinaryFormatter();
+                binaryFormatter.Serialize(ms, result);
+                byte[] rr = ms.GetBuffer();
+
+                var cntx = new BaseDb();
+                cntx.VkCohortSalesAnalyseResults.Add(new VkCohortSalesAnalyseResults
+                {
+                    UserId = userId,
+                    Name = name,
+                    CollectionDate = DateTime.Now,
+                    GroupId = groupId,
+                    Result = rr
+                });
+                cntx.SaveChanges();
+            }
+        }
     }
 }
