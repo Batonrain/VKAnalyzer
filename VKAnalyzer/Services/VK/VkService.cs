@@ -64,7 +64,7 @@ namespace VKAnalyzer.Services.VK
             else
             {
                 //Создание групп ретаргета для каждого поста
-                var retargetsInfo = _vkSalesAnalysisService.CreateRetargets(analyzeModels, model.AccountId, model.ClientId, model.ExcludeTargetGroup, AccessToken);
+                var retargetsInfo = _vkSalesAnalysisService.CreateRetargets(analyzeModels, model.AccountId, model.ExcludeTargetGroup, AccessToken);
                 var result = _cohortAnalyser.AnalyzeAcitivitySalesWithRetargetsInfo(retargetsInfo, model.Step, model.StartDate, model.EndDate, model.GroupId);
 
                 _vkDatabaseService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);
@@ -361,10 +361,14 @@ namespace VKAnalyzer.Services.VK
             return users;
         }
 
-        public IEnumerable<AdsRetargetGroup> GetTargetsGroups(string accessToken)
+        public string GetAccounts(string accessToken)
         {
-            AccessToken = accessToken;
-            return _vkSalesAnalysisService.GetTargetsGroups(AccessToken);
+            return _vkSalesAnalysisService.GetAccounts(accessToken);
+        }
+
+        public string GetTargetGroups(string accountId, string accessToken)
+        {
+            return _vkSalesAnalysisService.GetAccountGroups(accountId, accessToken);
         }
     }
 }

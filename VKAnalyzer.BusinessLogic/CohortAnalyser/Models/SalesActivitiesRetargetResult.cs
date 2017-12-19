@@ -21,10 +21,17 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser.Models
     {
         public SalesActivitiesRetargetStepData()
         {
-            Values = new List<string>();
+            Values = new List<SalesActivitiesRetargetPostResult>();
         }
 
         public string Date { get; set; }
-        public List<string> Values { get; set; }
+        public List<SalesActivitiesRetargetPostResult> Values { get; set; }
+    }
+
+    [Serializable]
+    public class SalesActivitiesRetargetPostResult
+    {
+        public string PostId { get; set; }
+        public string Result { get; set; }
     }
 }

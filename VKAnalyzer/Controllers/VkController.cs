@@ -23,8 +23,8 @@ namespace VKAnalyzer.Controllers
 
         public VkController()
         {
-            _vkService = new VkService();
             _dbContext = new BaseDb();
+            _vkService = new VkService();
         }
 
         public ActionResult Index()
@@ -57,6 +57,17 @@ namespace VKAnalyzer.Controllers
                     Name = rest.Name,
                     DateOfCollection = rest.CollectionDate,
                     AnalyseType = "Анализ мемасов",
+                })
+                .ToList();
+
+            model.CohortSalesAnalyseResults = _dbContext.VkCohortSalesAnalyseResults.Where(x => x.UserId == userId)
+                .OrderByDescending(order => order.CollectionDate)
+                .Select(rest => new AnalyseResultsViewModel()
+                {
+                    Id = rest.Id,
+                    Name = rest.Name,
+                    DateOfCollection = rest.CollectionDate,
+                    AnalyseType = "Анализ продаж",
                 })
                 .ToList();
 
@@ -104,6 +115,27 @@ namespace VKAnalyzer.Controllers
             return View("~/Views/Vk/Memas/Result.cshtml", result);
         }
 
+        public ActionResult CohortSalesResult(int id)
+        {
+            var resultDb = _dbContext.VkCohortSalesAnalyseResults.FirstOrDefault(rest => rest.Id == id);
+            var result = new SalesActivitiesRetargetResult();
+            try
+            {
+                var formatter = new BinaryFormatter();
+                using (var ms = new MemoryStream(resultDb.Result))
+                {
+                    result = (SalesActivitiesRetargetResult)formatter.Deserialize(ms);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(string.Format("Error: {0}", ex));
+            }
+
+            return View("~/Views/Vk/CohortAnalyseOfSales/Result.cshtml", result);
+        }
+
         public FileResult Download(string path)
         {
             byte[] fileBytes = System.IO.File.ReadAllBytes(path);
@@ -130,10 +162,6 @@ namespace VKAnalyzer.Controllers
 
         public ActionResult VkCohortAnalyseOfSales()
         {
-            var accessToken = GetCurrentUserAccessToken();
-            var targets = _vkService.GetTargetsGroups(accessToken);
-            ViewData["AllTargetGroups"] = from target in targets select new SelectListItem { Text = target.name, Value = target.id };
-
             return View("~/Views/Vk/CohortAnalyseOfSales/Index.cshtml");
         }
 
@@ -151,7 +179,19 @@ namespace VKAnalyzer.Controllers
                 return View("~/Views/Vk/CohortAnalyseOfSales/AnalyseInProgress.cshtml");
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("VkCohortAnalyseOfSales");
+        }
+
+        public string GetAccounts()
+        {
+            var accessToken = GetCurrentUserAccessToken();
+            return _vkService.GetAccounts(accessToken);
+        }
+
+        public string GetTargetGroups(string accountId)
+        {
+            var accessToken = GetCurrentUserAccessToken();
+            return _vkService.GetTargetGroups(accountId, accessToken);
         }
 
         public ActionResult MemasAnalyze()

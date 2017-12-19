@@ -4,17 +4,21 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
+using VKAnalyzer.DBContexts;
 
 namespace VKAnalyzer.Services.VK
 {
     public class VkAdsRequestService
     {
-        private const int SleepTime = 1000;
+        private string AccessToken { get; set; }
+        private string UserId { get; set; }
+        private const int SleepTime = 2500;
         private const int SleepTimeLong = 10000;
 
         public XDocument Request(string requestString)
         {
             var tryingCount = 10;
+            var floodControlTimer = 0;
             while (true)
             {
                 Thread.Sleep(SleepTime);
@@ -29,9 +33,14 @@ namespace VKAnalyzer.Services.VK
                     var errorCode = result.Descendants("error_code").FirstOrDefault();
                     if (errorCode != null && errorCode.Value == "9")
                     {
+                        floodControlTimer++;
                         Thread.Sleep(SleepTimeLong);
                     }
                     tryingCount--;
+                    if (floodControlTimer == 10)
+                    {
+
+                    }
                     if (tryingCount == 0)
                     {
                         return result;
@@ -45,7 +54,11 @@ namespace VKAnalyzer.Services.VK
             Thread.Sleep(SleepTime);
             using (var wc = new WebClient())
             {
-                var json = wc.DownloadString(String.Format("https://api.vk.com/api.php?oauth=1&method=ads.getAccounts&access_token={0}", accessToken));
+                var requestUrl = String.Format("https://api.vk.com/api.php?oauth=1&method=ads.getAccounts&access_token={0}", accessToken);
+
+                var result = wc.DownloadData(requestUrl);
+                var json = Encoding.UTF8.GetString(result);
+
                 return json;
             }
         }
@@ -55,7 +68,12 @@ namespace VKAnalyzer.Services.VK
             Thread.Sleep(SleepTime);
             using (var wc = new WebClient())
             {
-                var json = wc.DownloadString(String.Format("https://api.vk.com/api.php?oauth=1&method=ads.getClients&access_token={0}&account_id={1}", accessToken, accountId));
+                var requestUrl =
+                    String.Format(
+                        "https://api.vk.com/api.php?oauth=1&method=ads.getClients&access_token={0}&account_id={1}",
+                        accessToken, accountId);
+                var result = wc.DownloadData(requestUrl);
+                var json = Encoding.UTF8.GetString(result);
                 return json;
             }
         }
@@ -65,8 +83,22 @@ namespace VKAnalyzer.Services.VK
             Thread.Sleep(SleepTime);
             using (var wc = new WebClient())
             {
+                var requestUrl = String.Format(
+                    "https://api.vk.com/api.php?oauth=1&method=ads.getTargetGroups&access_token={0}&account_id={1}&client_id={2}",
+                    accessToken, accountId, clientId);
+                var result = wc.DownloadData(requestUrl);
+                var json = Encoding.UTF8.GetString(result);
+                return json;
+            }
+        }
+
+        public string GetTargetsGroups(string accountId, string accessToken)
+        {
+            Thread.Sleep(SleepTime);
+            using (var wc = new WebClient())
+            {
                 var result = wc.DownloadData(String.Format(
-                    "https://api.vk.com/api.php?oauth=1&method=ads.getTargetGroups&access_token={0}&account_id={1}&client_id={2}", accessToken, accountId, clientId));
+                    "https://api.vk.com/api.php?oauth=1&method=ads.getTargetGroups&access_token={0}&account_id={1}", accessToken, accountId));
                 var json = Encoding.UTF8.GetString(result);
                 return json;
             }
@@ -115,6 +147,16 @@ namespace VKAnalyzer.Services.VK
                 var json = Encoding.UTF8.GetString(result);
                 return json;
             }
+        }
+
+        
+
+        private string GetUpdatedAccessToken()
+        {
+            var context = new BaseDb();
+            var result = context.UserAccessTokens.FirstOrDefault(us => us.VkUserId == UserId);
+
+            return result.AccessToken;
         }
     }
 }

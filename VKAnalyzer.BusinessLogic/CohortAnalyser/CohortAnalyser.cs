@@ -30,7 +30,11 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
                         var dt1 = dt;
                         foreach (var resultModel in sr.Where(s => s.Date == dt1))
                         {
-                            stepResults.Values.Add(resultModel.Result);
+                            stepResults.Values.Add(new SalesActivitiesRetargetPostResult
+                            {
+                                PostId = resultModel.PostId,
+                                Result = resultModel.Result
+                            });
                         }
                     }
                     result.Results.Add(stepResults);
@@ -45,11 +49,9 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
                 .Select(s => s.ToList())
                 .ToList();
 
-                var allDays = GetTotalDays(dateOfTheBeginning, dateOfTheEnd);
-                var st = 30;
-                var countOfSteps = Math.Ceiling(allDays / st);
+                const int st = 30;
 
-                for (var i = 0; i < countOfSteps; i++)
+                for (var i = 0; i < ordered.Count; i++)
                 {
                     var stepResults = new SalesActivitiesRetargetStepData();
                     
@@ -63,7 +65,11 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
                         endDate.ToShortDateString());
                     foreach (var sr in ordered[i])
                     {
-                        stepResults.Values.Add(sr.Result);
+                        stepResults.Values.Add(new SalesActivitiesRetargetPostResult
+                        {
+                            PostId = sr.PostId,
+                            Result = sr.Result
+                        });
                     }
                     result.Results.Add(stepResults);
                 }

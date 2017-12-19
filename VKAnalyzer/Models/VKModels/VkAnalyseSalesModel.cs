@@ -14,12 +14,8 @@ namespace VKAnalyzer.Models.VKModels
         public string GroupId { get; set; }
 
         [Required]
-        [Display(Name = "Агентский номер")]
+        [Display(Name = "Агентский кабинет")]
         public string AccountId { get; set; }
-
-        [Required]
-        [Display(Name = "Номер рекламного кабинета")]
-        public string ClientId { get; set; }
 
         [Required]
         [Display(Name = "Группа ретаргета для исключения")]

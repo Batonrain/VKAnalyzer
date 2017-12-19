@@ -1,8 +1,7 @@
-﻿using System.Data.Entity;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using VKAnalyzer.Models;
+using VKAnalyzer.Utils;
 
 namespace VKAnalyzer
 {
@@ -10,6 +9,8 @@ namespace VKAnalyzer
     {
         protected void Application_Start()
         {
+            AutofacConfig.ConfigureContainer();
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

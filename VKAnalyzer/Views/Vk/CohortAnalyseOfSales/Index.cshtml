@@ -22,6 +22,8 @@
     @Html.AntiForgeryToken()
     <hr />
     @Html.ValidationSummary()
+    @Html.HiddenFor(x => x.AccountId)
+    @Html.HiddenFor(x => x.ExcludeTargetGroup)
     <div class="form-group">
         @Html.Label("Велосипеды: 77390912", new { @class = "col-md-2 control-label" })
     </div>
@@ -45,30 +47,26 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(m => m.ExcludeTargetGroup, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(m => m.ExcludeTargetGroup, (IEnumerable<SelectListItem>)ViewData["AllTargetGroups"], null, new { @class = "form-control" })
-        </div>
-    </div>
-    
-    <div class="form-group">
         @Html.LabelFor(m => m.GroupId, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
             @Html.TextBoxFor(m => m.GroupId, new { @class = "form-control" })
         </div>
     </div>
+
     <div class="form-group">
         @Html.LabelFor(m => m.AccountId, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.AccountId, new { @class = "form-control" })
+            <select id="AccountNames" name="AccountNames" class="form-control"></select>
         </div>
     </div>
+
     <div class="form-group">
-        @Html.LabelFor(m => m.ClientId, new { @class = "col-md-2 control-label" })
+        @Html.LabelFor(m => m.ExcludeTargetGroup, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.ClientId, new { @class = "form-control" })
+            <select id="TargetGroups" name="TargetGroups" class="form-control"></select>
         </div>
     </div>
+
     <div class="form-group">
         @Html.LabelFor(m => m.Step, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
@@ -111,6 +109,64 @@
             $('#EndDate').datepicker({
                 dateFormat: "dd.mm.yy"
             });
+        });
+
+        $(function () {
+            $.getJSON("GetAccounts")
+            .done(function (data) {
+                $.each(data.response, function (index, value) {
+                    var accountOption = $('<option>');
+                    accountOption.attr('value', value.account_id)
+                                 .text(value.account_name);
+
+                    if (index === 0) {
+                        $("#AccountId").attr("value", value.account_id);
+                        $.getJSON("GetTargetGroups", { accountId: value.account_id })
+                         .done(function (groups) {
+                             
+                             $('#TargetGroups').find('option').remove().end();
+
+                             $.each(groups.response, function (gIndex, gValue) {
+                                 if (gIndex === 0) {
+                                     $("#ExcludeTargetGroup").attr("value", gValue);
+                                 }
+                                  var groupOption = $('<option>');
+                                  groupOption.attr('value', gValue.id)
+                                             .text(gValue.name);
+                                 $('#TargetGroups').append(groupOption);
+                             });
+                             
+                         });
+                    }
+
+                    $('#AccountNames').append(accountOption);
+                });
+            });
+        });
+
+        $("#AccountNames").change(function () {
+            $("#AccountId").attr("value", $(this).val());
+            $("#TargetGroups").prop('disabled', true);
+
+            $.getJSON("GetTargetGroups", { accountId: $(this).val() })
+            .done(function (data) {
+                
+                $('#TargetGroups').find('option').remove().end();
+
+                $.each(data.response, function (index, value) {
+                    $("#AccountId").attr("value", value.account_id);
+                    var newOption = $('<option>');
+                    newOption.attr('value', value.id)
+                             .text(value.name);
+                    $('#TargetGroups').append(newOption);
+                });
+
+                $('#TargetGroups').prop('disabled', false);
+            });
+        });
+
+        $("#TargetGroups").change(function () {
+            $("#ExcludeTargetGroup").attr("value", $(this).val());
         });
     });
 </script>

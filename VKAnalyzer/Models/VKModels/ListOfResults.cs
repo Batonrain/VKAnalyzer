@@ -9,5 +9,6 @@ namespace VKAnalyzer.Models.VKModels
     {
         public List<AnalyseResultsViewModel> CohortAnalyseResults { get; set; }
         public List<AnalyseResultsViewModel> MemasAnalyzeResults { get; set; }
+        public List<AnalyseResultsViewModel> CohortSalesAnalyseResults { get; set; }
     }
 }

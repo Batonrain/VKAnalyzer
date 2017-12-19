@@ -6,23 +6,30 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Когортный анализ продаж</h2>
+<h2>Когортный анализ продаж группы @Model.GroupId</h2>
 
-<div>
-    <table class="table table-responsive table-bordered">
-        <thead class="thead-default">
+    <div>
+        <table class="table table-responsive table-bordered">
             <tr>
-                <th></th>
-                @foreach (var date in Model.Results)
+                @foreach (var result in Model.Results)
                 {
                     <th>
-                        @date
+                        <table>
+                            <tr>
+                                <th>@result.Date</th>
+                            </tr>
+                            @foreach (var value in result.Values)
+                            {
+                                <tr>
+                                    <th>
+                                        <a href="@string.Format("https://vk.com/feed?w=wall-{0}_{1}", value.PostId, Model.GroupId)" target="_blank">Пост</a>
+                                    </th>
+                                    <th>@value.Result</th>
+                                </tr>
+                            }
+                        </table>
                     </th>
                 }
-                <th>
-                    Итого:
-                </th>
             </tr>
-        </thead>
-    </table>
-</div>
+        </table>
+    </div>

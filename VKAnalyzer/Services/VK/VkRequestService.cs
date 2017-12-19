@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Xml.Linq;
-using Newtonsoft.Json;
 
 namespace VKAnalyzer.Services.VK
 {
