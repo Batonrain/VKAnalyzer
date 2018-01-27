@@ -218,11 +218,16 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\ServicesController.cs" />
+    <Compile Include="Controllers\Vk\AffinityIndexController.cs" />
+    <Compile Include="Controllers\Vk\CohortAnalysisController.cs" />
+    <Compile Include="Controllers\Vk\MemologyController.cs" />
+    <Compile Include="Controllers\Vk\SalesAnalysisController.cs" />
     <Compile Include="DBContexts\BaseDb.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\VkController.cs" />
     <Compile Include="DBContexts\IdentityDb.cs" />
+    <Compile Include="Filters\DashboardAuthorizationFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -239,6 +244,10 @@
     <Compile Include="Models\VKModels\VKCohortAnalyseResult.cs" />
     <Compile Include="Models\VKModels\VkMemasAnalyzeResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Interfaces\IAffinityIndexService.cs" />
+    <Compile Include="Services\Interfaces\IVkBaseService.cs" />
+    <Compile Include="Services\Interfaces\IVkService.cs" />
+    <Compile Include="Services\VK\AffinityIndexService.cs" />
     <Compile Include="Services\VK\VkAdsRequestService.cs" />
     <Compile Include="Services\VK\VkAuthService.cs" />
     <Compile Include="Services\VK\VkBaseService.cs" />
@@ -361,21 +370,23 @@
     <Content Include="Views\Account\Manage.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Vk\CohortAnalysis.cshtml" />
-    <Content Include="Views\Vk\Index.cshtml" />
-    <Content Include="Views\Vk\ListOfResults.cshtml" />
-    <Content Include="Views\Vk\Result.cshtml" />
+    <Content Include="Views\Vk\Results.cshtml" />
     <Content Include="Views\Service\Index.cshtml" />
-    <Content Include="Views\Vk\CohortAnalyseOfSales\Index.cshtml" />
-    <Content Include="Views\Vk\Memas\Index.cshtml" />
-    <Content Include="Views\Vk\Memas\Result.cshtml" />
-    <Content Include="Views\Vk\CohortAnalyseOfSales\AnalyseInProgress.cshtml" />
-    <Content Include="Views\Vk\CohortAnalyseOfSales\Result.cshtml" />
+    <Content Include="Views\Vk\InProgress.cshtml" />
+    <Content Include="Views\Memology\Index.cshtml" />
+    <Content Include="Views\Memology\Result.cshtml" />
+    <Content Include="Views\SalesAnalysis\Index.cshtml" />
+    <Content Include="Views\SalesAnalysis\Result.cshtml" />
+    <Content Include="Views\CohortAnalysis\AnalyseInProgress.cshtml" />
+    <Content Include="Views\CohortAnalysis\CohortAnalysis.cshtml" />
+    <Content Include="Views\CohortAnalysis\Index.cshtml" />
+    <Content Include="Views\CohortAnalysis\Result.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Logs\" />
     <Folder Include="Results\Memas\" />
+    <Folder Include="Views\AffinityIndex\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

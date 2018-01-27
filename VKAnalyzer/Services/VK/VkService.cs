@@ -144,19 +144,21 @@ namespace VKAnalyzer.Services.VK
 
         private GetWallPostsParametersModel PrepareGetParameters(string groupId, DateTime startDate, DateTime endDate)
         {
+            var needToParseCount = (endDate - startDate).Days*4;
+
             var parametersModel = new GetWallPostsParametersModel
             {
                 // Внутренний шаг для поиска постов, параметр count
-                InnerStep = (endDate - startDate).Days + 20,
+                InnerStep = 100,
                 // Внешний шаг для пропуска ненужных постов, параметр offset
                 OuterStep = (DateTime.Now - endDate).Days,
                 GroupId = groupId,
                 CyclesCount = 1
             };
 
-            if (parametersModel.InnerStep > 100)
+            if (needToParseCount > 100)
             {
-                var cc = (decimal)parametersModel.InnerStep / 100;
+                var cc = (decimal)needToParseCount / 100;
                 parametersModel.CyclesCount = (int)Math.Ceiling((double)cc) * 3;
             }
 
@@ -366,9 +368,14 @@ namespace VKAnalyzer.Services.VK
             return _vkSalesAnalysisService.GetAccounts(accessToken);
         }
 
-        public string GetTargetGroups(string accountId, string accessToken)
+        public string GetClients(string accountId, string accessToken)
         {
-            return _vkSalesAnalysisService.GetAccountGroups(accountId, accessToken);
+            return _vkSalesAnalysisService.GetClients(accountId, accessToken);
+        }
+
+        public string GetTargetGroups(string accountId, string clientId, string accessToken)
+        {
+            return _vkSalesAnalysisService.GetAccountGroups(accountId, clientId, accessToken);
         }
     }
 }

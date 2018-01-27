@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Xml.Linq;
 
 namespace VKAnalyzer.Services.VK
@@ -27,6 +28,7 @@ namespace VKAnalyzer.Services.VK
 
         public XDocument GetPostsCount(string groupId, string accessToken)
         {
+            Thread.Sleep(3000);
             return XDocument.Load(String.Format("https://api.vk.com/api.php?oauth=1&method=wall.get.xml&offset=0&count=1&owner_id=-{0}&access_token={1}", groupId, accessToken));
         }
 

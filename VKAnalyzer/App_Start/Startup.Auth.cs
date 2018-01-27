@@ -30,7 +30,7 @@ namespace VKAnalyzer
                 ClientSecret = "VyDbxal6Wbs6zbt0xy7E",
                 Display = "page",
                 CallbackPath = new PathString("/Vk/Result"),
-                Scope = new[] { "friends", "photo", "ads" },
+                Scope = new[] { "friends", "photo", "ads", "offline" },
                 AuthenticationType = "Вконтакте",
                 AuthenticationMode = AuthenticationMode.Passive,
                 Provider = new VKontakteAuthenticationProvider()

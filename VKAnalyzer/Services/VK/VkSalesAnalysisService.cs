@@ -133,14 +133,17 @@ namespace VKAnalyzer.Services.VK
                                 continue;
                             }
                             var uCount = updatedAdsInfo.Descendants("count").FirstOrDefault().Value;
-                            result.Result = (Convert.ToInt32(fCount) - Convert.ToInt32(uCount)).ToString();
+                            result.Result = (Math.Abs(Convert.ToInt32(fCount) - Convert.ToInt32(uCount))).ToString();
                         }
 
                         results.Add(result);
                     }
                     catch (Exception ex)
                     {
+                        _logger.Error("Error during foreach in CreateRetargets:");
                         _logger.Error(ex);
+                        _logger.Error("Inner Exception:");
+                        _logger.Error(ex.InnerException);
                     }
                 }
 
@@ -157,37 +160,24 @@ namespace VKAnalyzer.Services.VK
             return VkAdsRequestService.GetAccounts(accessToken);
         }
 
-        public string GetAccountGroups(string accountId, string accessToken)
+        public string GetClients(string accountId, string accessToken)
         {
-            var clientsJson = VkAdsRequestService.GetClients(accountId, accessToken);
-            if (clientsJson.Contains("error_code"))
+            return VkAdsRequestService.GetClients(accountId, accessToken);
+        }
+
+        public string GetAccountGroups(string accountId, string clientId, string accessToken)
+        {
+            var targetGroupsJson = VkAdsRequestService.RequestJson(CreateGetRetargetGroupsUrl(accountId, clientId, accessToken));
+            var targetGroupsToDeserialize = GetJsonFromResponse(targetGroupsJson);
+            var targetGroupsDeserialized = JsonConvert.DeserializeObject<List<AdsRetargetGroup>>(targetGroupsToDeserialize);
+            var correctTargetGroups =
+                targetGroupsDeserialized.Where(g => !g.name.Contains("EvilMarketingServiceForPost"));
+
+            var json = JsonConvert.SerializeObject(new
             {
-                return VkAdsRequestService.GetTargetsGroups(accountId, accessToken);
-            }
-            else
-            {
-                var result = new List<AdsRetargetGroup>();
-
-                var clientsToDeserialize = GetJsonFromResponse(clientsJson);
-                var clntsDeserialized = JsonConvert.DeserializeObject<List<AdsClient>>(clientsToDeserialize);
-
-                foreach (var adsClients in clntsDeserialized)
-                {
-                    var targetGroupsJson = VkAdsRequestService.GetTargetsGroups(accountId, adsClients.id,
-                        accessToken);
-                    var targetGroupsToDeserialize = GetJsonFromResponse(targetGroupsJson);
-                    var targetGroupsDeserialized = JsonConvert.DeserializeObject<List<AdsRetargetGroup>>(targetGroupsToDeserialize);
-                    var correctTargetGroups =
-                        targetGroupsDeserialized.Where(g => !g.name.Contains("EvilMarketingServiceForPost"));
-
-                    result.AddRange(correctTargetGroups);
-                }
-                var json = JsonConvert.SerializeObject(new
-                {
-                    response = result
-                });
-                return json;
-            }
+                response = correctTargetGroups
+            });
+            return json;
         }
 
         private string UpdateAd(string accountId, string adId, string excludeTargetGroupId, string accessToken)
@@ -207,7 +197,7 @@ namespace VKAnalyzer.Services.VK
         {
             foreach (var retargetId in retrgetIds)
             {
-                VkAdsRequestService.Request(CreateDeleteRetargetGroupUrl(accountId, clientId, retargetId, accessToken));
+                var result = VkAdsRequestService.Request(CreateDeleteRetargetGroupUrl(accountId, clientId, retargetId, accessToken));
             }
         }
 
@@ -224,12 +214,21 @@ namespace VKAnalyzer.Services.VK
         {
             var retargetsXml = VkAdsRequestService.Request(CreateCleanupRetargetGroupUrl(accountId, clientId, accessToken));
 
-            var ids = retargetsXml.Descendants("id")
-                .Where(s => s.Value.Contains("EvilMarketingServiceForPost"))
-                .Select(s => s.Value)
+            var ids = retargetsXml.Descendants("target_group")
+                .Where(x => x.Element("name").Value.Contains("EvilMarketingService"))
+                .Select(s => s.Element("id").Value)
                 .ToList();
 
             DeleteTargetGroup(accountId, clientId, ids, accessToken);
+        }
+
+        private string CreateGetRetargetGroupsUrl(string accountId, string clientId, string accessToken)
+        {
+            var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
+
+            return string.Format(
+                "https://api.vk.com/api.php?oauth=1&method=ads.getTargetGroups&access_token={0}&account_id={1}{2}",
+                accessToken, accountId, client);
         }
 
         private string CreateRetargetGroupUrl(string accountId, string clientId, string name, string accessToken)
@@ -252,7 +251,7 @@ namespace VKAnalyzer.Services.VK
         {
             var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
 
-            return string.Format( "https://api.vk.com/api.php?oauth=1&method=ads.importTargetContacts.xml&access_token={0}&account_id={1}{2}&target_group_id={3}&contacts={4}",
+            return string.Format("https://api.vk.com/api.php?oauth=1&method=ads.importTargetContacts.xml&access_token={0}&account_id={1}{2}&target_group_id={3}&contacts={4}",
                                    accessToken, accountId, client, targetGroupId, contacts);
         }
 
@@ -264,6 +263,7 @@ namespace VKAnalyzer.Services.VK
                     "https://api.vk.com/api.php?oauth=1&method=ads.deleteTargetGroup.xml&access_token={0}&account_id={1}{2}&target_group_id={3}",
                     accessToken, accountId, client, targetGroup);
         }
+
 
         private string CreateCampaignUrl(string accountId, string clientId, string name, string accessToken)
         {

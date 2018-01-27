@@ -22,6 +22,10 @@ namespace VKAnalyzer.Models.VKModels
         public string ExcludeTargetGroup { get; set; }
 
         [Required]
+        [Display(Name = "Клиент рекламного кабинета")]
+        public string ClientId { get; set; }
+
+        [Required]
         [Display(Name = "Шаг анализа")]
         public int Step { get; set; }
 

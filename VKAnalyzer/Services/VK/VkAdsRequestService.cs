@@ -4,16 +4,18 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
+using NLog;
 using VKAnalyzer.DBContexts;
 
 namespace VKAnalyzer.Services.VK
 {
     public class VkAdsRequestService
     {
-        private string AccessToken { get; set; }
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private string UserId { get; set; }
-        private const int SleepTime = 2500;
+        private const int SleepTime = 5000;
         private const int SleepTimeLong = 10000;
+        private const int SleepTimeDay = 86400000;
 
         public XDocument Request(string requestString)
         {
@@ -37,14 +39,34 @@ namespace VKAnalyzer.Services.VK
                         Thread.Sleep(SleepTimeLong);
                     }
                     tryingCount--;
-                    if (floodControlTimer == 10)
+                    if (floodControlTimer == 7)
                     {
-
+                        _logger.Error("Flood control. Request string is");
+                        _logger.Error(requestString);
+                        _logger.Error("Result is");
+                        _logger.Error(result);
+                        Thread.Sleep(SleepTimeDay);
+                        return result;
                     }
                     if (tryingCount == 0)
                     {
                         return result;
                     }
+                }
+            }
+        }
+
+        public string RequestJson(string requestString)
+        {
+            while (true)
+            {
+                Thread.Sleep(SleepTime);
+                using (var wc = new WebClient())
+                {
+                    var result = wc.DownloadData(requestString);
+                    var json = Encoding.UTF8.GetString(result);
+
+                    return json;
                 }
             }
         }

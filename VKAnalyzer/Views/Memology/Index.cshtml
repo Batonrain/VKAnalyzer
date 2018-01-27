@@ -5,7 +5,7 @@
 }
 
 <h2>Анализ мемасов</h2>
-@using (Html.BeginForm("AnalyzeMemas", "Vk", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("Analyze", "Memology", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
     <hr />

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VKAnalyzer.Services.Interfaces;
 
 namespace VKAnalyzer.Services.VK
 {
-    public class VkBaseService
+    public class VkBaseService : IVkBaseService
     {
 
 

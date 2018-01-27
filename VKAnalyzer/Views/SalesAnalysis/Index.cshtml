@@ -17,13 +17,14 @@
 
 <h2>Когортный анализ продаж</h2>
 
-@using (Html.BeginForm("VkCohortAnalyseOfSales", "Vk", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("Analyse", "SalesAnalysis", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
     <hr />
     @Html.ValidationSummary()
     @Html.HiddenFor(x => x.AccountId)
     @Html.HiddenFor(x => x.ExcludeTargetGroup)
+    @Html.HiddenFor(x => x.ClientId)
     <div class="form-group">
         @Html.Label("Велосипеды: 77390912", new { @class = "col-md-2 control-label" })
     </div>
@@ -57,6 +58,13 @@
         @Html.LabelFor(m => m.AccountId, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
             <select id="AccountNames" name="AccountNames" class="form-control"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ClientId, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            <select id="Clients" name="Clients" class="form-control"></select>
         </div>
     </div>
 
@@ -112,7 +120,9 @@
         });
 
         $(function () {
-            $.getJSON("GetAccounts")
+            disableAll();
+
+            $.getJSON("/SalesAnalysis/GetAccounts")
             .done(function (data) {
                 $.each(data.response, function (index, value) {
                     var accountOption = $('<option>');
@@ -121,52 +131,95 @@
 
                     if (index === 0) {
                         $("#AccountId").attr("value", value.account_id);
-                        $.getJSON("GetTargetGroups", { accountId: value.account_id })
-                         .done(function (groups) {
-                             
-                             $('#TargetGroups').find('option').remove().end();
 
-                             $.each(groups.response, function (gIndex, gValue) {
-                                 if (gIndex === 0) {
-                                     $("#ExcludeTargetGroup").attr("value", gValue);
-                                 }
-                                  var groupOption = $('<option>');
-                                  groupOption.attr('value', gValue.id)
-                                             .text(gValue.name);
-                                 $('#TargetGroups').append(groupOption);
-                             });
-                             
-                         });
+                        // Получение клиентов для рекламного кабинета
+                        getClients(value.account_id);
                     }
 
                     $('#AccountNames').append(accountOption);
                 });
+
             });
         });
 
         $("#AccountNames").change(function () {
             $("#AccountId").attr("value", $(this).val());
+           
             $("#TargetGroups").prop('disabled', true);
+            $("#Clients").prop('disabled', true);
 
-            $.getJSON("GetTargetGroups", { accountId: $(this).val() })
-            .done(function (data) {
-                
-                $('#TargetGroups').find('option').remove().end();
-
-                $.each(data.response, function (index, value) {
-                    $("#AccountId").attr("value", value.account_id);
-                    var newOption = $('<option>');
-                    newOption.attr('value', value.id)
-                             .text(value.name);
-                    $('#TargetGroups').append(newOption);
-                });
-
-                $('#TargetGroups').prop('disabled', false);
-            });
+            getClients($(this).val());
         });
 
         $("#TargetGroups").change(function () {
             $("#ExcludeTargetGroup").attr("value", $(this).val());
         });
+        $("#Clients").change(function () {
+            $("#ClientId").attr("value", $(this).val());
+        });
+
+        function getClients(accountId) {
+            $.getJSON("/SalesAnalysis/GetClients", { accountId: accountId })
+                .done(function (clients) {
+                    $('#Clients').find('option').remove().end();
+
+                    if (clients.error) {
+                        $("#ClientId").attr("value", "");
+                        // Получение групп ретаргета напрямую
+                        getRetargets(accountId);
+                    } else {
+                        $.each(clients.response, function (cIndex, cValue) {
+                            if (cIndex === 0) {
+                                $("#ClientId").attr("value", cValue.id);
+
+                                // Получение групп ретаргета напрямую
+                                getRetargets(accountId, cValue.id);
+                            }
+
+                            var clientOption = $('<option>');
+                            clientOption.attr('value', cValue.id)
+                                       .text(cValue.name);
+
+                            $('#Clients').append(clientOption);
+                        });
+                    }
+                });
+        }
+
+        function getRetargets(accountId, clientId) {
+            $.getJSON("/SalesAnalysis/GetTargetGroups", { accountId: accountId, clientId: clientId })
+                         .done(function (groups) {
+
+                             $('#TargetGroups').find('option').remove().end();
+
+                             $.each(groups.response, function (gIndex, gValue) {
+                                 if (gIndex === 0) {
+                                     $("#ExcludeTargetGroup").attr("value", gValue.id);
+                                 }
+                                 var groupOption = $('<option>');
+                                 groupOption.attr('value', gValue.id)
+                                            .text(gValue.name);
+                                 $('#TargetGroups').append(groupOption);
+                             });
+
+                             var needToDisableClient = false;
+                             if (!clientId)
+                                 needToDisableClient = true;
+
+                             enableAll(needToDisableClient);
+                         });
+        }
+
+        function disableAll() {
+            $("#AccountNames").prop('disabled', true);
+            $("#TargetGroups").prop('disabled', true);
+            $("#Clients").prop('disabled', true);
+        }
+
+        function enableAll(disableClient) {
+            $("#AccountNames").prop('disabled', false);
+            $("#TargetGroups").prop('disabled', false);
+            $("#Clients").prop('disabled', disableClient);
+        }
     });
 </script>

@@ -364,7 +364,10 @@ namespace VKAnalyzer.Controllers
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
             var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
-            AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, identity);
+            AuthenticationManager.SignIn(new AuthenticationProperties
+            {
+                IsPersistent = isPersistent, ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2)
+            }, identity);
         }
 
         private void AddErrors(IdentityResult result)

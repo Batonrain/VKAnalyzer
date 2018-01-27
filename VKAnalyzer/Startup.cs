@@ -1,6 +1,8 @@
-﻿using Hangfire;
+﻿using System.Web;
+using Hangfire;
 using Microsoft.Owin;
 using Owin;
+using VKAnalyzer.Filters;
 
 [assembly: OwinStartupAttribute(typeof(VKAnalyzer.Startup))]
 namespace VKAnalyzer
@@ -9,12 +11,17 @@ namespace VKAnalyzer
     {
         public void Configuration(IAppBuilder app)
         {
+            ConfigureAuth(app);
+
             GlobalConfiguration.Configuration.UseSqlServerStorage("DefaultConnection");
 
-            app.UseHangfireDashboard();
+            var options = new DashboardOptions
+            {
+                AppPath = VirtualPathUtility.ToAbsolute("~"),
+                Authorization = new[] { new DashboardAuthorizationFilter() }
+            };
+            app.UseHangfireDashboard("/hangfire", options);
             app.UseHangfireServer();
-
-            ConfigureAuth(app);
         }
     }
 }
