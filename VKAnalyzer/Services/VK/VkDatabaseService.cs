@@ -1,109 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
-using VKAnalyzer.DBContexts;
-using VKAnalyzer.Models.VKModels;
-using VKAnalyzer.Models.VKModels.Memas;
+using System.Net;
+using System.Text;
+using System.Threading;
+using VKAnalyzer.Services.Interfaces;
 
 namespace VKAnalyzer.Services.VK
 {
-    public class VkDatabaseService
+    public class VkDatabaseService : IVkDatabaseService
     {
-        private BaseDb _dbContext;
+        private const int SleepTime = 5000;
 
-        public VkDatabaseService()
+        public string GetCities()
         {
-            _dbContext = new BaseDb();
+            throw new NotImplementedException();
         }
 
-        public IEnumerable<string> GetListOfGroups()
+        public string GetUniversities()
         {
-            return _dbContext.Groups.Select(g => g.Link.Replace("https://vk.com/", "")).ToList();
+            throw new NotImplementedException();
         }
 
-        public void SaveMemas(MemasAnalyzeResultModel result, string userId)
+        public string GetInterestsCategories(string accessToken)
         {
-            using (var ms = new MemoryStream())
+            Thread.Sleep(SleepTime);
+            using (var wc = new WebClient())
             {
-                var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(ms, result);
-                byte[] rr = ms.GetBuffer();
+                var requestUrl = String.Format("https://api.vk.com/api.php?oauth=1&method=ads.getCategories&access_token={0}", accessToken);
 
-                var cntx = new BaseDb();
-                cntx.VkMemasAnalyzeResults.Add(new VkMemasAnalyzeResult
-                {
-                    UserId = userId,
-                    Name = string.Format("Анализатор мемасов за {0}", DateTime.Now),
-                    CollectionDate = DateTime.Now,
-                    Result = rr
-                });
-                cntx.SaveChanges();
-            }
-        }
+                var result = wc.DownloadData(requestUrl);
+                var json = Encoding.UTF8.GetString(result);
 
-        public void SaveCohortAnalyze(CohortAnalysisResultModel result, string userId, string name, string groupId)
-        {
-            using (var ms = new MemoryStream())
-            {
-                var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(ms, result);
-                byte[] rr = ms.GetBuffer();
-
-                var cntx = new BaseDb();
-                cntx.VkCohortAnalyseResults.Add(new VkCohortAnalyseResult
-                {
-                    UserId = userId,
-                    Name = name,
-                    CollectionDate = DateTime.Now,
-                    GroupId = groupId,
-                    Result = rr
-                });
-                cntx.SaveChanges();
-            }
-        }
-
-        public void SaveAnalyzeOfSalesWithRetarget(CohortAnalysisResultModel result, string userId, string name, string groupId)
-        {
-            using (var ms = new MemoryStream())
-            {
-                var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(ms, result);
-                byte[] rr = ms.GetBuffer();
-
-                var cntx = new BaseDb();
-                cntx.VkCohortAnalyseResults.Add(new VkCohortAnalyseResult
-                {
-                    UserId = userId,
-                    Name = name,
-                    CollectionDate = DateTime.Now,
-                    GroupId = groupId,
-                    Result = rr
-                });
-                cntx.SaveChanges();
-            }
-        }
-
-        public void SaveAnalyzeOfSalesWithRetarget(SalesActivitiesRetargetResult result, string userId, string name, string groupId)
-        {
-            using (var ms = new MemoryStream())
-            {
-                var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(ms, result);
-                byte[] rr = ms.GetBuffer();
-
-                var cntx = new BaseDb();
-                cntx.VkCohortSalesAnalyseResults.Add(new VkCohortSalesAnalyseResults
-                {
-                    UserId = userId,
-                    Name = name,
-                    CollectionDate = DateTime.Now,
-                    GroupId = groupId,
-                    Result = rr
-                });
-                cntx.SaveChanges();
+                return json;
             }
         }
     }

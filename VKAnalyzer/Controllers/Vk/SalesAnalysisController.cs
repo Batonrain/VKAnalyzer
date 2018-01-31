@@ -11,7 +11,7 @@ namespace VKAnalyzer.Controllers.Vk
 {
     public class SalesAnalysisController : Controller
     {
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly VkService _vkService;
         private readonly BaseDb _dbContext;
@@ -42,24 +42,6 @@ namespace VKAnalyzer.Controllers.Vk
             }
 
             return RedirectToAction("Index");
-        }
-
-        public string GetAccounts()
-        {
-            var accessToken = GetCurrentUserAccessToken();
-            return _vkService.GetAccounts(accessToken);
-        }
-
-        public string GetClients(string accountId)
-        {
-            var accessToken = GetCurrentUserAccessToken();
-            return _vkService.GetClients(accountId, accessToken);
-        }
-
-        public string GetTargetGroups(string accountId, string clientId)
-        {
-            var accessToken = GetCurrentUserAccessToken();
-            return _vkService.GetTargetGroups(accountId, clientId, accessToken);
         }
 
         private string GetCurrentUserAccessToken()

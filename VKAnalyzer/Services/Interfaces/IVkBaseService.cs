@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace VKAnalyzer.Services.Interfaces
 {
-    interface IVkBaseService
+    public interface IVkBaseService
     {
         IEnumerable<string> ConvertstringToList(string input);
+
+        string GetJsonFromResponse(string json);
     }
 }

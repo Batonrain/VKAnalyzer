@@ -31,15 +31,6 @@
     <div class="form-group">
         @Html.Label("Куркин: 70468135", new { @class = "col-md-2 control-label" })
     </div>
-
-    <div class="form-group">
-        @Html.Label("Агентский номер - account_id: 1900013299", new { @class = "col-md-2 control-label" })
-    </div>
-
-    <div class="form-group">
-        @Html.Label("Кабинет - client_id: 1604087573", new { @class = "col-md-2 control-label" })
-    </div>
-
     <div class="form-group">
         @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
@@ -122,7 +113,7 @@
         $(function () {
             disableAll();
 
-            $.getJSON("/SalesAnalysis/GetAccounts")
+            $.getJSON("/Vk/GetAccounts")
             .done(function (data) {
                 $.each(data.response, function (index, value) {
                     var accountOption = $('<option>');
@@ -159,7 +150,7 @@
         });
 
         function getClients(accountId) {
-            $.getJSON("/SalesAnalysis/GetClients", { accountId: accountId })
+            $.getJSON("/Vk/GetClients", { accountId: accountId })
                 .done(function (clients) {
                     $('#Clients').find('option').remove().end();
 
@@ -187,7 +178,7 @@
         }
 
         function getRetargets(accountId, clientId) {
-            $.getJSON("/SalesAnalysis/GetTargetGroups", { accountId: accountId, clientId: clientId })
+            $.getJSON("/Vk/GetTargetGroups", { accountId: accountId, clientId: clientId })
                          .done(function (groups) {
 
                              $('#TargetGroups').find('option').remove().end();

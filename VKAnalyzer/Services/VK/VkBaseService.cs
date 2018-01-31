@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using VKAnalyzer.Services.Interfaces;
 
 namespace VKAnalyzer.Services.VK
 {
     public class VkBaseService : IVkBaseService
     {
-
-
         public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch
@@ -21,6 +20,12 @@ namespace VKAnalyzer.Services.VK
         {
             var result = input.Split(new[] { "\r\n", ";" }, StringSplitOptions.RemoveEmptyEntries);
             return input.Replace("\r\n", "").Split(';').ToList();
+        }
+
+        public string GetJsonFromResponse(string json)
+        {
+            var parsed = JObject.Parse(json);
+            return parsed["response"].ToString();
         }
     }
 }

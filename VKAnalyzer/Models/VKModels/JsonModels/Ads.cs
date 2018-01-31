@@ -31,4 +31,10 @@
         public string pixel { get; set; }
         public string domain { get; set; }
     }
+
+    public class VkInterestCategory
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+    }
 }

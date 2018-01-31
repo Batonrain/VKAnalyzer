@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity;
 using NLog;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels;
+using VKAnalyzer.Services.VK;
 
 namespace VKAnalyzer.Controllers
 {
@@ -12,10 +13,12 @@ namespace VKAnalyzer.Controllers
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly BaseDb _dbContext;
+        private readonly VkService _vkService;
 
         public VkController()
         {
             _dbContext = new BaseDb();
+            _vkService = new VkService();
         }
 
         public ActionResult Index()
@@ -63,6 +66,33 @@ namespace VKAnalyzer.Controllers
                 .ToList();
 
             return View(model);
+        }
+
+        public string GetAccounts()
+        {
+            var accessToken = GetCurrentUserAccessToken();
+            return _vkService.GetAccounts(accessToken);
+        }
+
+        public string GetClients(string accountId)
+        {
+            var accessToken = GetCurrentUserAccessToken();
+            return _vkService.GetClients(accountId, accessToken);
+        }
+
+        public string GetTargetGroups(string accountId, string clientId)
+        {
+            var accessToken = GetCurrentUserAccessToken();
+            return _vkService.GetTargetGroups(accountId, clientId, accessToken);
+        }
+
+        private string GetCurrentUserAccessToken()
+        {
+            var context = new BaseDb();
+            var userId = User.Identity.GetUserId();
+            var result = context.UserAccessTokens.FirstOrDefault(us => us.VkUserId == userId);
+
+            return result.AccessToken;
         }
     }
 }

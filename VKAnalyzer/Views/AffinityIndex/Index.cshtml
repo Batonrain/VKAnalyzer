@@ -1,0 +1,248 @@
+﻿@model VKAnalyzer.Models.VKModels.AffinityIndex.AffinityIndexOptionsModel
+
+@{
+    ViewBag.Title = "Когортный анализ";
+}
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+@Scripts.Render("~/bundles/cohortanalyse")
+
+<h2>Аффинити Индекс</h2>
+
+<div class="row">
+    @using (Html.BeginForm("Start", "AffinityIndex", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        <hr />
+        @Html.ValidationSummary()
+        @Html.HiddenFor(x => x.AccountId)
+        @Html.HiddenFor(x => x.ClientId)
+        <div class="form-group">
+            @Html.Label("Велосипеды: 77390912", new { @class = "col-md-3 control-label" })
+        </div>
+        <div class="form-group">
+            @Html.Label("Куркин: 70468135", new { @class = "col-md-3 control-label" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Name, new { @class = "col-md-3 control-label" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.AccountId, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                <select id="AccountNames" name="AccountNames" class="form-control"></select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.ClientId, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                <select id="Clients" name="Clients" class="form-control"></select>
+            </div>
+        </div>
+        <div class="col-sm-6">
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.Name, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory1.Name, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.Cities, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory1.Cities, new { @class = "form-control", @readonly = "readonly", @Value = "Санкт-Петербург" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.Gender, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.RadioButtonFor(m => m.Auditory1.Gender, "0", new { @class = "radio-inline", @checked = true })
+                    @Html.Label("Не важно")
+                    @Html.RadioButtonFor(m => m.Auditory1.Gender, "1", new { @class = "radio-inline" })
+                    @Html.Label("Женский")
+                    @Html.RadioButtonFor(m => m.Auditory1.Gender, "2", new { @class = "radio-inline" })
+                    @Html.Label("Мужской")
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.AgesFrom, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory1.AgesFrom, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.AgesUpTo, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory1.AgesUpTo, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.InterestGroupIds, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory1.InterestGroupIds, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.ExcludeInterestGroupIds, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory1.ExcludeInterestGroupIds, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.Name, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory2.Name, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.Cities, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory2.Cities, new { @class = "form-control", @readonly = "readonly", @Value = "Санкт-Петербург" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.Gender, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.RadioButtonFor(m => m.Auditory2.Gender, "0", new { @class = "radio-inline", @checked = true })
+                    @Html.Label("Не важно")
+                    @Html.RadioButtonFor(m => m.Auditory2.Gender, "1", new { @class = "radio-inline" })
+                    @Html.Label("Женский")
+                    @Html.RadioButtonFor(m => m.Auditory2.Gender, "2", new { @class = "radio-inline" })
+                    @Html.Label("Мужской")
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.AgesFrom, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory2.AgesFrom, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.AgesUpTo, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory2.AgesUpTo, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.InterestGroupIds, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory2.InterestGroupIds, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.ExcludeInterestGroupIds, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Auditory2.ExcludeInterestGroupIds, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-8">
+                <input type="submit" class="btn btn-default" value="Анализировать" />
+            </div>
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(function () {
+            $('#StartDate').datepicker({
+                dateFormat: "dd.mm.yy"
+            });
+            $('#EndDate').datepicker({
+                dateFormat: "dd.mm.yy"
+            });
+        });
+
+        $(function () {
+            disableAll();
+
+            $.getJSON("/Vk/GetAccounts")
+            .done(function (data) {
+                $.each(data.response, function (index, value) {
+                    var accountOption = $('<option>');
+                    accountOption.attr('value', value.account_id)
+                                 .text(value.account_name);
+
+                    if (index === 0) {
+                        $("#AccountId").attr("value", value.account_id);
+
+                        // Получение клиентов для рекламного кабинета
+                        getClients(value.account_id);
+                    }
+
+                    $('#AccountNames').append(accountOption);
+                });
+
+            });
+        });
+
+        $("#AccountNames").change(function () {
+            $("#AccountId").attr("value", $(this).val());
+
+            $("#Clients").prop('disabled', true);
+
+            getClients($(this).val());
+        });
+
+        $("#Clients").change(function () {
+            $("#ClientId").attr("value", $(this).val());
+        });
+
+        function getClients(accountId) {
+            $.getJSON("/Vk/GetClients", { accountId: accountId })
+                .done(function (clients) {
+                    $('#Clients').find('option').remove().end();
+
+                    var needToDisableClient = false;
+
+                    if (clients.error) {
+                        $("#ClientId").attr("value", "");
+                        // Получение групп ретаргета напрямую
+                    } else {
+                        $.each(clients.response, function (cIndex, cValue) {
+                            if (cIndex === 0) {
+                                $("#ClientId").attr("value", cValue.id);
+                            }
+
+                            var clientOption = $('<option>');
+                            clientOption.attr('value', cValue.id)
+                                       .text(cValue.name);
+
+                            $('#Clients').append(clientOption);
+                            if (!cValue.id)
+                                needToDisableClient = true;
+                        });
+                    }
+
+                    enableAll(needToDisableClient);
+                });
+        }
+
+        function disableAll() {
+            $("#AccountNames").prop('disabled', true);
+            $("#Clients").prop('disabled', true);
+        }
+
+        function enableAll(disableClient) {
+            $("#AccountNames").prop('disabled', false);
+            $("#Clients").prop('disabled', disableClient);
+        }
+    });
+</script>

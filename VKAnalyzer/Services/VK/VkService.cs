@@ -23,11 +23,11 @@ namespace VKAnalyzer.Services.VK
         private readonly VkMemasService _vkMemasService;
         private readonly VkSalesAnalysisService _vkSalesAnalysisService;
 
-        private readonly VkDatabaseService _vkDatabaseService;
+        private readonly VkDbService _vkDbService;
 
         public VkService()
         {
-            _vkDatabaseService = new VkDatabaseService();
+            _vkDbService = new VkDbService();
             _vkMemasService = new VkMemasService();
             _vkSalesAnalysisService = new VkSalesAnalysisService();
             RequestService = new VkRequestService();
@@ -42,7 +42,7 @@ namespace VKAnalyzer.Services.VK
             var result = _cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
                 model.EndDate, model.GroupId);
 
-            _vkDatabaseService.SaveCohortAnalyze(result, userId, model.Name, model.GroupId);
+            _vkDbService.SaveCohortAnalyze(result, userId, model.Name, model.GroupId);
         }
 
         public void AnalyzeSales(VkAnalyseSalesModel model, string accessToken, string userId)
@@ -59,7 +59,7 @@ namespace VKAnalyzer.Services.VK
                 var result = _cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
                 model.EndDate, model.GroupId);
 
-                _vkDatabaseService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);
+                _vkDbService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);
             }
             else
             {
@@ -67,7 +67,7 @@ namespace VKAnalyzer.Services.VK
                 var retargetsInfo = _vkSalesAnalysisService.CreateRetargets(analyzeModels, model.AccountId, model.ExcludeTargetGroup, AccessToken);
                 var result = _cohortAnalyser.AnalyzeAcitivitySalesWithRetargetsInfo(retargetsInfo, model.Step, model.StartDate, model.EndDate, model.GroupId);
 
-                _vkDatabaseService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);
+                _vkDbService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);
             }
         }
 
@@ -76,7 +76,7 @@ namespace VKAnalyzer.Services.VK
             AccessToken = accessToken;
             var result = _vkMemasService.Analyze(accessToken);
 
-            _vkDatabaseService.SaveMemas(result, userId);
+            _vkDbService.SaveMemas(result, userId);
         }
 
         private List<CohortAnalysisModel> GetPostsForAnalyze(string groupId, DateTime startDate, DateTime endDate,IEnumerable<string> buyers = null, bool excludeUsers = false)

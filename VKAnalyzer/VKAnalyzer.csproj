@@ -235,6 +235,7 @@
     <Compile Include="Models\EFModels\AccessTokenUserModel.cs" />
     <Compile Include="Models\EFModels\Groups.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\VKModels\AffinityIndex\AffinityIndexOptionsModel.cs" />
     <Compile Include="Models\VKModels\AnalyseResultsViewModel.cs" />
     <Compile Include="Models\VKModels\CohortAnalysysInputModel.cs" />
     <Compile Include="Models\VKModels\JsonModels\Ads.cs" />
@@ -246,12 +247,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\IAffinityIndexService.cs" />
     <Compile Include="Services\Interfaces\IVkBaseService.cs" />
+    <Compile Include="Services\Interfaces\IVkDatabaseService.cs" />
     <Compile Include="Services\Interfaces\IVkService.cs" />
     <Compile Include="Services\VK\AffinityIndexService.cs" />
     <Compile Include="Services\VK\VkAdsRequestService.cs" />
     <Compile Include="Services\VK\VkAuthService.cs" />
     <Compile Include="Services\VK\VkBaseService.cs" />
     <Compile Include="Services\VK\VkDatabaseService.cs" />
+    <Compile Include="Services\VK\VkDbService.cs" />
     <Compile Include="Services\VK\VkMemasService.cs" />
     <Compile Include="Services\VK\VkRequestService.cs" />
     <Compile Include="Services\VK\VkSalesAnalysisService.cs" />
@@ -381,12 +384,12 @@
     <Content Include="Views\CohortAnalysis\CohortAnalysis.cshtml" />
     <Content Include="Views\CohortAnalysis\Index.cshtml" />
     <Content Include="Views\CohortAnalysis\Result.cshtml" />
+    <Content Include="Views\AffinityIndex\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Logs\" />
     <Folder Include="Results\Memas\" />
-    <Folder Include="Views\AffinityIndex\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

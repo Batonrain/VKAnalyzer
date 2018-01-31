@@ -29,6 +29,7 @@ namespace VKAnalyzer.Utils
             builder.RegisterType<BaseDb>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<VkBaseService>().As<IVkBaseService>();
             builder.RegisterType<AffinityIndexService>().As<IAffinityIndexService>();
+            builder.RegisterType<VkDatabaseService>().As<IVkDatabaseService>();
 
             // создаем новый контейнер с теми зависимостями, которые определены выше
             var container = builder.Build();

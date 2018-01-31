@@ -13,20 +13,20 @@ namespace VKAnalyzer.Services.VK
     public class VkMemasService
     {
         private VkRequestService RequestService { get; set; }
-        private VkDatabaseService DatabaseService { get; set; }
+        private VkDbService DbService { get; set; }
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public VkMemasService()
         {
             RequestService = new VkRequestService();
-            DatabaseService = new VkDatabaseService();
+            DbService = new VkDbService();
         }
 
         public MemasAnalyzeResultModel Analyze(string accessToken)
         {
             var result = new MemasAnalyzeResultModel();
-            var groups = DatabaseService.GetListOfGroups();
+            var groups = DbService.GetListOfGroups();
             var rawPosts = new List<XDocument>();
 
             var memasPosts = new List<MemasPost>();
