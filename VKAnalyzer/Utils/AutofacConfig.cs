@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
+using Hangfire;
 using VKAnalyzer.Controllers;
 using VKAnalyzer.Controllers.Vk;
 using VKAnalyzer.DBContexts;
@@ -26,14 +27,19 @@ namespace VKAnalyzer.Utils
             builder.RegisterType<ServiceController>().InstancePerRequest();
 
             // регистрируем споставление типов
-            builder.RegisterType<BaseDb>().AsImplementedInterfaces().InstancePerLifetimeScope();
-            builder.RegisterType<VkBaseService>().As<IVkBaseService>();
-            builder.RegisterType<AffinityIndexService>().As<IAffinityIndexService>();
-            builder.RegisterType<VkDatabaseService>().As<IVkDatabaseService>();
+            builder.RegisterType<BaseDb>().AsImplementedInterfaces();
+            builder.RegisterType<VkBaseService>().InstancePerLifetimeScope();
+            builder.RegisterType<VkDatabaseService>().InstancePerLifetimeScope();
+            builder.RegisterType<AffinityIndexService>().InstancePerLifetimeScope();
+
+            builder.RegisterType<VkAdsRequestService>().InstancePerLifetimeScope();
+            builder.RegisterType<VkUrlService>().InstancePerLifetimeScope();
 
             // создаем новый контейнер с теми зависимостями, которые определены выше
             var container = builder.Build();
 
+            GlobalConfiguration.Configuration.UseAutofacActivator(container, false);
+            
             // установка сопоставителя зависимостей
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
         }

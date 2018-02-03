@@ -7,15 +7,16 @@ using NLog;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels.AffinityIndex;
 using VKAnalyzer.Services.Interfaces;
+using VKAnalyzer.Services.VK;
 
 namespace VKAnalyzer.Controllers.Vk
 {
     public class AffinityIndexController : Controller
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private IAffinityIndexService _affinityIndexService;
+        private readonly AffinityIndexService _affinityIndexService;
 
-        public AffinityIndexController(IAffinityIndexService affinityIndexService)
+        public AffinityIndexController(AffinityIndexService affinityIndexService)
         {
             _affinityIndexService = affinityIndexService;
         }
@@ -35,7 +36,7 @@ namespace VKAnalyzer.Controllers.Vk
                 var audiencesUnderAnalysis = new List<AffinityIndexOptionsAuditoryModel>() {model.Auditory1};
                 var comparativeAudience = new List<AffinityIndexOptionsAuditoryModel>() { model.Auditory2 };
 
-                BackgroundJob.Enqueue(() => _affinityIndexService.Start(audiencesUnderAnalysis, comparativeAudience, accessToken, userId));
+                BackgroundJob.Enqueue(() => _affinityIndexService.Start(audiencesUnderAnalysis, model.Auditory2, model.AccountId, model.ClientId, accessToken, userId));
 
                 ViewBag.Message = "Аффинити Индекс";
 

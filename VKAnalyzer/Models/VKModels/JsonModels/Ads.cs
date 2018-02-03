@@ -37,4 +37,36 @@
         public int id { get; set; }
         public string name { get; set; }
     }
+
+    public class VkCampaignSuccess
+    {
+        public int id { get; set; }
+
+        public Error Error { get; set; }
+    }
+
+    public class VkAdSuccess
+    {
+        public int id { get; set; }
+
+        public Error Error { get; set; }
+    }
+
+    public class VkAdTargetInfo
+    {
+        public int id { get; set; }
+        public string campaign_id { get; set; }
+        public int age_from { get; set; }
+        public int age_to { get; set; }
+        public string groups { get; set; }
+        public int count { get; set; }
+
+        public Error Error { get; set; }
+    }
+
+    public class Error
+    {
+        public int error_code { get; set; }
+        public string error_msg { get; set; }
+    }
 }

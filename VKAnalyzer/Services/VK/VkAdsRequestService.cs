@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 using NLog;
-using VKAnalyzer.DBContexts;
 
 namespace VKAnalyzer.Services.VK
 {
@@ -52,6 +51,35 @@ namespace VKAnalyzer.Services.VK
                     {
                         return result;
                     }
+                }
+            }
+        }
+
+        public string RequestJs(string requestString)
+        {
+            var tryingCount = 10;
+            while (true)
+            {
+                Thread.Sleep(SleepTime);
+                using (var wc = new WebClient())
+                {
+                    var result = wc.DownloadData(requestString);
+                    var json = Encoding.UTF8.GetString(result);
+
+                    if (!json.Contains("error_code"))
+                    {
+                        return json;
+                    }
+                    else
+                    {
+                        tryingCount--;
+
+                        if (tryingCount == 0)
+                        {
+                            return json;
+                        }
+                    }
+                    
                 }
             }
         }
@@ -171,14 +199,6 @@ namespace VKAnalyzer.Services.VK
             }
         }
 
-        
 
-        private string GetUpdatedAccessToken()
-        {
-            var context = new BaseDb();
-            var result = context.UserAccessTokens.FirstOrDefault(us => us.VkUserId == UserId);
-
-            return result.AccessToken;
-        }
     }
 }

@@ -5,6 +5,6 @@ namespace VKAnalyzer.Services.Interfaces
 {
     public interface IAffinityIndexService
     {
-        void Start(IEnumerable<AffinityIndexOptionsAuditoryModel> audiencesUnderAnalysis, IEnumerable<AffinityIndexOptionsAuditoryModel> comparativeAudience, string accessToken, string userId);
+        void Start(IEnumerable<AffinityIndexOptionsAuditoryModel> audiencesUnderAnalysis, IEnumerable<AffinityIndexOptionsAuditoryModel> comparativeAudience, string accountId, string clientId, string accessToken, string userId);
     }
 }
