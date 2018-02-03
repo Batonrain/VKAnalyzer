@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels;
+using VKAnalyzer.Models.VKModels.AffinityIndex;
 using VKAnalyzer.Models.VKModels.Memas;
 
 namespace VKAnalyzer.Services.VK
@@ -96,6 +97,27 @@ namespace VKAnalyzer.Services.VK
 
                 var cntx = new BaseDb();
                 cntx.VkCohortSalesAnalyseResults.Add(new VkCohortSalesAnalyseResults
+                {
+                    UserId = userId,
+                    Name = name,
+                    CollectionDate = DateTime.Now,
+                    GroupId = groupId,
+                    Result = rr
+                });
+                cntx.SaveChanges();
+            }
+        }
+
+        public void SaveAddinityIndex(AffinityIndexResult result, string userId, string name, string groupId)
+        {
+            using (var ms = new MemoryStream())
+            {
+                var binaryFormatter = new BinaryFormatter();
+                binaryFormatter.Serialize(ms, result);
+                byte[] rr = ms.GetBuffer();
+
+                var cntx = new BaseDb();
+                cntx.VkAffinityIndexResults.Add(new VkAffinityIndexResults
                 {
                     UserId = userId,
                     Name = name,

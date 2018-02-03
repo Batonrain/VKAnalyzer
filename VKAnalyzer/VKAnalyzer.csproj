@@ -239,7 +239,9 @@
     <Compile Include="Models\EFModels\AccessTokenUserModel.cs" />
     <Compile Include="Models\EFModels\Groups.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\VKModels\AffinityIndexResult.cs" />
     <Compile Include="Models\VKModels\AffinityIndex\AffinityIndexOptionsModel.cs" />
+    <Compile Include="Models\VKModels\AffinityIndex\VKCohortAnalyseResult.cs" />
     <Compile Include="Models\VKModels\AnalyseResultsViewModel.cs" />
     <Compile Include="Models\VKModels\CohortAnalysysInputModel.cs" />
     <Compile Include="Models\VKModels\JsonModels\Ads.cs" />

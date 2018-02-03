@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using VKAnalyzer.Models.VKModels;
 using VKAnalyzer.Models.VKModels.AffinityIndex;
 using VKAnalyzer.Models.VKModels.JsonModels;
 
@@ -101,7 +103,7 @@ namespace VKAnalyzer.Services.VK
                 }
             }
 
-
+            result.DateOfCollection = DateTime.Now;
         }
 
         private VkCampaignSuccess CreateCampaign(string accountId, string clientId, string accessToken, string name)
@@ -140,29 +142,6 @@ namespace VKAnalyzer.Services.VK
             var categories = _vkBaseService.GetJsonFromResponse(_vkDatabaseService.GetInterestsCategories(accessToken));
             var accsDeserialized = JsonConvert.DeserializeObject<List<VkInterestCategory>>(categories);
             return accsDeserialized;
-        }
-    }
-
-    public class AffinityIndexCounter
-    {
-        public int CategoryId { get; set; }
-
-        public string Category { get; set; }
-
-        public decimal Audience1Result { get; set; }
-
-        public decimal Audience2Result { get; set; }
-    }
-
-    public class AffinityIndexResult
-    {
-        public string ErrorMessage { get; set; }
-
-        public List<AffinityIndexCounter> Results { get; set; }
-
-        public AffinityIndexResult()
-        {
-            Results = new List<AffinityIndexCounter>();
         }
     }
 }
