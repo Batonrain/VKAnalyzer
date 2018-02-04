@@ -5,29 +5,43 @@
 }
 
 <h2>Результат</h2>
+<h2>@Model.Audience / @Model.ComparativeAudience</h2>
 
-<table class="table table-responsive table-bordered">
-    <thead>
-        <tr>
-            <th>Категория</th>
-            <th>Индекс</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var result in Model.Results.Where(res => res.Audience1Result != 0))
-        {
+
+@if (string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <table class="table table-responsive table-bordered">
+        <thead>
             <tr>
-                <th>
-                    @result.Category
-                </th>
-                <th>
-                    @{
-                        var c = (result.Audience1Result/result.Audience2Result) * 100;
-                        var index = string.Format("{0}%", c.ToString().Substring(0, 3));
-                    }
-                    @index
-                </th>
+                <th>Категория</th>
+                <th>Индекс</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var result in Model.Results.Where(res => res.Audience1Result != 0).OrderByDescending(o => o.Index))
+            {
+                <tr>
+                    <th>
+                        @result.Category
+                    </th>
+                    <th>
+                        @{
+                            var c = result.Index*100;
+                            var index = string.Format("{0}%", c.ToString().Substring(0, 3).Replace(".", ""));
+                        }
+                        @index
+                    </th>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div>
+        @Model.ErrorMessage
+    </div>
+}
+
+
+

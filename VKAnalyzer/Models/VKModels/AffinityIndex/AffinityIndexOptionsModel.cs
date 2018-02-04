@@ -42,7 +42,6 @@ namespace VKAnalyzer.Models.VKModels.AffinityIndex
         [Display(Name = "Возраст до")]
         public int AgesUpTo { get; set; }
 
-        [Required]
         [Display(Name = "Сообщества по интересам")]
         public string InterestGroupIds { get; set; }
 

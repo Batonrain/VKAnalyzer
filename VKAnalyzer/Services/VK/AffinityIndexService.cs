@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
-using NLog;
-using VKAnalyzer.Models.VKModels;
 using VKAnalyzer.Models.VKModels.AffinityIndex;
 using VKAnalyzer.Models.VKModels.JsonModels;
 using WebGrease.Css.Extensions;
@@ -45,12 +43,12 @@ namespace VKAnalyzer.Services.VK
             }));
 
             //Сравнительная аудитория
-
-            var commonСomparativeCampaign = CreateCampaign(accountId, clientId, accessToken, "common");
+            //Общая кампания для запроса
+            var affinityIndexCampaign = CreateCampaign(accountId, clientId, accessToken, "common");
 
             var allCategories = string.Join(",", categories.Select(c => c.id));
 
-            var commonСomparativeAd = CreateAd(accountId, accessToken, commonСomparativeCampaign.id,
+            var commonСomparativeAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
                 comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.InterestGroupIds,
                 comparativeAudience.ExcludeInterestGroupIds, allCategories);
 
@@ -70,8 +68,8 @@ namespace VKAnalyzer.Services.VK
                 {
                     result.Audience = audience.Name;
 
-                    var commonCampaign = CreateCampaign(accountId, clientId, accessToken, "common");
-                    var commonAd = CreateAd(accountId, accessToken, commonCampaign.id,
+                    //var commonCampaign = CreateCampaign(accountId, clientId, accessToken, "common");
+                    var commonAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
                         audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
                         audience.ExcludeInterestGroupIds, allCategories);
 
@@ -83,9 +81,9 @@ namespace VKAnalyzer.Services.VK
 
                     foreach (var category in categories)
                     {
-                        var categoryCampaign = CreateCampaign(accountId, clientId, accessToken, string.Format("common_{0}", audience.Name));
+                        //var categoryCampaign = CreateCampaign(accountId, clientId, accessToken, string.Format("common_{0}", audience.Name));
 
-                        var categoryAd = CreateAd(accountId, accessToken, categoryCampaign.id,
+                        var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
                         audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
                         audience.ExcludeInterestGroupIds, category.id.ToString());
 
@@ -109,9 +107,9 @@ namespace VKAnalyzer.Services.VK
                         continue;
                     }
 
-                    var categoryCampaign = CreateCampaign(accountId, clientId, accessToken, string.Format("common_{0}", comparativeAudience.Name));
+                    //var categoryCampaign = CreateCampaign(accountId, clientId, accessToken, string.Format("common_{0}", comparativeAudience.Name));
 
-                    var categoryAd = CreateAd(accountId, accessToken, categoryCampaign.id,
+                    var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
                     comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.InterestGroupIds,
                     comparativeAudience.ExcludeInterestGroupIds, category.id.ToString());
 
