@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace VKAnalyzer.Models.VKModels
+namespace VKAnalyzer.Models.VKModels.AffinityIndex
 {
     [Serializable]
     public class AffinityIndexResult
     {
         public string ErrorMessage { get; set; }
+
+        public string Audience { get; set; }
+
+        public string ComparativeAudience { get; set; }
 
         public List<AffinityIndexCounter> Results { get; set; }
 
@@ -28,5 +32,7 @@ namespace VKAnalyzer.Models.VKModels
         public decimal Audience1Result { get; set; }
 
         public decimal Audience2Result { get; set; }
+
+        public decimal Index { get; set; }
     }
 }

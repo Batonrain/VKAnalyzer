@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using VKAnalyzer.Models.VKModels.JsonModels;
 using VKAnalyzer.Services.Interfaces;
 
 namespace VKAnalyzer.Services.VK
@@ -25,12 +29,12 @@ namespace VKAnalyzer.Services.VK
             Thread.Sleep(SleepTime);
             using (var wc = new WebClient())
             {
-                var requestUrl = String.Format("https://api.vk.com/api.php?oauth=1&method=ads.getCategories&access_token={0}", accessToken);
-
+                var requestUrl = String.Format("https://api.vk.com/api.php?oauth=1&method=ads.getSuggestions&section=interest_categories&lang=ru&access_token={0}", accessToken);
                 var result = wc.DownloadData(requestUrl);
                 var json = Encoding.UTF8.GetString(result);
+                var parsed = JObject.Parse(json);
 
-                return json;
+                return parsed["response"].ToString();
             }
         }
     }

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
+using NLog;
 using VKAnalyzer.Models.VKModels;
 using VKAnalyzer.Models.VKModels.AffinityIndex;
 using VKAnalyzer.Models.VKModels.JsonModels;
+using WebGrease.Css.Extensions;
 
 namespace VKAnalyzer.Services.VK
 {
@@ -14,96 +18,146 @@ namespace VKAnalyzer.Services.VK
         private VkBaseService _vkBaseService;
         private VkAdsRequestService _vkAdsRequestService;
         private VkUrlService _vkUrlService;
+        private VkDbService _vkDbService;
 
-        public AffinityIndexService(VkDatabaseService vkDatabaseService, VkBaseService vkBaseService, VkAdsRequestService vkAdsRequestService, VkUrlService vkUrlService)
+        public AffinityIndexService(VkDatabaseService vkDatabaseService, VkBaseService vkBaseService, VkAdsRequestService vkAdsRequestService, VkUrlService vkUrlService, VkDbService vkDbService)
         {
             _vkDatabaseService = vkDatabaseService;
             _vkBaseService = vkBaseService;
             _vkAdsRequestService = vkAdsRequestService;
             _vkUrlService = vkUrlService;
+            _vkDbService = vkDbService;
         }
 
-        public void Start(IEnumerable<AffinityIndexOptionsAuditoryModel> audiencesUnderAnalysis, AffinityIndexOptionsAuditoryModel comparativeAudience, string accountId, string clientId, string accessToken, string userId)
+        public void Start(IEnumerable<AffinityIndexOptionsAuditoryModel> audiencesUnderAnalysis, AffinityIndexOptionsAuditoryModel comparativeAudience, string accountId, string clientId, string accessToken, string userId, string name)
         {
-            var result = new AffinityIndexResult();
+            var result = new AffinityIndexResult
+            {
+                ComparativeAudience = comparativeAudience.Name
+            };
 
             var categories = GetCategories(accessToken);
 
-            foreach (var audience in audiencesUnderAnalysis)
+            categories.ForEach(cat => result.Results.Add(new AffinityIndexCounter
             {
-                var commonCampaign = CreateCampaign(accountId, clientId, accessToken, "common");
-                var commonAd = CreateAd(accountId, accessToken, commonCampaign.id,
-                    audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
-                    audience.ExcludeInterestGroupIds);
-
-                var commonTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", commonAd.id), accessToken);
-                if (commonTargeting.Error != null)
-                {
-                    result.ErrorMessage =
-                        string.Format(
-                            "Выбранные Вами параметры настроек для аудитории {0} содержат в себе слишком мало людей для анализа.", audience.Name);
-                    continue;
-                }
-                
-                foreach (var category in categories)
-                {
-                    var categoryCampaign = CreateCampaign(accountId, clientId, accessToken, string.Format("common_{0}", audience.Name));
-
-                    var categoryAd = CreateAd(accountId, accessToken, categoryCampaign.id,
-                    audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
-                    audience.ExcludeInterestGroupIds, category.id.ToString());
-
-                    if (categoryAd.Error != null)
-                    {
-                        result.ErrorMessage =
-                            string.Format(
-                                "Выбранные Вами параметры настроек для аудитории {0} содержат в себе слишком мало людей для анализа.", audience.Name);
-                        continue;
-                    }
-
-                    var categoryTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", categoryAd.id), accessToken);
-                    result.Results.Add(new AffinityIndexCounter
-                    {
-                        Category = category.name,
-                        CategoryId = category.id,
-                        Audience1Result = (decimal)categoryTargeting.count / (decimal)commonTargeting.count
-                    });
-                }
-            }
+                Category = cat.name,
+                CategoryId = cat.id
+            }));
 
             //Сравнительная аудитория
 
             var commonСomparativeCampaign = CreateCampaign(accountId, clientId, accessToken, "common");
 
+            var allCategories = string.Join(",", categories.Select(c => c.id));
+
             var commonСomparativeAd = CreateAd(accountId, accessToken, commonСomparativeCampaign.id,
                 comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.InterestGroupIds,
-                comparativeAudience.ExcludeInterestGroupIds);
+                comparativeAudience.ExcludeInterestGroupIds, allCategories);
 
             var commonСomparativeTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", commonСomparativeAd.id), accessToken);
-            if (commonСomparativeTargeting.Error != null)
+            if (!string.IsNullOrEmpty(commonСomparativeTargeting.error_desc))
             {
                 result.ErrorMessage =
                     string.Format(
                         "Выбранные Вами параметры настроек для аудитории {0} содержат в себе слишком мало людей для анализа.", comparativeAudience.Name);
             }
 
-            foreach (var category in categories)
+            //Анализируемые аудтиории
+
+            if (string.IsNullOrEmpty(result.ErrorMessage))
             {
-                var categoryCampaign = CreateCampaign(accountId, clientId, accessToken, string.Format("common_{0}", comparativeAudience.Name));
-
-                var categoryAd = CreateAd(accountId, accessToken, categoryCampaign.id,
-                comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.InterestGroupIds,
-                comparativeAudience.ExcludeInterestGroupIds, category.id.ToString());
-
-                var categoryTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", categoryAd.id), accessToken);
-
-                if (result.Results.Any(f => f.CategoryId == category.id))
+                foreach (var audience in audiencesUnderAnalysis)
                 {
+                    result.Audience = audience.Name;
+
+                    var commonCampaign = CreateCampaign(accountId, clientId, accessToken, "common");
+                    var commonAd = CreateAd(accountId, accessToken, commonCampaign.id,
+                        audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
+                        audience.ExcludeInterestGroupIds, allCategories);
+
+                    var commonTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", commonAd.id), accessToken);
+                    if (!string.IsNullOrEmpty(commonTargeting.error_desc))
+                    {
+                        continue;
+                    }
+
+                    foreach (var category in categories)
+                    {
+                        var categoryCampaign = CreateCampaign(accountId, clientId, accessToken, string.Format("common_{0}", audience.Name));
+
+                        var categoryAd = CreateAd(accountId, accessToken, categoryCampaign.id,
+                        audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
+                        audience.ExcludeInterestGroupIds, category.id.ToString());
+
+                        if (!string.IsNullOrEmpty(categoryAd.error_desc))
+                        {
+                            continue;
+                        }
+
+                        var categoryTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", categoryAd.id), accessToken);
+
+                        result.Results.First(f => f.CategoryId == category.id).Audience1Result =
+                            (decimal) categoryTargeting.count/(decimal) commonTargeting.count;
+                    }
+                }
+
+                //Выгрузка категорий сравнительной аудитории
+                foreach (var category in categories)
+                {
+                    if (result.Results.All(f => f.Audience1Result == 0))
+                    {
+                        continue;
+                    }
+
+                    var categoryCampaign = CreateCampaign(accountId, clientId, accessToken, string.Format("common_{0}", comparativeAudience.Name));
+
+                    var categoryAd = CreateAd(accountId, accessToken, categoryCampaign.id,
+                    comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.InterestGroupIds,
+                    comparativeAudience.ExcludeInterestGroupIds, category.id.ToString());
+
+                    if (!string.IsNullOrEmpty(categoryAd.error_desc))
+                    {
+                        continue;
+                    }
+
+                    var categoryTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", categoryAd.id), accessToken);
+
                     result.Results.First(f => f.CategoryId == category.id).Audience2Result = (decimal)categoryTargeting.count / (decimal)commonСomparativeTargeting.count;
+                    
+                }
+
+                result.Results.Where(w => w.Audience1Result != 0).ForEach(f => f.Index = f.Audience1Result / f.Audience2Result);
+            }
+            
+            result.DateOfCollection = DateTime.Now;
+
+            _vkDbService.SaveAddinityIndex(result, userId, name);
+        }
+
+        public List<AffinityIndexResultsViewModel> GetResults(string userId)
+        {
+            return _vkDbService.GetAffinityIndexResults(userId);
+        }
+
+        public AffinityIndexResult GetResult(int id)
+        {
+            var resultDb = _vkDbService.GetAffinityIndexResult(id);
+
+            var result = new AffinityIndexResult();
+            try
+            {
+                var formatter = new BinaryFormatter();
+                using (var ms = new MemoryStream(resultDb.Result))
+                {
+                    result = (AffinityIndexResult)formatter.Deserialize(ms);
                 }
             }
+            catch (Exception ex)
+            {
 
-            result.DateOfCollection = DateTime.Now;
+            }
+
+            return result;
         }
 
         private VkCampaignSuccess CreateCampaign(string accountId, string clientId, string accessToken, string name)
@@ -139,8 +193,10 @@ namespace VKAnalyzer.Services.VK
 
         private List<VkInterestCategory> GetCategories(string accessToken)
         {
-            var categories = _vkBaseService.GetJsonFromResponse(_vkDatabaseService.GetInterestsCategories(accessToken));
+            var categories = _vkDatabaseService.GetInterestsCategories(accessToken);
+
             var accsDeserialized = JsonConvert.DeserializeObject<List<VkInterestCategory>>(categories);
+
             return accsDeserialized;
         }
     }

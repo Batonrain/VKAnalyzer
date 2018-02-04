@@ -27,5 +27,11 @@ namespace VKAnalyzer.Services.VK
             var parsed = JObject.Parse(json);
             return parsed["response"].ToString();
         }
+
+        public string GetJsonCategoriesFromResponse(string json)
+        {
+            var parsed = JObject.Parse(json);
+            return parsed["response"]["v2"].ToString();
+        }
     }
 }

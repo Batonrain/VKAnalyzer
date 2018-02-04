@@ -108,7 +108,7 @@ namespace VKAnalyzer.Services.VK
             }
         }
 
-        public void SaveAddinityIndex(AffinityIndexResult result, string userId, string name, string groupId)
+        public void SaveAddinityIndex(AffinityIndexResult result, string userId, string name)
         {
             using (var ms = new MemoryStream())
             {
@@ -122,11 +122,31 @@ namespace VKAnalyzer.Services.VK
                     UserId = userId,
                     Name = name,
                     CollectionDate = DateTime.Now,
-                    GroupId = groupId,
                     Result = rr
                 });
                 cntx.SaveChanges();
             }
+        }
+
+        public List<AffinityIndexResultsViewModel> GetAffinityIndexResults(string userId)
+        {
+            return _dbContext
+                   .VkAffinityIndexResults
+                   .Where(x => x.UserId == userId)
+                   .OrderByDescending(order => order.CollectionDate)
+                   .Select(rest => new AffinityIndexResultsViewModel
+                   {
+                       Id = rest.Id,
+                       Name = rest.Name,
+                       DateOfCollection = rest.CollectionDate,
+                       AnalyseType = "Аффинити Индекс"
+                   })
+                   .ToList();
+        }
+
+        public VkAffinityIndexResults GetAffinityIndexResult(int id)
+        {
+            return  _dbContext.VkAffinityIndexResults.FirstOrDefault(rest => rest.Id == id);
         }
     }
 }

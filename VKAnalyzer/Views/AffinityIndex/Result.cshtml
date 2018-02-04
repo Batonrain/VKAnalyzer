@@ -1,0 +1,33 @@
+﻿@model VKAnalyzer.Models.VKModels.AffinityIndex.AffinityIndexResult
+@{
+    ViewBag.Title = "Result";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Результат</h2>
+
+<table class="table table-responsive table-bordered">
+    <thead>
+        <tr>
+            <th>Категория</th>
+            <th>Индекс</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in Model.Results.Where(res => res.Audience1Result != 0))
+        {
+            <tr>
+                <th>
+                    @result.Category
+                </th>
+                <th>
+                    @{
+                        var c = (result.Audience1Result/result.Audience2Result) * 100;
+                        var index = string.Format("{0}%", c.ToString().Substring(0, 3));
+                    }
+                    @index
+                </th>
+            </tr>
+        }
+    </tbody>
+</table>

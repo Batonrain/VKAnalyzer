@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLog;
+using VKAnalyzer.Models.VKModels.JsonModels;
 
 namespace VKAnalyzer.Services.VK
 {
@@ -72,6 +76,18 @@ namespace VKAnalyzer.Services.VK
                     }
                     else
                     {
+                        var error = JsonConvert.DeserializeObject<List<Error>>(JObject.Parse(json)["response"].ToString()).FirstOrDefault();
+
+                        if (error.error_code == 603)
+                        {
+                            return json;
+                        }
+
+                        if (error.error_code == 9)
+                        {
+                            Thread.Sleep(SleepTimeLong);
+                        }
+
                         tryingCount--;
 
                         if (tryingCount == 0)

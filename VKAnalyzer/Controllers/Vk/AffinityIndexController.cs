@@ -6,7 +6,6 @@ using Microsoft.AspNet.Identity;
 using NLog;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels.AffinityIndex;
-using VKAnalyzer.Services.Interfaces;
 using VKAnalyzer.Services.VK;
 
 namespace VKAnalyzer.Controllers.Vk
@@ -34,9 +33,8 @@ namespace VKAnalyzer.Controllers.Vk
                 var accessToken = GetCurrentUserAccessToken();
                 var userId = User.Identity.GetUserId();
                 var audiencesUnderAnalysis = new List<AffinityIndexOptionsAuditoryModel>() {model.Auditory1};
-                var comparativeAudience = new List<AffinityIndexOptionsAuditoryModel>() { model.Auditory2 };
 
-                BackgroundJob.Enqueue(() => _affinityIndexService.Start(audiencesUnderAnalysis, model.Auditory2, model.AccountId, model.ClientId, accessToken, userId));
+                BackgroundJob.Enqueue(() => _affinityIndexService.Start(audiencesUnderAnalysis, model.Auditory2, model.AccountId, model.ClientId, accessToken, userId, model.Name));
 
                 ViewBag.Message = "Аффинити Индекс";
 
@@ -46,9 +44,19 @@ namespace VKAnalyzer.Controllers.Vk
             return RedirectToAction("Index");
         }
 
+        public ActionResult Results()
+        {
+            var userId = User.Identity.GetUserId();
+            var model = _affinityIndexService.GetResults(userId);
+
+            return View(model);
+        } 
+
         public ActionResult Result(int id)
         {
-            return View();
+            var result = _affinityIndexService.GetResult(id);
+
+            return View(result);
         }
 
         private string GetCurrentUserAccessToken()

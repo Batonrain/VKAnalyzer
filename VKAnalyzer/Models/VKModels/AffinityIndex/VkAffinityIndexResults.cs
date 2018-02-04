@@ -16,8 +16,6 @@ namespace VKAnalyzer.Models.VKModels.AffinityIndex
 
         public DateTime CollectionDate { get; set; }
 
-        public string GroupId { get; set; }
-
         public byte[] Result { get; set; }
     }
 }

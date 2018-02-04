@@ -1,4 +1,6 @@
-﻿namespace VKAnalyzer.Models.VKModels.JsonModels
+﻿using System.Collections.Generic;
+
+namespace VKAnalyzer.Models.VKModels.JsonModels
 {
     public class AdsAccount
     {
@@ -32,7 +34,21 @@
         public string domain { get; set; }
     }
 
+    public class VkAllInterestCategory
+    {
+        public List<VkInterestCategory> v1 { get; set; }
+
+        public List<VkInterestCategory> v2 { get; set; }
+    }
+
     public class VkInterestCategory
+    {
+        public int id { get; set; }
+
+        public string name { get; set; }
+    }
+
+    public class VkInterestSubcategory
     {
         public int id { get; set; }
         public string name { get; set; }
@@ -42,14 +58,16 @@
     {
         public int id { get; set; }
 
-        public Error Error { get; set; }
+        public int error_code { get; set; }
+        public string error_desc { get; set; }
     }
 
     public class VkAdSuccess
     {
         public int id { get; set; }
 
-        public Error Error { get; set; }
+        public int error_code { get; set; }
+        public string error_desc { get; set; }
     }
 
     public class VkAdTargetInfo
@@ -60,13 +78,13 @@
         public int age_to { get; set; }
         public string groups { get; set; }
         public int count { get; set; }
-
-        public Error Error { get; set; }
+        public int error_code { get; set; }
+        public string error_desc { get; set; }
     }
 
     public class Error
     {
         public int error_code { get; set; }
-        public string error_msg { get; set; }
+        public string error_desc { get; set; }
     }
 }
