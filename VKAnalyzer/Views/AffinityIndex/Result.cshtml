@@ -18,7 +18,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var result in Model.Results.Where(res => res.Audience1Result != 0).OrderByDescending(o => o.Index))
+            @foreach (var result in Model.Results.OrderByDescending(o => o.Index))
             {
                 <tr>
                     <th>
@@ -26,8 +26,14 @@
                     </th>
                     <th>
                         @{
-                            var c = result.Index*100;
-                            var index = string.Format("{0}%", c.ToString().Substring(0, 3).Replace(".", ""));
+                            var index = "N/A";
+                            
+                            if (result.Index != 0)
+                            {
+                                var c = result.Index*100;
+                            index = string.Format("{0}%", c.ToString().Substring(0, 3).Replace(".", ""));
+                            }
+                            
                         }
                         @index
                     </th>

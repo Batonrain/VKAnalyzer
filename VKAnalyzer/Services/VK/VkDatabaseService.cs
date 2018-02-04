@@ -1,22 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VKAnalyzer.Models.VKModels.JsonModels;
-using VKAnalyzer.Services.Interfaces;
 
 namespace VKAnalyzer.Services.VK
 {
-    public class VkDatabaseService : IVkDatabaseService
+    public class VkDatabaseService
     {
         private const int SleepTime = 5000;
 
-        public string GetCities()
+        public string GetCities(string accessToken, int country = 1)
         {
-            throw new NotImplementedException();
+            Thread.Sleep(SleepTime);
+            using (var wc = new WebClient())
+            {
+                var requestUrl = String.Format("https://api.vk.com/api.php?oauth=1&method=ads.getSuggestions&section=cities&country=1&lang=ru&access_token={0}", accessToken);
+                var result = wc.DownloadData(requestUrl);
+                var json = Encoding.UTF8.GetString(result);
+
+                return json;
+            }
         }
 
         public string GetUniversities()

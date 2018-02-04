@@ -14,11 +14,13 @@ namespace VKAnalyzer.Controllers
 
         private readonly BaseDb _dbContext;
         private readonly VkService _vkService;
+        private readonly VkDatabaseService _vkDatabaseService;
 
         public VkController()
         {
             _dbContext = new BaseDb();
             _vkService = new VkService();
+            _vkDatabaseService = new VkDatabaseService();
         }
 
         public ActionResult Index()
@@ -84,6 +86,12 @@ namespace VKAnalyzer.Controllers
         {
             var accessToken = GetCurrentUserAccessToken();
             return _vkService.GetTargetGroups(accountId, clientId, accessToken);
+        }
+
+        public string GetCities(int country = 1)
+        {
+            var accessToken = GetCurrentUserAccessToken();
+            return _vkDatabaseService.GetCities(accessToken, country);
         }
 
         private string GetCurrentUserAccessToken()

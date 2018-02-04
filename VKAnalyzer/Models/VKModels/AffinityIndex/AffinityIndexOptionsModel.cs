@@ -12,7 +12,6 @@ namespace VKAnalyzer.Models.VKModels.AffinityIndex
         [Display(Name = "Агентский кабинет")]
         public string AccountId { get; set; }
 
-        [Required]
         [Display(Name = "Клиент рекламного кабинета")]
         public string ClientId { get; set; }
 
@@ -32,7 +31,7 @@ namespace VKAnalyzer.Models.VKModels.AffinityIndex
         public string Gender { get; set; }
 
         [Display(Name = "Город")]
-        public string Cities { get; set; }
+        public string City { get; set; }
 
         [Required]
         [Display(Name = "Возраст от")]

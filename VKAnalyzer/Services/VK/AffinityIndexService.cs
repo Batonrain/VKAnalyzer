@@ -68,7 +68,6 @@ namespace VKAnalyzer.Services.VK
                 {
                     result.Audience = audience.Name;
 
-                    //var commonCampaign = CreateCampaign(accountId, clientId, accessToken, "common");
                     var commonAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
                         audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
                         audience.ExcludeInterestGroupIds, allCategories);
@@ -81,8 +80,6 @@ namespace VKAnalyzer.Services.VK
 
                     foreach (var category in categories)
                     {
-                        //var categoryCampaign = CreateCampaign(accountId, clientId, accessToken, string.Format("common_{0}", audience.Name));
-
                         var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
                         audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
                         audience.ExcludeInterestGroupIds, category.id.ToString());
@@ -107,8 +104,6 @@ namespace VKAnalyzer.Services.VK
                         continue;
                     }
 
-                    //var categoryCampaign = CreateCampaign(accountId, clientId, accessToken, string.Format("common_{0}", comparativeAudience.Name));
-
                     var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
                     comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.InterestGroupIds,
                     comparativeAudience.ExcludeInterestGroupIds, category.id.ToString());
@@ -124,7 +119,7 @@ namespace VKAnalyzer.Services.VK
                     
                 }
 
-                result.Results.Where(w => w.Audience1Result != 0).ForEach(f => f.Index = f.Audience1Result / f.Audience2Result);
+                result.Results.Where(w => w.Audience1Result != 0 && w.Audience2Result != 0).ForEach(f => f.Index = f.Audience1Result / f.Audience2Result);
             }
             
             result.DateOfCollection = DateTime.Now;
