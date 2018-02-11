@@ -38,8 +38,14 @@ namespace VKAnalyzer.Models.VKModels.AffinityIndex
         [Display(Name = "Возраст до:")]
         public int AgesUpTo { get; set; }
 
-        [Display(Name = "Город:")]
-        public string City { get; set; }
+        [Display(Name = "Страна:")]
+        public string Country { get; set; }
+
+        [Display(Name = "Города:")]
+        public string Cities { get; set; }
+
+        [Display(Name = "За исключением:")]
+        public string ExcludeCities { get; set; }
 
         [Display(Name = "Университет:")]
         public string Univercity { get; set; }
@@ -51,9 +57,9 @@ namespace VKAnalyzer.Models.VKModels.AffinityIndex
         public string ExcludeInterestGroupIds { get; set; }
 
         [Display(Name = "Аудитории ретаргетинга:")]
-        public string RetargetGroupId { get; set; }
+        public string RetargetGroupIds { get; set; }
 
         [Display(Name = "За исключением:")]
-        public string ExcludeRetargetGroupId { get; set; }
+        public string ExcludeRetargetGroupIds { get; set; }
     }
 }

@@ -1,50 +1,164 @@
 ﻿$(document).ready(function () {
-    $(function () {
-        disableCities();
 
-        $.getJSON("/Vk/GetCities")
-        .done(function (data) {
-            console.log(JSON.stringify(data.response));
-            $.each(data.response, function (index, value) {
-                var citiesOption = document.createElement('option');
-                citiesOption.value = value.id;
-                citiesOption.text = value.name;
+    /* СОБЫТИЯ ПРИ ВЫБОРЕ ГОРОДОВ */
+    var eventHandler_Auditory1_Cities = function (name) {
+        return function () {
+            $("#Auditory1_Cities").attr("value", arguments[0].join());
+        };
+    };
+    var eventHandler_Auditory1_Exclude_Cities = function (name) {
+        return function () {
+            $("#Auditory1_ExcludeCities").attr("value", arguments[0].join());
+        };
+    };
 
-                if (index === 0) {
-                    $("#Auditory1_City").attr("value", value.id);
-                    $("#Auditory2_City").attr("value", value.id);
-                }
+    var eventHandler_Auditory2_Cities = function (name) {
+        return function () {
+            $("#Auditory2_Cities").attr("value", arguments[0].join());
+        };
+    };
+    var eventHandler_Auditory2_Exclude_Cities = function (name) {
+        return function () {
+            $("#Auditory2_ExcludeCities").attr("value", arguments[0].join());
+        };
+    };
+    /* СОБЫТИЯ ПРИ ВЫБОРЕ ГОРОДОВ */
 
-                $('#CityName1').append(citiesOption.cloneNode(true));
-                $('#CityName2').append(citiesOption.cloneNode(true));
-            });
-        });
 
-        enableCities();
+    /* СОБЫТИЯ ПРИ ВЫБОРЕ ГРУПП РЕТАРГЕТА */
+    var eventHandler_Auditory1_RetargetGroupIds = function (name) {
+        return function () {
+            $("#Auditory1_RetargetGroupIds").attr("value", arguments[0].join());
+        };
+    };
+    var eventHandler_Auditory1_Exclude_RetargetGroupIds = function (name) {
+        return function () {
+            $("#Auditory1_ExcludeRetargetGroupIds").attr("value", arguments[0].join());
+        };
+    };
+
+    var eventHandler_Auditory2_RetargetGroupIds = function (name) {
+        return function () {
+            $("#Auditory2_RetargetGroupIds").attr("value", arguments[0].join());
+        };
+    };
+    var eventHandler_Auditory2_Exclude_RetargetGroupIds = function (name) {
+        return function () {
+            $("#Auditory2_ExcludeRetargetGroupIds").attr("value", arguments[0].join());
+        };
+    };
+    /* СОБЫТИЯ ПРИ ВЫБОРЕ ГРУПП РЕТАРГЕТА */
+
+
+    /* ЭЛЕМЕНТЫ ВЫБОРА ГОРОДОВ */
+    var $selectize_Auditory1_Cities = $('#element_Auditory1_Cities').selectize({
+        maxItems: null,
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        options: [],
+        create: true,
+        onChange: eventHandler_Auditory1_Cities('onChange'),
+    });
+    var $selectize_Auditory1_Exclude_Cities = $('#element_Auditory1_Exclude_Cities').selectize({
+        maxItems: null,
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        options: [],
+        create: true,
+        onChange: eventHandler_Auditory1_Exclude_Cities('onChange'),
     });
 
-    $(function () {
-        disableCities();
+    var $selectize_Auditory2_Cities = $('#element_Auditory2_Cities').selectize({
+        maxItems: null,
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        options: [],
+        create: true,
+        onChange: eventHandler_Auditory2_Cities('onChange'),
+    });
+    var $selectize_Auditory2_Exclude_Cities = $('#element_Auditory2_Exclude_Cities').selectize({
+        maxItems: null,
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        options: [],
+        create: true,
+        onChange: eventHandler_Auditory2_Exclude_Cities('onChange'),
+    });
+    /* ЭЛЕМЕНТЫ ВЫБОРА ГОРОДОВ */
 
+    /* ЭЛЕМЕНТЫ ВЫБОРА ГРУПП РЕТАРГЕТА */
+    var $selectize_Auditory1_RetargetGroupIds = $('#element_Auditory1_RetargetGroupIds').selectize({
+        maxItems: null,
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        options: [],
+        create: true,
+        onChange: eventHandler_Auditory1_RetargetGroupIds('onChange'),
+    });
+    var $selectize_Auditory1_Exclude_RetargetGroupIds = $('#element_Auditory1_Exclude_RetargetGroupIds').selectize({
+        maxItems: null,
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        options: [],
+        create: true,
+        onChange: eventHandler_Auditory1_Exclude_RetargetGroupIds('onChange'),
+    });
+
+    var $selectize_Auditory2_RetargetGroupIds = $('#element_Auditory2_RetargetGroupIds').selectize({
+        maxItems: null,
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        options: [],
+        create: true,
+        onChange: eventHandler_Auditory2_RetargetGroupIds('onChange'),
+    });
+    var $selectize_Auditory2_Exclude_RetargetGroupIds = $('#element_Auditory2_Exclude_RetargetGroupIds').selectize({
+        maxItems: null,
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        options: [],
+        create: true,
+        onChange: eventHandler_Auditory2_Exclude_RetargetGroupIds('onChange'),
+    });
+    /* ЭЛЕМЕНТЫ ВЫБОРА ГРУПП РЕТАРГЕТА */
+
+    $(function () {
         $.getJSON("/Vk/GetCities")
         .done(function (data) {
-            console.log(JSON.stringify(data.response));
+            var control_Auditory1_Cities = $selectize_Auditory1_Cities[0].selectize;
+            var control_Auditory1_Exclude_Cities = $selectize_Auditory1_Exclude_Cities[0].selectize;
+
+            var control_Auditory2_Cities = $selectize_Auditory2_Cities[0].selectize;
+            var control_Auditory2_Exclude_Citiess = $selectize_Auditory2_Exclude_Cities[0].selectize;
+
             $.each(data.response, function (index, value) {
-                var citiesOption = document.createElement('option');
-                citiesOption.value = value.id;
-                citiesOption.text = value.name;
+                    control_Auditory1_Cities.addOption({
+                        id: value.id,
+                        title: value.name
+                    });
+                    control_Auditory1_Exclude_Cities.addOption({
+                        id: value.id,
+                        title: value.name
+                    });
 
-                if (index === 0) {
-                    $("#Auditory1_City").attr("value", value.id);
-                    $("#Auditory2_City").attr("value", value.id);
-                }
-
-                $('#CityName1').append(citiesOption.cloneNode(true));
-                $('#CityName2').append(citiesOption.cloneNode(true));
+                    control_Auditory2_Cities.addOption({
+                        id: value.id,
+                        title: value.name
+                    });
+                    control_Auditory2_Exclude_Citiess.addOption({
+                        id: value.id,
+                        title: value.name
+                    });
             });
         });
-
-        enableCities();
     });
 
     $(function () {
@@ -70,6 +184,7 @@
     });
 
     function getClients(accountId) {
+        disableRetargetGroups();
         $.getJSON("/Vk/GetClients", { accountId: accountId })
             .done(function (clients) {
                 $('#Clients').find('option').remove().end();
@@ -79,6 +194,7 @@
                 if (clients.error) {
                     $("#ClientId").attr("value", "");
                     // Получение групп ретаргета напрямую
+                    needToDisableClient = true;
                     getRetargets(accountId);
                 } else {
                     $.each(clients.response, function (cIndex, cValue) {
@@ -93,38 +209,44 @@
                                    .text(cValue.name);
 
                         $('#Clients').append(clientOption);
-                        if (!cValue.id)
-                            needToDisableClient = true;
                     });
                 }
 
                 enableAll(needToDisableClient);
-                enableRetargetGroups();
             });
     }
 
     function getRetargets(accountId, clientId) {
         $.getJSON("/Vk/GetTargetGroups", { accountId: accountId, clientId: clientId })
-                     .done(function (groups) {
+            .done(function (groups) {
+                var control_Auditory1_RetargetGroupIds = $selectize_Auditory1_RetargetGroupIds[0].selectize;
+                var control_Auditory1_Exclude_RetargetGroupIds = $selectize_Auditory1_Exclude_RetargetGroupIds[0].selectize;
 
-                         $('#RetargetGroupIds1').find('option').remove().end();
+                var control_Auditory2_RetargetGroupIds = $selectize_Auditory2_RetargetGroupIds[0].selectize;
+                var control_Auditory2_Exclude_RetargetGroupIds = $selectize_Auditory2_Exclude_RetargetGroupIds[0].selectize;
 
-                         $.each(groups.response, function (gIndex, gValue) {
-                             if (gIndex === 0) {
-                                 $("#Auditory1_RetargetGroupId").attr("value", gValue.id);
-                             }
-                             var groupOption = $('<option>');
-                             groupOption.attr('value', gValue.id)
-                                        .text(gValue.name);
-                             $('#RetargetGroupIds1').append(groupOption);
-                         });
+                $.each(groups.response, function (gIndex, gValue) {
+                    control_Auditory1_RetargetGroupIds.addOption({
+                        id: gValue.id,
+                        title: gValue.name
+                    });
+                    control_Auditory1_Exclude_RetargetGroupIds.addOption({
+                        id: gValue.id,
+                        title: gValue.name
+                    });
 
-                         var needToDisableClient = false;
-                         if (!clientId)
-                             needToDisableClient = true;
+                    control_Auditory2_RetargetGroupIds.addOption({
+                        id: gValue.id,
+                        title: gValue.name
+                    });
+                    control_Auditory2_Exclude_RetargetGroupIds.addOption({
+                        id: gValue.id,
+                        title: gValue.name
+                    });
+                });
+            });
 
-                         enableAll(needToDisableClient);
-                     });
+        enableRetargetGroups();
     }
 
     $("#AccountNames").change(function () {
@@ -139,49 +261,32 @@
         $("#ClientId").attr("value", $(this).val());
     });
 
-    $("#RetargetGroupIds1").change(function () {
-        $("#Auditory1_RetargetGroupId").attr("value", $(this).val());
-    });
-
-    $("#RetargetGroupIds2").change(function () {
-        $("#Auditory2_RetargetGroupId").attr("value", $(this).val());
-    });
-
-    $("#CityName1").change(function () {
-        $("#Auditory1_City").attr("value", $(this).val());
-    });
-
-    $("#CityName2").change(function () {
-        $("#Auditory2_City").attr("value", $(this).val());
-    });
-
     function disableAll() {
         $("#AccountNames").prop('disabled', true);
         $("#Clients").prop('disabled', true);
     }
 
-    function enableAll(disableClient) {
+    function enableAll(needToDisableClient) {
         $("#AccountNames").prop('disabled', false);
-        $("#Clients").prop('disabled', disableClient);
+        $("#Clients").prop('disabled', needToDisableClient);
+    }
+
+    function disableClient() {
+        $("#Clients").prop('disabled', true);
     }
 
     function disableRetargetGroups() {
-        $("#RetargetGroupIds1").prop('disabled', true);
-        $("#RetargetGroupIds2").prop('disabled', true);
+        $selectize_Auditory1_RetargetGroupIds[0].selectize.disable();
+        $selectize_Auditory1_Exclude_RetargetGroupIds[0].selectize.disable();
+        $selectize_Auditory2_RetargetGroupIds[0].selectize.disable();
+        $selectize_Auditory2_Exclude_RetargetGroupIds[0].selectize.disable();
     }
 
     function enableRetargetGroups() {
-        $("#RetargetGroupIds1").prop('disabled', false);
-        $("#RetargetGroupIds2").prop('disabled', false);
+        $selectize_Auditory1_RetargetGroupIds[0].selectize.enable();
+        $selectize_Auditory1_Exclude_RetargetGroupIds[0].selectize.enable();
+        $selectize_Auditory2_RetargetGroupIds[0].selectize.enable();
+        $selectize_Auditory2_Exclude_RetargetGroupIds[0].selectize.enable();
     }
 
-    function disableCities() {
-        $("#CityName1").prop('disabled', true);
-        $("#CityName2").prop('disabled', true);
-    }
-
-    function enableCities() {
-        $("#CityName1").prop('disabled', false);
-        $("#CityName2").prop('disabled', false);
-    }
 });

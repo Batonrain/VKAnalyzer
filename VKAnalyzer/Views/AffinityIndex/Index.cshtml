@@ -5,6 +5,8 @@
 }
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script type="text/javascript" src="~/Scripts/Plugins/selectize/selectize.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Content/Plugins/selectize/selectize.css" />
 @Scripts.Render("~/bundles/affinityIndex")
 
 <h2>Аффинити Индекс</h2>
@@ -17,11 +19,19 @@
         @Html.ValidationSummary()
         @Html.HiddenFor(x => x.AccountId)
         @Html.HiddenFor(x => x.ClientId)
-        @Html.HiddenFor(x => x.Auditory1.City)
-        @Html.HiddenFor(x => x.Auditory2.City)
+        
+        @Html.HiddenFor(x => x.Auditory1.Cities)
+        @Html.HiddenFor(x => x.Auditory1.ExcludeCities)
+        @Html.HiddenFor(x => x.Auditory2.Cities)
+        @Html.HiddenFor(x => x.Auditory2.ExcludeCities)
+        
         @Html.HiddenFor(x => x.Auditory1.Univercity)
         @Html.HiddenFor(x => x.Auditory2.Univercity)
-        @Html.HiddenFor(x => x.Auditory1.RetargetGroupId)
+        
+        @Html.HiddenFor(x => x.Auditory1.RetargetGroupIds)
+        @Html.HiddenFor(x => x.Auditory1.ExcludeRetargetGroupIds)
+        @Html.HiddenFor(x => x.Auditory2.RetargetGroupIds)
+        @Html.HiddenFor(x => x.Auditory2.ExcludeRetargetGroupIds)
         <div class="form-group">
             @Html.Label("Велосипеды: 77390912", new { @class = "col-md-3 control-label" })
         </div>
@@ -55,13 +65,20 @@
                     @Html.TextBoxFor(m => m.Auditory1.Name, new { @class = "form-control" })
                 </div>
             </div>
-            
+
             <div class="form-group">
-                @Html.LabelFor(m => m.Auditory1.City, new { @class = "col-md-3 control-label" })
+                @Html.LabelFor(m => m.Auditory1.Cities, new { @class = "col-md-3 control-label" })
                 <div class="col-md-8">
-                    <select id="CityName1" name="CityName1" class="form-control"></select>
+                    <select id="element_Auditory1_Cities" name="element_Auditory1_Cities"></select>
                 </div>
             </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.ExcludeCities, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    <select id="element_Auditory1_Exclude_Cities" name="element_Auditory1_Exclude_Cities"></select>
+                </div>
+            </div>
+
 
             <div class="form-group">
                 @Html.LabelFor(m => m.Auditory1.Gender, new { @class = "col-md-3 control-label" })
@@ -87,11 +104,11 @@
                     @Html.TextBoxFor(m => m.Auditory1.AgesUpTo, new { @class = "form-control" })
                 </div>
             </div>
-            
+
             <div class="form-group">
                 @Html.LabelFor(m => m.Auditory1.Univercity, new { @class = "col-md-3 control-label" })
                 <div class="col-md-8">
-                    <select id="Univercity1" name="Univercity1" class="form-control"></select>
+                    <select id="element_Auditory1_Univercity" name="element_Auditory1_Univercity" class="form-control"></select>
                 </div>
             </div>
 
@@ -107,15 +124,23 @@
                     @Html.TextBoxFor(m => m.Auditory1.ExcludeInterestGroupIds, new { @class = "form-control" })
                 </div>
             </div>
-            
+
             <div class="form-group">
-                @Html.LabelFor(m => m.Auditory1.RetargetGroupId, new { @class = "col-md-3 control-label" })
+                @Html.LabelFor(m => m.Auditory1.RetargetGroupIds, new { @class = "col-md-3 control-label" })
                 <div class="col-md-8">
-                    <select id="RetargetGroupIds1" name="RetargetGroupIds1" class="form-control"></select>
+                    <select id="element_Auditory1_RetargetGroupIds" name="element_Auditory1_RetargetGroupIds"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.ExcludeRetargetGroupIds, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    <select id="element_Auditory1_Exclude_RetargetGroupIds" name="element_Auditory1_Exclude_RetargetGroupIds"></select>
                 </div>
             </div>
         </div>
 
+        /*-------------------------------------------------------------------------*/
+        
         <div class="col-sm-6">
             <div class="form-group">
                 @Html.LabelFor(m => m.Auditory2.Name, new { @class = "col-md-3 control-label" })
@@ -125,9 +150,15 @@
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(m => m.Auditory2.City, new { @class = "col-md-3 control-label" })
+                @Html.LabelFor(m => m.Auditory2.Cities, new { @class = "col-md-3 control-label" })
                 <div class="col-md-8">
-                    <select id="CityName2" name="CityName2" class="form-control"></select>
+                    <select id="element_Auditory2_Cities" name="element_Auditory2_Cities"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.ExcludeCities, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    <select id="element_Auditory2_Exclude_Cities" name="element_Auditory2_Exclude_Cities"></select>
                 </div>
             </div>
 
@@ -155,6 +186,13 @@
                     @Html.TextBoxFor(m => m.Auditory2.AgesUpTo, new { @class = "form-control" })
                 </div>
             </div>
+            
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.Univercity, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    <select id="element_Auditory2_Univercity" name="element_Auditory2_Univercity" class="form-control"></select>
+                </div>
+            </div>
 
             <div class="form-group">
                 @Html.LabelFor(m => m.Auditory2.InterestGroupIds, new { @class = "col-md-3 control-label" })
@@ -166,6 +204,19 @@
                 @Html.LabelFor(m => m.Auditory2.ExcludeInterestGroupIds, new { @class = "col-md-3 control-label" })
                 <div class="col-md-8">
                     @Html.TextBoxFor(m => m.Auditory2.ExcludeInterestGroupIds, new { @class = "form-control" })
+                </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.RetargetGroupIds, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    <select id="element_Auditory2_RetargetGroupIds" name="element_Auditory2_RetargetGroupIds"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.ExcludeRetargetGroupIds, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    <select id="element_Auditory2_Exclude_RetargetGroupIds" name="element_Auditory2_Exclude_RetargetGroupIds"></select>
                 </div>
             </div>
         </div>

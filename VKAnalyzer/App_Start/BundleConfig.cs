@@ -32,9 +32,19 @@ namespace VKAnalyzer
             bundles.Add(new ScriptBundle("~/bundles/cohortanalyse").Include(
                       "~/Scripts/jquery-ui-1.12.1.min.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/selectize").Include(
+
+                      "~/Scripts/Plugins/selectize/selectize.js",
+                      "~/Content/Plugins/selectize/selectize.css",
+                      "~/Content/Plugins/selectize/selectize.bootstrap3.css"
+                      ));
+
             bundles.Add(new ScriptBundle("~/bundles/affinityIndex").Include(
                       "~/Scripts/jquery-ui-1.12.1.min.js",
-                      "~/Scripts/Services/AffinityIndex.js"));
+                      "~/Scripts/Services/AffinityIndex.js"//,
+                      //"~/Scripts/Plugins/selectize/selectize.js",
+                      //"~/Content/Plugins/selectize/selectize.css"
+                      ));
         }
     }
 }

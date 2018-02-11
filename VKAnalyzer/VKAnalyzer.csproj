@@ -279,6 +279,11 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Plugins\selectize\selectize.bootstrap2.css" />
+    <Content Include="Content\Plugins\selectize\selectize.bootstrap3.css" />
+    <Content Include="Content\Plugins\selectize\selectize.css" />
+    <Content Include="Content\Plugins\selectize\selectize.default.css" />
+    <Content Include="Content\Plugins\selectize\selectize.legacy.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -350,6 +355,8 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\Plugins\selectize\selectize.js" />
+    <Content Include="Scripts\Plugins\selectize\selectize.min.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />

@@ -3,6 +3,10 @@
     ViewBag.Title = "Result";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@{
+    var absValues = "N/A";
+}
+
 
 <h2>Результат</h2>
 <h2>@Model.Audience / @Model.ComparativeAudience</h2>
@@ -15,6 +19,8 @@
             <tr>
                 <th>Категория</th>
                 <th>Индекс</th>
+                <th>Аудитория 1</th>
+                <th>Аудитория 2</th>
             </tr>
         </thead>
         <tbody>
@@ -31,11 +37,17 @@
                             if (result.Index != 0)
                             {
                                 var c = result.Index*100;
-                            index = string.Format("{0}%", c.ToString().Substring(0, 3).Replace(".", ""));
+                                index = string.Format("{0}%", c.ToString().Substring(0, 3).Replace(".", ""));
                             }
                             
                         }
                         @index
+                    </th>
+                    <th>
+                        @result.Audience1Abs
+                    </th>
+                    <th>
+                        @result.Audience2Abs
                     </th>
                 </tr>
             }

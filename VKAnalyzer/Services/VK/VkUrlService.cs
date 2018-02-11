@@ -19,7 +19,8 @@ namespace VKAnalyzer.Services.VK
         }
 
         public string CreateAdUrl(string accountId, int campaignId, string accessToken, string name, string sex, int ageFrom, int ageUpTo,
-                                   string groups, string excludedGroups, string country = "1", string cities = "2", string interestCategories = "")
+                                  string groups, string excludedGroups,string country, string cities, string excludedCities, string interestCategories,
+                                  string retargetGroups, string excludedRetargetGroups)
         {
             if (ageFrom < 14)
             {
@@ -27,7 +28,7 @@ namespace VKAnalyzer.Services.VK
             }
             if (ageUpTo < 14)
             {
-                ageUpTo = 0;
+                ageUpTo = 70;
             }
 
             var json = JsonConvert.SerializeObject(new
@@ -43,11 +44,14 @@ namespace VKAnalyzer.Services.VK
                 sex = sex,
                 age_from = ageFrom,
                 age_to = ageUpTo,
-                //country = country,
-                //cities = cities,
+                country = country,
+                cities = cities,
+                cities_not = excludedCities,
                 groups = groups ?? string.Empty,
                 groups_not = excludedGroups ?? string.Empty,
-                interest_categories = interestCategories
+                interest_categories = interestCategories,
+                retargeting_groups = retargetGroups,
+                retargeting_groups_not = excludedRetargetGroups
             });
 
             return string.Format(

@@ -50,7 +50,8 @@ namespace VKAnalyzer.Services.VK
 
             var commonСomparativeAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
                 comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.InterestGroupIds,
-                comparativeAudience.ExcludeInterestGroupIds, allCategories);
+                comparativeAudience.ExcludeInterestGroupIds, allCategories, comparativeAudience.Country, comparativeAudience.Cities, comparativeAudience.ExcludeCities,
+                comparativeAudience.RetargetGroupIds, comparativeAudience.ExcludeRetargetGroupIds);
 
             var commonСomparativeTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", commonСomparativeAd.id), accessToken);
             if (!string.IsNullOrEmpty(commonСomparativeTargeting.error_desc))
@@ -70,7 +71,8 @@ namespace VKAnalyzer.Services.VK
 
                     var commonAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
                         audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
-                        audience.ExcludeInterestGroupIds, allCategories);
+                        audience.ExcludeInterestGroupIds, allCategories, audience.Country, audience.Cities, audience.ExcludeCities,
+                        audience.RetargetGroupIds, audience.ExcludeRetargetGroupIds);
 
                     var commonTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", commonAd.id), accessToken);
                     if (!string.IsNullOrEmpty(commonTargeting.error_desc))
@@ -82,7 +84,8 @@ namespace VKAnalyzer.Services.VK
                     {
                         var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
                         audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
-                        audience.ExcludeInterestGroupIds, category.id.ToString());
+                        audience.ExcludeInterestGroupIds, category.id.ToString(), audience.Country, audience.Cities, audience.ExcludeCities,
+                        audience.RetargetGroupIds, audience.ExcludeRetargetGroupIds);
 
                         if (!string.IsNullOrEmpty(categoryAd.error_desc))
                         {
@@ -91,8 +94,9 @@ namespace VKAnalyzer.Services.VK
 
                         var categoryTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", categoryAd.id), accessToken);
 
+                        result.Results.First(f => f.CategoryId == category.id).Audience1Abs = categoryTargeting.count;
                         result.Results.First(f => f.CategoryId == category.id).Audience1Result =
-                            (decimal) categoryTargeting.count/(decimal) commonTargeting.count;
+                            (decimal)categoryTargeting.count / (decimal)commonTargeting.count;
                     }
                 }
 
@@ -106,7 +110,8 @@ namespace VKAnalyzer.Services.VK
 
                     var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
                     comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.InterestGroupIds,
-                    comparativeAudience.ExcludeInterestGroupIds, category.id.ToString());
+                    comparativeAudience.ExcludeInterestGroupIds, category.id.ToString(), comparativeAudience.Country, comparativeAudience.Cities, comparativeAudience.ExcludeCities,
+                    comparativeAudience.RetargetGroupIds, comparativeAudience.ExcludeRetargetGroupIds);
 
                     if (!string.IsNullOrEmpty(categoryAd.error_desc))
                     {
@@ -115,13 +120,13 @@ namespace VKAnalyzer.Services.VK
 
                     var categoryTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", categoryAd.id), accessToken);
 
+                    result.Results.First(f => f.CategoryId == category.id).Audience2Abs = categoryTargeting.count;
                     result.Results.First(f => f.CategoryId == category.id).Audience2Result = (decimal)categoryTargeting.count / (decimal)commonСomparativeTargeting.count;
-                    
                 }
 
                 result.Results.Where(w => w.Audience1Result != 0 && w.Audience2Result != 0).ForEach(f => f.Index = f.Audience1Result / f.Audience2Result);
             }
-            
+
             result.DateOfCollection = DateTime.Now;
 
             _vkDbService.SaveAddinityIndex(result, userId, name);
@@ -164,10 +169,13 @@ namespace VKAnalyzer.Services.VK
             return result;
         }
 
-        private VkAdSuccess CreateAd(string accountId, string accessToken, int campaignId, string sex, int ageFrom, int ageUpTo, string groups, string excludedGroupds, string interestCategories = "")
+        private VkAdSuccess CreateAd(string accountId, string accessToken, int campaignId, string sex, int ageFrom, int ageUpTo, string groups = "",
+                                     string excludedGroupds = "", string interestCategories = "", string country = "", string cities = "", string excludedCities = "",
+                                     string retargetGroups = "", string excludedRetargetGroups = "")
         {
-            var reqString = _vkUrlService.CreateAdUrl(accountId, campaignId, accessToken, "EvilMarketing_Affinity_Ad", sex, ageFrom, ageUpTo,
-                groups, excludedGroupds, interestCategories: interestCategories);
+            var reqString = _vkUrlService.CreateAdUrl(accountId: accountId, campaignId: campaignId, accessToken: accessToken, name: "EvilMarketing_Affinity_Ad",
+                sex: sex, ageFrom: ageFrom, ageUpTo: ageUpTo, groups: groups, excludedGroups: excludedGroupds, interestCategories: interestCategories,
+                country: country, cities: cities, excludedCities: excludedCities, retargetGroups: retargetGroups, excludedRetargetGroups: excludedRetargetGroups);
 
             var ad = _vkBaseService.GetJsonFromResponse(_vkAdsRequestService.RequestJs(reqString));
             var result = JsonConvert.DeserializeObject<List<VkAdSuccess>>(ad).FirstOrDefault();

@@ -33,6 +33,10 @@ namespace VKAnalyzer.Models.VKModels.AffinityIndex
 
         public decimal Audience2Result { get; set; }
 
+        public decimal Audience1Abs { get; set; }
+
+        public decimal Audience2Abs { get; set; }
+
         public decimal Index { get; set; }
     }
 }
