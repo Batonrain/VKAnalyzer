@@ -5,7 +5,7 @@
 }
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-@Scripts.Render("~/bundles/cohortanalyse")
+@Scripts.Render("~/bundles/affinityIndex")
 
 <h2>Аффинити Индекс</h2>
 
@@ -19,6 +19,9 @@
         @Html.HiddenFor(x => x.ClientId)
         @Html.HiddenFor(x => x.Auditory1.City)
         @Html.HiddenFor(x => x.Auditory2.City)
+        @Html.HiddenFor(x => x.Auditory1.Univercity)
+        @Html.HiddenFor(x => x.Auditory2.Univercity)
+        @Html.HiddenFor(x => x.Auditory1.RetargetGroupId)
         <div class="form-group">
             @Html.Label("Велосипеды: 77390912", new { @class = "col-md-3 control-label" })
         </div>
@@ -84,6 +87,13 @@
                     @Html.TextBoxFor(m => m.Auditory1.AgesUpTo, new { @class = "form-control" })
                 </div>
             </div>
+            
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.Univercity, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    <select id="Univercity1" name="Univercity1" class="form-control"></select>
+                </div>
+            </div>
 
             <div class="form-group">
                 @Html.LabelFor(m => m.Auditory1.InterestGroupIds, new { @class = "col-md-3 control-label" })
@@ -95,6 +105,13 @@
                 @Html.LabelFor(m => m.Auditory1.ExcludeInterestGroupIds, new { @class = "col-md-3 control-label" })
                 <div class="col-md-8">
                     @Html.TextBoxFor(m => m.Auditory1.ExcludeInterestGroupIds, new { @class = "form-control" })
+                </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.RetargetGroupId, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    <select id="RetargetGroupIds1" name="RetargetGroupIds1" class="form-control"></select>
                 </div>
             </div>
         </div>
@@ -160,134 +177,3 @@
         </div>
     }
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        $(function () {
-            $('#StartDate').datepicker({
-                dateFormat: "dd.mm.yy"
-            });
-            $('#EndDate').datepicker({
-                dateFormat: "dd.mm.yy"
-            });
-        });
-
-        $(function () {
-            disableCities();
-
-            $.getJSON("/Vk/GetCities")
-            .done(function (data) {
-                console.log(JSON.stringify(data.response));
-                $.each(data.response, function (index, value) {
-                    var citiesOption = document.createElement('option');
-                    citiesOption.value = value.id;
-                    citiesOption.text = value.name;
-
-                    if (index === 0) {
-                        $("#Auditory1_City").attr("value", value.id);
-                        $("#Auditory2_City").attr("value", value.id);
-                    }
-
-                    $('#CityName1').append(citiesOption.cloneNode(true));
-                    $('#CityName2').append(citiesOption.cloneNode(true));
-                    //appendValues(citiesOption);
-                });
-            });
-
-            enableCities();
-        });
-
-        $(function () {
-            disableAll();
-
-            $.getJSON("/Vk/GetAccounts")
-            .done(function (data) {
-                $.each(data.response, function (index, value) {
-                    var accountOption = $('<option>');
-                    accountOption.attr('value', value.account_id)
-                                 .text(value.account_name);
-
-                    if (index === 0) {
-                        $("#AccountId").attr("value", value.account_id);
-
-                        // Получение клиентов для рекламного кабинета
-                        getClients(value.account_id);
-                    }
-
-                    $('#AccountNames').append(accountOption);
-                });
-
-            });
-        });
-
-        $("#AccountNames").change(function () {
-            $("#AccountId").attr("value", $(this).val());
-
-            $("#Clients").prop('disabled', true);
-
-            getClients($(this).val());
-        });
-
-        $("#Clients").change(function () {
-            $("#ClientId").attr("value", $(this).val());
-        });
-
-        $("#CityName1").change(function () {
-            $("#Auditory1_City").attr("value", $(this).val());
-        });
-
-        $("#CityName2").change(function () {
-            $("#Auditory2_City").attr("value", $(this).val());
-        });
-
-        function getClients(accountId) {
-            $.getJSON("/Vk/GetClients", { accountId: accountId })
-                .done(function (clients) {
-                    $('#Clients').find('option').remove().end();
-
-                    var needToDisableClient = false;
-
-                    if (clients.error) {
-                        $("#ClientId").attr("value", "");
-                        // Получение групп ретаргета напрямую
-                    } else {
-                        $.each(clients.response, function (cIndex, cValue) {
-                            if (cIndex === 0) {
-                                $("#ClientId").attr("value", cValue.id);
-                            }
-
-                            var clientOption = $('<option>');
-                            clientOption.attr('value', cValue.id)
-                                       .text(cValue.name);
-
-                            $('#Clients').append(clientOption);
-                            if (!cValue.id)
-                                needToDisableClient = true;
-                        });
-                    }
-
-                    enableAll(needToDisableClient);
-                });
-        }
-
-        function disableAll() {
-            $("#AccountNames").prop('disabled', true);
-            $("#Clients").prop('disabled', true);
-        }
-
-        function enableAll(disableClient) {
-            $("#AccountNames").prop('disabled', false);
-            $("#Clients").prop('disabled', disableClient);
-        }
-
-        function disableCities() {
-            $("#CityName1").prop('disabled', true);
-            $("#CityName2").prop('disabled', true);
-        }
-
-        function enableCities() {
-            $("#CityName1").prop('disabled', false);
-            $("#CityName2").prop('disabled', false);
-        }
-    });
-</script>

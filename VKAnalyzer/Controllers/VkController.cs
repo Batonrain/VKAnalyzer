@@ -85,13 +85,19 @@ namespace VKAnalyzer.Controllers
         public string GetTargetGroups(string accountId, string clientId)
         {
             var accessToken = GetCurrentUserAccessToken();
-            return _vkService.GetTargetGroups(accountId, clientId, accessToken);
+            return _vkDatabaseService.GetTargetGroups(accountId, clientId, accessToken);
         }
 
         public string GetCities(int country = 1)
         {
             var accessToken = GetCurrentUserAccessToken();
             return _vkDatabaseService.GetCities(accessToken, country);
+        }
+
+        public string GetUnivercity(int country = 1)
+        {
+            var accessToken = GetCurrentUserAccessToken();
+            return _vkDatabaseService.GetUniversities(accessToken, country);
         }
 
         private string GetCurrentUserAccessToken()

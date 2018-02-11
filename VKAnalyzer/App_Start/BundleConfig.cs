@@ -31,6 +31,10 @@ namespace VKAnalyzer
             //Cohort analyse
             bundles.Add(new ScriptBundle("~/bundles/cohortanalyse").Include(
                       "~/Scripts/jquery-ui-1.12.1.min.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/affinityIndex").Include(
+                      "~/Scripts/jquery-ui-1.12.1.min.js",
+                      "~/Scripts/Services/AffinityIndex.js"));
         }
     }
 }
