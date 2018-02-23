@@ -53,6 +53,25 @@ namespace VKAnalyzer.Controllers.Vk
             return View(result);
         }
 
+        public ActionResult Results()
+        {
+            var userId = User.Identity.GetUserId();
+
+            var model = _dbContext.VkCohortAnalyseResults.Where(x => x.UserId == userId)
+                .OrderByDescending(order => order.CollectionDate)
+                .Select(rest => new AnalyseResultsViewModel
+                {
+                    Id = rest.Id,
+                    Name = rest.Name,
+                    DateOfCollection = rest.CollectionDate,
+                    AnalyseType = "Когортный анализ",
+                    GroupId = rest.GroupId
+                })
+                .ToList();
+
+            return View(model);
+        } 
+
         [HttpPost]
         public ActionResult Analyze(CohortAnalysysInputModel model)
         {

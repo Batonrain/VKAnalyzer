@@ -79,6 +79,8 @@ namespace VKAnalyzer.Services.VK
             _vkDbService.SaveMemas(result, userId);
         }
 
+        
+
         private List<CohortAnalysisModel> GetPostsForAnalyze(string groupId, DateTime startDate, DateTime endDate,IEnumerable<string> buyers = null, bool excludeUsers = false)
         {
             // Создание модели с параметрами для запроса всех постов за определённую дату

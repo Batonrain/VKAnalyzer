@@ -396,13 +396,14 @@
     <Content Include="Views\Memology\Result.cshtml" />
     <Content Include="Views\SalesAnalysis\Index.cshtml" />
     <Content Include="Views\SalesAnalysis\Result.cshtml" />
-    <Content Include="Views\CohortAnalysis\AnalyseInProgress.cshtml" />
     <Content Include="Views\CohortAnalysis\CohortAnalysis.cshtml" />
     <Content Include="Views\CohortAnalysis\Index.cshtml" />
     <Content Include="Views\CohortAnalysis\Result.cshtml" />
     <Content Include="Views\AffinityIndex\Index.cshtml" />
     <Content Include="Views\AffinityIndex\Results.cshtml" />
     <Content Include="Views\AffinityIndex\Result.cshtml" />
+    <Content Include="Views\SalesAnalysis\Results.cshtml" />
+    <Content Include="Views\CohortAnalysis\Results.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

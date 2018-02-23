@@ -2,6 +2,20 @@
 
 @{
     ViewBag.Title = "Аффинити Индекс";
+
+    var statuses = new SelectList(
+        new List<SelectListItem>
+        {
+            new SelectListItem {Text = "Любой", Value = string.Empty, Selected = true,},
+            new SelectListItem {Text = "Не женат/Не замужем", Value = "1"},
+            new SelectListItem {Text = "Есть подруга/Есть друг", Value = "2"},
+            new SelectListItem {Text = "Помолвлен(а)", Value = "3"},
+            new SelectListItem {Text = "Женат/Замужем", Value = "4"},
+            new SelectListItem {Text = "Все сложно", Value = "5"},
+            new SelectListItem {Text = "В активном поиске", Value = "6"},
+            new SelectListItem {Text = "Влюблен/влюблена", Value = "7"},
+            new SelectListItem {Text = "В гражданском браке", Value = "8"},
+        }, "Value", "Text");
 }
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -42,6 +56,7 @@
             @Html.LabelFor(m => m.Name, new { @class = "col-md-3 control-label" })
             <div class="col-md-8">
                 @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Auditory1.Name)
             </div>
         </div>
         <div class="form-group">
@@ -63,6 +78,7 @@
                 @Html.LabelFor(m => m.Auditory1.Name, new { @class = "col-md-3 control-label" })
                 <div class="col-md-8">
                     @Html.TextBoxFor(m => m.Auditory1.Name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Auditory1.Name)
                 </div>
             </div>
 
@@ -104,13 +120,20 @@
                     @Html.TextBoxFor(m => m.Auditory1.AgesUpTo, new { @class = "form-control" })
                 </div>
             </div>
-
+            
             <div class="form-group">
+                @Html.LabelFor(m => m.Auditory1.Status, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.DropDownListFor(m => m.Auditory1.Status, statuses, null, new { @class = "form-control" })
+                </div>
+            </div>
+
+            @*<div class="form-group">
                 @Html.LabelFor(m => m.Auditory1.Univercity, new { @class = "col-md-3 control-label" })
                 <div class="col-md-8">
                     <select id="element_Auditory1_Univercity" name="element_Auditory1_Univercity" class="form-control"></select>
                 </div>
-            </div>
+            </div>*@
 
             <div class="form-group">
                 @Html.LabelFor(m => m.Auditory1.InterestGroupIds, new { @class = "col-md-3 control-label" })
@@ -188,11 +211,18 @@
             </div>
             
             <div class="form-group">
+                @Html.LabelFor(m => m.Auditory2.Status, new { @class = "col-md-3 control-label" })
+                <div class="col-md-8">
+                    @Html.DropDownListFor(m => m.Auditory2.Status, statuses, null, new { @class = "form-control" })
+                </div>
+            </div>
+            
+            @*<div class="form-group">
                 @Html.LabelFor(m => m.Auditory2.Univercity, new { @class = "col-md-3 control-label" })
                 <div class="col-md-8">
                     <select id="element_Auditory2_Univercity" name="element_Auditory2_Univercity" class="form-control"></select>
                 </div>
-            </div>
+            </div>*@
 
             <div class="form-group">
                 @Html.LabelFor(m => m.Auditory2.InterestGroupIds, new { @class = "col-md-3 control-label" })

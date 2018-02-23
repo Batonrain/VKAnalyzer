@@ -1,0 +1,33 @@
+﻿@model List<VKAnalyzer.Models.VKModels.AnalyseResultsViewModel>
+@{
+    ViewBag.Title = "Список результатов";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Список результатов</h2>
+
+<table class="table table-responsive table-bordered">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Дата агрегации</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in Model)
+        {
+            <tr>
+                <th>
+                    @result.Name
+                </th>
+                <th>
+                    @result.DateOfCollection.ToString("dd-MM-yyyy HH:mm")
+                </th>
+                <th>
+                    @Html.ActionLink("Результаты", "Result", new { id = result.Id })
+                </th>
+            </tr>
+        }
+    </tbody>
+</table>

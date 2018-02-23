@@ -1,8 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Web.Mvc;
 using Hangfire;
 using Microsoft.AspNet.Identity;
 using NLog;
+using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels;
 using VKAnalyzer.Services.VK;
@@ -43,6 +47,44 @@ namespace VKAnalyzer.Controllers.Vk
 
             return RedirectToAction("Index");
         }
+
+        public ActionResult Result(int id)
+        {
+            var resultDb = _dbContext.VkCohortSalesAnalyseResults.FirstOrDefault(rest => rest.Id == id);
+            var result = new SalesActivitiesRetargetResult();
+            try
+            {
+                var formatter = new BinaryFormatter();
+                using (var ms = new MemoryStream(resultDb.Result))
+                {
+                    result = (SalesActivitiesRetargetResult)formatter.Deserialize(ms);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(string.Format("Error: {0}", ex));
+            }
+
+            return View(result);
+        }
+
+        public ActionResult Results()
+        {
+            var userId = User.Identity.GetUserId();
+
+            var model = _dbContext.VkCohortSalesAnalyseResults.Where(x => x.UserId == userId)
+                .OrderByDescending(order => order.CollectionDate)
+                .Select(rest => new AnalyseResultsViewModel()
+                {
+                    Id = rest.Id,
+                    Name = rest.Name,
+                    DateOfCollection = rest.CollectionDate,
+                    AnalyseType = "Анализ продаж",
+                })
+                .ToList();
+
+            return View(model);
+        } 
 
         private string GetCurrentUserAccessToken()
         {

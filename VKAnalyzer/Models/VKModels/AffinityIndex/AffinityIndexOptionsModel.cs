@@ -26,17 +26,17 @@ namespace VKAnalyzer.Models.VKModels.AffinityIndex
         [Display(Name = "Название аудитории")]
         public string Name { get; set; }
 
-        [Required]
         [Display(Name = "Пол:")]
         public string Gender { get; set; }
 
-        [Required]
         [Display(Name = "Возраст от:")]
-        public int AgesFrom { get; set; }
+        public string AgesFrom { get; set; }
 
-        [Required]
         [Display(Name = "Возраст до:")]
-        public int AgesUpTo { get; set; }
+        public string AgesUpTo { get; set; }
+
+        [Display(Name = "Семейное положение:")]
+        public int Status { get; set; }
 
         [Display(Name = "Страна:")]
         public string Country { get; set; }

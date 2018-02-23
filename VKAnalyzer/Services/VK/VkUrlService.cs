@@ -18,7 +18,7 @@ namespace VKAnalyzer.Services.VK
                                   accessToken, accountId, string.Format("[{0}]", json));
         }
 
-        public string CreateAdUrl(string accountId, int campaignId, string accessToken, string name, string sex, int ageFrom, int ageUpTo,
+        public string CreateAdUrl(string accountId, int campaignId, string accessToken, string name, string sex, int ageFrom, int ageUpTo, string status,
                                   string groups, string excludedGroups,string country, string cities, string excludedCities, string interestCategories,
                                   string retargetGroups, string excludedRetargetGroups)
         {
@@ -26,9 +26,13 @@ namespace VKAnalyzer.Services.VK
             {
                 ageFrom = 14;
             }
-            if (ageUpTo < 14)
+            if (ageUpTo < 14 || ageUpTo > 80)
             {
-                ageUpTo = 70;
+                ageUpTo = 80;
+            }
+            if (status.Equals("0"))
+            {
+                status = string.Empty;
             }
 
             var json = JsonConvert.SerializeObject(new
@@ -44,6 +48,7 @@ namespace VKAnalyzer.Services.VK
                 sex = sex,
                 age_from = ageFrom,
                 age_to = ageUpTo,
+                statuses = status,
                 country = country,
                 cities = cities,
                 cities_not = excludedCities,

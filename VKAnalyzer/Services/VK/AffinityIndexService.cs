@@ -49,7 +49,7 @@ namespace VKAnalyzer.Services.VK
             var allCategories = string.Join(",", categories.Select(c => c.id));
 
             var commonСomparativeAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
-                comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.InterestGroupIds,
+                comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.Status, comparativeAudience.InterestGroupIds,
                 comparativeAudience.ExcludeInterestGroupIds, allCategories, comparativeAudience.Country, comparativeAudience.Cities, comparativeAudience.ExcludeCities,
                 comparativeAudience.RetargetGroupIds, comparativeAudience.ExcludeRetargetGroupIds);
 
@@ -70,7 +70,7 @@ namespace VKAnalyzer.Services.VK
                     result.Audience = audience.Name;
 
                     var commonAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
-                        audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
+                        audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.Status, audience.InterestGroupIds,
                         audience.ExcludeInterestGroupIds, allCategories, audience.Country, audience.Cities, audience.ExcludeCities,
                         audience.RetargetGroupIds, audience.ExcludeRetargetGroupIds);
 
@@ -83,7 +83,7 @@ namespace VKAnalyzer.Services.VK
                     foreach (var category in categories)
                     {
                         var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
-                        audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.InterestGroupIds,
+                        audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.Status, audience.InterestGroupIds,
                         audience.ExcludeInterestGroupIds, category.id.ToString(), audience.Country, audience.Cities, audience.ExcludeCities,
                         audience.RetargetGroupIds, audience.ExcludeRetargetGroupIds);
 
@@ -109,7 +109,7 @@ namespace VKAnalyzer.Services.VK
                     }
 
                     var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
-                    comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.InterestGroupIds,
+                    comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.Status, comparativeAudience.InterestGroupIds,
                     comparativeAudience.ExcludeInterestGroupIds, category.id.ToString(), comparativeAudience.Country, comparativeAudience.Cities, comparativeAudience.ExcludeCities,
                     comparativeAudience.RetargetGroupIds, comparativeAudience.ExcludeRetargetGroupIds);
 
@@ -169,12 +169,12 @@ namespace VKAnalyzer.Services.VK
             return result;
         }
 
-        private VkAdSuccess CreateAd(string accountId, string accessToken, int campaignId, string sex, int ageFrom, int ageUpTo, string groups = "",
+        private VkAdSuccess CreateAd(string accountId, string accessToken, int campaignId, string sex, string ageFrom = "14", string ageUpTo = "80", int status = 0, string groups = "",
                                      string excludedGroupds = "", string interestCategories = "", string country = "", string cities = "", string excludedCities = "",
                                      string retargetGroups = "", string excludedRetargetGroups = "")
         {
             var reqString = _vkUrlService.CreateAdUrl(accountId: accountId, campaignId: campaignId, accessToken: accessToken, name: "EvilMarketing_Affinity_Ad",
-                sex: sex, ageFrom: ageFrom, ageUpTo: ageUpTo, groups: groups, excludedGroups: excludedGroupds, interestCategories: interestCategories,
+                sex: sex, ageFrom: Convert.ToInt32(ageFrom), ageUpTo: Convert.ToInt32(ageUpTo), status: status.ToString(), groups: groups, excludedGroups: excludedGroupds, interestCategories: interestCategories,
                 country: country, cities: cities, excludedCities: excludedCities, retargetGroups: retargetGroups, excludedRetargetGroups: excludedRetargetGroups);
 
             var ad = _vkBaseService.GetJsonFromResponse(_vkAdsRequestService.RequestJs(reqString));
