@@ -30,44 +30,7 @@ namespace VKAnalyzer.Controllers
 
         public ActionResult Results()
         {
-            var userId = User.Identity.GetUserId();
-            var model = new ListOfResults();
-
-            model.CohortAnalyseResults = _dbContext.VkCohortAnalyseResults.Where(x => x.UserId == userId)
-                .OrderByDescending(order => order.CollectionDate)
-                .Select(rest => new AnalyseResultsViewModel()
-                {
-                    Id = rest.Id,
-                    Name = rest.Name,
-                    DateOfCollection = rest.CollectionDate,
-                    AnalyseType = "Когортный анализ",
-                    GroupId = rest.GroupId
-                })
-                .ToList();
-
-            model.MemasAnalyzeResults = _dbContext.VkMemasAnalyzeResults.Where(x => x.UserId == userId)
-                .OrderByDescending(order => order.CollectionDate)
-                .Select(rest => new AnalyseResultsViewModel()
-                {
-                    Id = rest.Id,
-                    Name = rest.Name,
-                    DateOfCollection = rest.CollectionDate,
-                    AnalyseType = "Анализ мемасов",
-                })
-                .ToList();
-
-            model.CohortSalesAnalyseResults = _dbContext.VkCohortSalesAnalyseResults.Where(x => x.UserId == userId)
-                .OrderByDescending(order => order.CollectionDate)
-                .Select(rest => new AnalyseResultsViewModel()
-                {
-                    Id = rest.Id,
-                    Name = rest.Name,
-                    DateOfCollection = rest.CollectionDate,
-                    AnalyseType = "Анализ продаж",
-                })
-                .ToList();
-
-            return View(model);
+            return View();
         }
 
         public string GetAccounts()

@@ -396,7 +396,6 @@
     <Content Include="Views\Memology\Result.cshtml" />
     <Content Include="Views\SalesAnalysis\Index.cshtml" />
     <Content Include="Views\SalesAnalysis\Result.cshtml" />
-    <Content Include="Views\CohortAnalysis\CohortAnalysis.cshtml" />
     <Content Include="Views\CohortAnalysis\Index.cshtml" />
     <Content Include="Views\CohortAnalysis\Result.cshtml" />
     <Content Include="Views\AffinityIndex\Index.cshtml" />
