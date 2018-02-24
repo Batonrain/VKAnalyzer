@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using VKAnalyzer.Services.Interfaces;
 
 namespace VKAnalyzer.Services.VK
 {
-    public class VkBaseService : IVkBaseService
+    public class VkBaseService 
     {
         public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
         {

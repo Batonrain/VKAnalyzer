@@ -25,7 +25,7 @@ namespace VKAnalyzer.Services.VK
             }
         }
 
-        public string GetUniversities(string accessToken, int city = 1, int country = 1)
+        public string GetUniversities(string accessToken, int country = 1, int city = 1)
         {
             using (var wc = new WebClient())
             {

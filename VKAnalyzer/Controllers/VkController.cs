@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using NLog;
 using VKAnalyzer.DBContexts;
-using VKAnalyzer.Models.VKModels;
 using VKAnalyzer.Services.VK;
 
 namespace VKAnalyzer.Controllers
@@ -12,13 +11,11 @@ namespace VKAnalyzer.Controllers
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly BaseDb _dbContext;
         private readonly VkService _vkService;
         private readonly VkDatabaseService _vkDatabaseService;
 
         public VkController()
         {
-            _dbContext = new BaseDb();
             _vkService = new VkService();
             _vkDatabaseService = new VkDatabaseService();
         }
@@ -57,10 +54,10 @@ namespace VKAnalyzer.Controllers
             return _vkDatabaseService.GetCities(accessToken, country);
         }
 
-        public string GetUnivercity(int country = 1)
+        public string GetUnivercity(int country = 1, int city = 1)
         {
             var accessToken = GetCurrentUserAccessToken();
-            return _vkDatabaseService.GetUniversities(accessToken, country);
+            return _vkDatabaseService.GetUniversities(accessToken, country, city);
         }
 
         private string GetCurrentUserAccessToken()

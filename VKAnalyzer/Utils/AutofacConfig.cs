@@ -5,7 +5,6 @@ using Hangfire;
 using VKAnalyzer.Controllers;
 using VKAnalyzer.Controllers.Vk;
 using VKAnalyzer.DBContexts;
-using VKAnalyzer.Services.Interfaces;
 using VKAnalyzer.Services.VK;
 
 namespace VKAnalyzer.Utils
@@ -35,8 +34,6 @@ namespace VKAnalyzer.Utils
             builder.RegisterType<VkDbService>().InstancePerLifetimeScope();
 
             builder.RegisterType<AffinityIndexService>().InstancePerLifetimeScope();
-
-            
 
             // создаем новый контейнер с теми зависимостями, которые определены выше
             var container = builder.Build();
