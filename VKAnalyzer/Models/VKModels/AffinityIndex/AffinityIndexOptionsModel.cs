@@ -36,7 +36,7 @@ namespace VKAnalyzer.Models.VKModels.AffinityIndex
         public string AgesUpTo { get; set; }
 
         [Display(Name = "Семейное положение:")]
-        public int Status { get; set; }
+        public string Status { get; set; }
 
         [Display(Name = "Страна:")]
         public string Country { get; set; }

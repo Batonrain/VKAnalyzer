@@ -30,7 +30,7 @@ namespace VKAnalyzer.Services.VK
             {
                 ageUpTo = 80;
             }
-            if (status.Equals("0"))
+            if (status == null || status == "0")
             {
                 status = string.Empty;
             }
@@ -47,16 +47,16 @@ namespace VKAnalyzer.Services.VK
                 description = name,
                 sex = sex,
                 age_from = ageFrom,
-                age_to = ageUpTo,
+                age_to = ageUpTo ,
                 statuses = status,
-                country = country,
-                cities = cities,
-                cities_not = excludedCities,
+                country = country ?? string.Empty,
+                cities = cities ?? string.Empty,
+                cities_not = excludedCities ?? string.Empty,
                 groups = groups ?? string.Empty,
                 groups_not = excludedGroups ?? string.Empty,
                 interest_categories = interestCategories,
-                retargeting_groups = retargetGroups,
-                retargeting_groups_not = excludedRetargetGroups
+                retargeting_groups = retargetGroups ?? string.Empty,
+                retargeting_groups_not = excludedRetargetGroups ?? string.Empty
             });
 
             return string.Format(

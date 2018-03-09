@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
@@ -12,8 +9,6 @@ using Microsoft.Owin.Security;
 using NLog;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models;
-using VKAnalyzer.Models.EFModels;
-using VKAnalyzer.Services;
 using VKAnalyzer.Services.VK;
 
 namespace VKAnalyzer.Controllers
@@ -204,6 +199,7 @@ namespace VKAnalyzer.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
+            var req = Request;
             var result = await AuthenticationManager.AuthenticateAsync(DefaultAuthenticationTypes.ExternalCookie);
             if (result == null || result.Identity == null)
             {

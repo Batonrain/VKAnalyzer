@@ -17,8 +17,9 @@ namespace VKAnalyzer
 
             var options = new DashboardOptions
             {
-                AppPath = VirtualPathUtility.ToAbsolute("~"),
-                Authorization = new[] { new DashboardAuthorizationFilter() }
+                AppPath = VirtualPathUtility.ToAbsolute("~")
+                //,
+                //Authorization = new[] { new DashboardAuthorizationFilter() }
             };
             app.UseHangfireDashboard("/hangfire", options);
             app.UseHangfireServer();

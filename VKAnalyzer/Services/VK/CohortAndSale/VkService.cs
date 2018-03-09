@@ -10,6 +10,7 @@ using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.BusinessLogic.VK.Models;
 using VKAnalyzer.Models.VKModels;
 using VKAnalyzer.Models.VKModels.JsonModels;
+using VKAnalyzer.Services.VK.CohortAndSale;
 
 namespace VKAnalyzer.Services.VK
 {

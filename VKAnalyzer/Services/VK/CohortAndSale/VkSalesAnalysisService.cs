@@ -8,7 +8,7 @@ using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.Models.VKModels;
 using VKAnalyzer.Models.VKModels.JsonModels;
 
-namespace VKAnalyzer.Services.VK
+namespace VKAnalyzer.Services.VK.CohortAndSale
 {
     public class VkSalesAnalysisService
     {

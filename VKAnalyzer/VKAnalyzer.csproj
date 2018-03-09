@@ -145,8 +145,8 @@
       <HintPath>..\packages\NLog.4.4.11\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Owin.Security.Providers.VKontakte, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.VKontakte.2.14.0\lib\net45\Owin.Security.Providers.VKontakte.dll</HintPath>
+    <Reference Include="Owin.Security.Providers.VKontakte, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.Security.Providers.VKontakte.2.21.0\lib\net45\Owin.Security.Providers.VKontakte.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

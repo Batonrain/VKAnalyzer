@@ -169,12 +169,12 @@ namespace VKAnalyzer.Services.VK
             return result;
         }
 
-        private VkAdSuccess CreateAd(string accountId, string accessToken, int campaignId, string sex, string ageFrom = "14", string ageUpTo = "80", int status = 0, string groups = "",
+        private VkAdSuccess CreateAd(string accountId, string accessToken, int campaignId, string sex, string ageFrom = "14", string ageUpTo = "80", string status = "0", string groups = "",
                                      string excludedGroupds = "", string interestCategories = "", string country = "", string cities = "", string excludedCities = "",
                                      string retargetGroups = "", string excludedRetargetGroups = "")
         {
             var reqString = _vkUrlService.CreateAdUrl(accountId: accountId, campaignId: campaignId, accessToken: accessToken, name: "EvilMarketing_Affinity_Ad",
-                sex: sex, ageFrom: Convert.ToInt32(ageFrom), ageUpTo: Convert.ToInt32(ageUpTo), status: status.ToString(), groups: groups, excludedGroups: excludedGroupds, interestCategories: interestCategories,
+                sex: sex, ageFrom: Convert.ToInt32(ageFrom), ageUpTo: Convert.ToInt32(ageUpTo), status: status, groups: groups, excludedGroups: excludedGroupds, interestCategories: interestCategories,
                 country: country, cities: cities, excludedCities: excludedCities, retargetGroups: retargetGroups, excludedRetargetGroups: excludedRetargetGroups);
 
             var ad = _vkBaseService.GetJsonFromResponse(_vkAdsRequestService.RequestJs(reqString));
