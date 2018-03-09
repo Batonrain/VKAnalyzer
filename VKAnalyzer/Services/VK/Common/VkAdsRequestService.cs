@@ -4,21 +4,28 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Web.Configuration;
 using System.Xml.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 using VKAnalyzer.Models.VKModels.JsonModels;
 
-namespace VKAnalyzer.Services.VK
+namespace VKAnalyzer.Services.VK.Common
 {
     public class VkAdsRequestService
     {
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private string UserId { get; set; }
+        private string BaseUrl { get; set; }
         private const int SleepTime = 5000;
         private const int SleepTimeLong = 10000;
         private const int SleepTimeDay = 86400000;
+
+        public VkAdsRequestService()
+        {
+            BaseUrl = string.Format("{0}&{1}", WebConfigurationManager.AppSettings["VkApiBaseUrl"],
+                WebConfigurationManager.AppSettings["VkApiActualVersion"]);
+        }
 
         public XDocument Request(string requestString)
         {
@@ -78,12 +85,12 @@ namespace VKAnalyzer.Services.VK
                     {
                         var error = JsonConvert.DeserializeObject<List<Error>>(JObject.Parse(json)["response"].ToString()).FirstOrDefault();
 
-                        if (error.error_code == 603)
+                        if (error.ErrorCode == 603)
                         {
                             return json;
                         }
 
-                        if (error.error_code == 9)
+                        if (error.ErrorCode == 9)
                         {
                             Thread.Sleep(SleepTimeLong);
                         }
@@ -120,7 +127,7 @@ namespace VKAnalyzer.Services.VK
             Thread.Sleep(SleepTime);
             using (var wc = new WebClient())
             {
-                var requestUrl = String.Format("https://api.vk.com/api.php?oauth=1&method=ads.getAccounts&access_token={0}", accessToken);
+                var requestUrl = String.Format("{0}&method=ads.getAccounts&access_token={1}",BaseUrl, accessToken);
 
                 var result = wc.DownloadData(requestUrl);
                 var json = Encoding.UTF8.GetString(result);
@@ -136,35 +143,8 @@ namespace VKAnalyzer.Services.VK
             {
                 var requestUrl =
                     String.Format(
-                        "https://api.vk.com/api.php?oauth=1&method=ads.getClients&access_token={0}&account_id={1}",
-                        accessToken, accountId);
+                        "{0}&method=ads.getClients&access_token={1}&account_id={2}", BaseUrl, accessToken, accountId);
                 var result = wc.DownloadData(requestUrl);
-                var json = Encoding.UTF8.GetString(result);
-                return json;
-            }
-        }
-
-        public string GetTargetsGroups(string accountId, string clientId, string accessToken)
-        {
-            Thread.Sleep(SleepTime);
-            using (var wc = new WebClient())
-            {
-                var requestUrl = String.Format(
-                    "https://api.vk.com/api.php?oauth=1&method=ads.getTargetGroups&access_token={0}&account_id={1}&client_id={2}",
-                    accessToken, accountId, clientId);
-                var result = wc.DownloadData(requestUrl);
-                var json = Encoding.UTF8.GetString(result);
-                return json;
-            }
-        }
-
-        public string GetTargetsGroups(string accountId, string accessToken)
-        {
-            Thread.Sleep(SleepTime);
-            using (var wc = new WebClient())
-            {
-                var result = wc.DownloadData(String.Format(
-                    "https://api.vk.com/api.php?oauth=1&method=ads.getTargetGroups&access_token={0}&account_id={1}", accessToken, accountId));
                 var json = Encoding.UTF8.GetString(result);
                 return json;
             }
@@ -175,8 +155,7 @@ namespace VKAnalyzer.Services.VK
             Thread.Sleep(SleepTime);
             using (var wc = new WebClient())
             {
-                var requestUrl = String.Format(
-                    "https://api.vk.com/api.php?oauth=1&method=ads.deleteCampaigns&access_token={0}&account_id={1}&ids={2}",
+                var requestUrl = String.Format("{0}&method=ads.deleteCampaigns&access_token={1}&account_id={2}&ids={3}", BaseUrl,
                     accessToken, accountId, campaignIds);
 
                 var result = wc.DownloadData(requestUrl);
@@ -191,30 +170,12 @@ namespace VKAnalyzer.Services.VK
             using (var wc = new WebClient())
             {
                 var requestUrl = String.Format(
-                    "https://api.vk.com/api.php?oauth=1&method=ads.deleteAds&access_token={0}&account_id={1}&ids={2}",
-                    accessToken, accountId, adIds);
+                    "{0}&method=ads.deleteAds&access_token={0}&account_id={1}&ids={2}", BaseUrl, accessToken, accountId, adIds);
 
                 var result = wc.DownloadData(requestUrl);
                 var json = Encoding.UTF8.GetString(result);
                 return json;
             }
         }
-
-        public string DeleteTargetGroup(string accountId, string clientId, string targetGroup, string accessToken)
-        {
-            Thread.Sleep(SleepTime);
-            using (var wc = new WebClient())
-            {
-                var requestUrl = String.Format(
-                    "https://api.vk.com/api.php?oauth=1&method=ads.deleteTargetGroup&access_token={0}&account_id={1}&client_id={2}&target_group_id={3}",
-                    accessToken, accountId, clientId, targetGroup);
-
-                var result = wc.DownloadData(requestUrl);
-                var json = Encoding.UTF8.GetString(result);
-                return json;
-            }
-        }
-
-
     }
 }

@@ -6,6 +6,7 @@ using VKAnalyzer.Controllers;
 using VKAnalyzer.Controllers.Vk;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Services.VK;
+using VKAnalyzer.Services.VK.Common;
 
 namespace VKAnalyzer.Utils
 {

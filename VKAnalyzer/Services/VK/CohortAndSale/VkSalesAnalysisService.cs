@@ -7,6 +7,7 @@ using NLog;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.Models.VKModels;
 using VKAnalyzer.Models.VKModels.JsonModels;
+using VKAnalyzer.Services.VK.Common;
 
 namespace VKAnalyzer.Services.VK.CohortAndSale
 {
@@ -31,7 +32,7 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
             var accsDeserialized = JsonConvert.DeserializeObject<List<AdsAccount>>(accountsToDeserialize);
 
             var needClientId =
-                accsDeserialized.Any(a => a.account_type == "agency" && a.account_id == accountId);
+                accsDeserialized.Any(a => a.AccountType == "agency" && a.AccountId == accountId);
 
             var clientId = string.Empty;
 
@@ -42,7 +43,7 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
                 var clntsDeserialized = JsonConvert.DeserializeObject<List<AdsClient>>(clientsToDeserialize);
 
                 var firstOrDefault = clntsDeserialized.FirstOrDefault();
-                if (firstOrDefault != null) clientId = firstOrDefault.id;
+                if (firstOrDefault != null) clientId = firstOrDefault.Id;
             }
 
             CleanupRetargets(accountId, clientId, accessToken);
@@ -171,7 +172,7 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
             var targetGroupsToDeserialize = GetJsonFromResponse(targetGroupsJson);
             var targetGroupsDeserialized = JsonConvert.DeserializeObject<List<AdsRetargetGroup>>(targetGroupsToDeserialize);
             var correctTargetGroups =
-                targetGroupsDeserialized.Where(g => !g.name.Contains("EvilMarketingServiceForPost"));
+                targetGroupsDeserialized.Where(g => !g.Name.Contains("EvilMarketingServiceForPost"));
 
             var json = JsonConvert.SerializeObject(new
             {

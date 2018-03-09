@@ -1,10 +1,18 @@
-﻿using System;
+﻿using System.Web.Configuration;
 using Newtonsoft.Json;
 
-namespace VKAnalyzer.Services.VK
+namespace VKAnalyzer.Services.VK.Common
 {
     public class VkUrlService
     {
+        private string BaseUrl { get; set; }
+
+        public VkUrlService()
+        {
+            BaseUrl = string.Format("{0}&{1}", WebConfigurationManager.AppSettings["VkApiBaseUrl"],
+                WebConfigurationManager.AppSettings["VkApiActualVersion"]);
+        }
+
         public string CreateCampaignUrl(string accountId, string clientId, string name, string accessToken)
         {
             var json = JsonConvert.SerializeObject(new
@@ -14,8 +22,8 @@ namespace VKAnalyzer.Services.VK
                 name = name
             });
 
-            return string.Format("https://api.vk.com/api.php?oauth=1&method=ads.createCampaigns&access_token={0}&account_id={1}&data={2}",
-                                  accessToken, accountId, string.Format("[{0}]", json));
+            return string.Format("{0}&method=ads.createCampaigns&access_token={1}&account_id={2}&data={3}",
+                                  BaseUrl, accessToken, accountId, string.Format("[{0}]", json));
         }
 
         public string CreateAdUrl(string accountId, int campaignId, string accessToken, string name, string sex, int ageFrom, int ageUpTo, string status,
@@ -58,9 +66,9 @@ namespace VKAnalyzer.Services.VK
                 retargeting_groups = retargetGroups ?? string.Empty,
                 retargeting_groups_not = excludedRetargetGroups ?? string.Empty
             });
-
+            
             return string.Format(
-                    "https://api.vk.com/api.php?oauth=1&method=ads.createAds&access_token={0}&account_id={1}&data={2}", accessToken, accountId, string.Format("[{0}]", json));
+                    "{0}&method=ads.createAds&access_token={1}&account_id={2}&data={3}", BaseUrl, accessToken, accountId, string.Format("[{0}]", json));
         }
 
         public string CreateGetAdsTargetingUrl(string accountId, string clientId, string adsIds, string accessToken)
@@ -68,8 +76,8 @@ namespace VKAnalyzer.Services.VK
             var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
 
             return string.Format(
-                "https://api.vk.com/api.php?oauth=1&method=ads.getAdsTargeting&access_token={0}&account_id={1}{2}&ad_ids={3}",
-                accessToken, accountId, client, adsIds);
+                "{0}&method=ads.getAdsTargeting&access_token={1}&account_id={2}{3}&ad_ids={4}",
+                BaseUrl, accessToken, accountId, client, adsIds);
         }
     }
 }

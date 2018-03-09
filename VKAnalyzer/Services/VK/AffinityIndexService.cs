@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 using VKAnalyzer.Models.VKModels.AffinityIndex;
 using VKAnalyzer.Models.VKModels.JsonModels;
+using VKAnalyzer.Services.VK.Common;
 using WebGrease.Css.Extensions;
 
 namespace VKAnalyzer.Services.VK
@@ -38,23 +39,23 @@ namespace VKAnalyzer.Services.VK
 
             categories.ForEach(cat => result.Results.Add(new AffinityIndexCounter
             {
-                Category = cat.name,
-                CategoryId = cat.id
+                Category = cat.Name,
+                CategoryId = cat.Id
             }));
 
             //Сравнительная аудитория
             //Общая кампания для запроса
             var affinityIndexCampaign = CreateCampaign(accountId, clientId, accessToken, "common");
 
-            var allCategories = string.Join(",", categories.Select(c => c.id));
+            var allCategories = string.Join(",", categories.Select(c => c.Id));
 
-            var commonСomparativeAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
+            var commonСomparativeAd = CreateAd(accountId, accessToken, affinityIndexCampaign.Id,
                 comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.Status, comparativeAudience.InterestGroupIds,
                 comparativeAudience.ExcludeInterestGroupIds, allCategories, comparativeAudience.Country, comparativeAudience.Cities, comparativeAudience.ExcludeCities,
                 comparativeAudience.RetargetGroupIds, comparativeAudience.ExcludeRetargetGroupIds);
 
-            var commonСomparativeTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", commonСomparativeAd.id), accessToken);
-            if (!string.IsNullOrEmpty(commonСomparativeTargeting.error_desc))
+            var commonСomparativeTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", commonСomparativeAd.Id), accessToken);
+            if (!string.IsNullOrEmpty(commonСomparativeTargeting.ErrorDesc))
             {
                 result.ErrorMessage =
                     string.Format(
@@ -69,34 +70,34 @@ namespace VKAnalyzer.Services.VK
                 {
                     result.Audience = audience.Name;
 
-                    var commonAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
+                    var commonAd = CreateAd(accountId, accessToken, affinityIndexCampaign.Id,
                         audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.Status, audience.InterestGroupIds,
                         audience.ExcludeInterestGroupIds, allCategories, audience.Country, audience.Cities, audience.ExcludeCities,
                         audience.RetargetGroupIds, audience.ExcludeRetargetGroupIds);
 
-                    var commonTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", commonAd.id), accessToken);
-                    if (!string.IsNullOrEmpty(commonTargeting.error_desc))
+                    var commonTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", commonAd.Id), accessToken);
+                    if (!string.IsNullOrEmpty(commonTargeting.ErrorDesc))
                     {
                         continue;
                     }
 
                     foreach (var category in categories)
                     {
-                        var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
+                        var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.Id,
                         audience.Gender, audience.AgesFrom, audience.AgesUpTo, audience.Status, audience.InterestGroupIds,
-                        audience.ExcludeInterestGroupIds, category.id.ToString(), audience.Country, audience.Cities, audience.ExcludeCities,
+                        audience.ExcludeInterestGroupIds, category.Id.ToString(), audience.Country, audience.Cities, audience.ExcludeCities,
                         audience.RetargetGroupIds, audience.ExcludeRetargetGroupIds);
 
-                        if (!string.IsNullOrEmpty(categoryAd.error_desc))
+                        if (!string.IsNullOrEmpty(categoryAd.ErrorDesc))
                         {
                             continue;
                         }
 
-                        var categoryTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", categoryAd.id), accessToken);
+                        var categoryTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", categoryAd.Id), accessToken);
 
-                        result.Results.First(f => f.CategoryId == category.id).Audience1Abs = categoryTargeting.count;
-                        result.Results.First(f => f.CategoryId == category.id).Audience1Result =
-                            (decimal)categoryTargeting.count / (decimal)commonTargeting.count;
+                        result.Results.First(f => f.CategoryId == category.Id).Audience1Abs = categoryTargeting.Count;
+                        result.Results.First(f => f.CategoryId == category.Id).Audience1Result =
+                            (decimal)categoryTargeting.Count / (decimal)commonTargeting.Count;
                     }
                 }
 
@@ -108,20 +109,20 @@ namespace VKAnalyzer.Services.VK
                         continue;
                     }
 
-                    var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.id,
+                    var categoryAd = CreateAd(accountId, accessToken, affinityIndexCampaign.Id,
                     comparativeAudience.Gender, comparativeAudience.AgesFrom, comparativeAudience.AgesUpTo, comparativeAudience.Status, comparativeAudience.InterestGroupIds,
-                    comparativeAudience.ExcludeInterestGroupIds, category.id.ToString(), comparativeAudience.Country, comparativeAudience.Cities, comparativeAudience.ExcludeCities,
+                    comparativeAudience.ExcludeInterestGroupIds, category.Id.ToString(), comparativeAudience.Country, comparativeAudience.Cities, comparativeAudience.ExcludeCities,
                     comparativeAudience.RetargetGroupIds, comparativeAudience.ExcludeRetargetGroupIds);
 
-                    if (!string.IsNullOrEmpty(categoryAd.error_desc))
+                    if (!string.IsNullOrEmpty(categoryAd.ErrorDesc))
                     {
                         continue;
                     }
 
-                    var categoryTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", categoryAd.id), accessToken);
+                    var categoryTargeting = GetAdTarget(accountId, clientId, string.Format("[{0}]", categoryAd.Id), accessToken);
 
-                    result.Results.First(f => f.CategoryId == category.id).Audience2Abs = categoryTargeting.count;
-                    result.Results.First(f => f.CategoryId == category.id).Audience2Result = (decimal)categoryTargeting.count / (decimal)commonСomparativeTargeting.count;
+                    result.Results.First(f => f.CategoryId == category.Id).Audience2Abs = categoryTargeting.Count;
+                    result.Results.First(f => f.CategoryId == category.Id).Audience2Result = (decimal)categoryTargeting.Count / (decimal)commonСomparativeTargeting.Count;
                 }
 
                 result.Results.Where(w => w.Audience1Result != 0 && w.Audience2Result != 0).ForEach(f => f.Index = f.Audience1Result / f.Audience2Result);

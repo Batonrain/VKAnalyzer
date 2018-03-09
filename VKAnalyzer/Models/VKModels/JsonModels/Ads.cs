@@ -1,37 +1,75 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace VKAnalyzer.Models.VKModels.JsonModels
 {
     public class AdsAccount
     {
-        public string account_id { get; set; }
-        public string account_type { get; set; }
-        public int account_status { get; set; }
-        public string account_name { get; set; }
-        public string access_role { get; set; }
+        [JsonProperty("account_id")]
+        public string AccountId { get; set; }
+
+        [JsonProperty("account_type")]
+        public string AccountType { get; set; }
+
+        [JsonProperty("account_status")]
+        public int AccountStatus { get; set; }
+
+        [JsonProperty("account_name")]
+        public string AccountName { get; set; }
+
+        [JsonProperty("access_role")]
+        public string AccessRole { get; set; }
     }
 
     public class AdsClient
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public int day_limits { get; set; }
-        public string all_limits { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("day_limits")]
+        public int DayLimits { get; set; }
+
+        [JsonProperty("all_limits")]
+        public string AllLimits { get; set; }
     }
 
     public class AdsRetargetGroup
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public string last_updated { get; set; }
-        public string is_audience { get; set; }
-        public string audience_count { get; set; }
-        public string lifetime { get; set; }
-        public string file_source { get; set; }
-        public string api_source { get; set; }
-        public string lookalike_source { get; set; }
-        public string pixel { get; set; }
-        public string domain { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("last_updated")]
+        public string LastUpdated { get; set; }
+
+        [JsonProperty("is_audience")]
+        public string IsAudience { get; set; }
+
+        [JsonProperty("audience_count")]
+        public string AudienceCount { get; set; }
+
+        [JsonProperty("lifetime")]
+        public string Lifetime { get; set; }
+
+        [JsonProperty("file_source")]
+        public string FileSource { get; set; }
+
+        [JsonProperty("api_source")]
+        public string ApiSource { get; set; }
+
+        [JsonProperty("lookalike_source")]
+        public string LookalikeSource { get; set; }
+
+        [JsonProperty("pixel")]
+        public string Pixel { get; set; }
+
+        [JsonProperty("domain")]
+        public string Domain { get; set; }
     }
 
     public class VkAllInterestCategory
@@ -43,48 +81,79 @@ namespace VKAnalyzer.Models.VKModels.JsonModels
 
     public class VkInterestCategory
     {
-        public int id { get; set; }
+        [JsonProperty("id")]
+        public int Id { get; set; }
 
-        public string name { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
     }
 
     public class VkInterestSubcategory
     {
-        public int id { get; set; }
-        public string name { get; set; }
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
     }
 
     public class VkCampaignSuccess
     {
-        public int id { get; set; }
+        [JsonProperty("id")]
+        public int Id { get; set; }
 
-        public int error_code { get; set; }
-        public string error_desc { get; set; }
+        [JsonProperty("error_code")]
+        public int ErrorCode { get; set; }
+
+        [JsonProperty("error_desc")]
+        public string ErrorDesc { get; set; }
     }
 
     public class VkAdSuccess
     {
-        public int id { get; set; }
+        [JsonProperty("id")]
+        public int Id { get; set; }
 
-        public int error_code { get; set; }
-        public string error_desc { get; set; }
+        [JsonProperty("error_code")]
+        public int ErrorCode { get; set; }
+
+        [JsonProperty("error_desc")]
+        public string ErrorDesc { get; set; }
     }
 
     public class VkAdTargetInfo
     {
-        public int id { get; set; }
-        public string campaign_id { get; set; }
-        public int age_from { get; set; }
-        public int age_to { get; set; }
-        public string groups { get; set; }
-        public int count { get; set; }
-        public int error_code { get; set; }
-        public string error_desc { get; set; }
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("campaign_id")]
+        public string CampaignId { get; set; }
+
+        [JsonProperty("age_from")]
+        public int AgeFrom { get; set; }
+
+        [JsonProperty("age_to")]
+        public int AgeTo { get; set; }
+
+        [JsonProperty("groups")]
+        public string Groups { get; set; }
+
+        [JsonProperty("count")]
+        public int Count { get; set; }
+
+        [JsonProperty("error_code")]
+        public int ErrorCode { get; set; }
+
+        [JsonProperty("error_desc")]
+        public string ErrorDesc { get; set; }
     }
 
     public class Error
     {
-        public int error_code { get; set; }
-        public string error_desc { get; set; }
+        [JsonProperty("error_code")]
+        public int ErrorCode { get; set; }
+
+        [JsonProperty("error_desc")]
+        public string ErrorDesc { get; set; }
     }
 }

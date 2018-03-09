@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Web.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VKAnalyzer.Models.VKModels.JsonModels;
@@ -12,12 +13,19 @@ namespace VKAnalyzer.Services.VK
     public class VkDatabaseService
     {
         private const int SleepTime = 5000;
+        private string BaseUrl { get; set; }
+
+        public VkDatabaseService()
+        {
+            BaseUrl = string.Format("{0}&{1}", WebConfigurationManager.AppSettings["VkApiBaseUrl"],
+                WebConfigurationManager.AppSettings["VkApiActualVersion"]);
+        }
 
         public string GetCities(string accessToken, int country = 1)
         {
             using (var wc = new WebClient())
             {
-                var requestUrl = String.Format("https://api.vk.com/api.php?oauth=1&method=ads.getSuggestions&section=cities&country=1&lang=ru&access_token={0}", accessToken);
+                var requestUrl = String.Format("{0}&method=ads.getSuggestions&section=cities&country=1&lang=ru&access_token={1}", BaseUrl, accessToken);
                 var result = wc.DownloadData(requestUrl);
                 var json = Encoding.UTF8.GetString(result);
 
@@ -29,7 +37,7 @@ namespace VKAnalyzer.Services.VK
         {
             using (var wc = new WebClient())
             {
-                var requestUrl = String.Format("https://api.vk.com/api.php?oauth=1&method=database.getUniversities&section=interest_categories&lang=ru&access_token={0}", accessToken);
+                var requestUrl = String.Format("{0}&method=database.getUniversities&section=interest_categories&lang=ru&access_token={1}", BaseUrl, accessToken);
                 var result = wc.DownloadData(requestUrl);
                 var json = Encoding.UTF8.GetString(result);
                 var parsed = JObject.Parse(json);
@@ -46,7 +54,7 @@ namespace VKAnalyzer.Services.VK
             using (var wc = new WebClient())
             {
                 var requestString = string.Format(
-                    "https://api.vk.com/api.php?oauth=1&method=ads.getTargetGroups&access_token={0}&account_id={1}{2}",
+                    "{0}&method=ads.getTargetGroups&access_token={1}&account_id={2}{3}", BaseUrl,
                     accessToken, accountId, client);
 
                 var data = wc.DownloadData(requestString);
@@ -56,7 +64,7 @@ namespace VKAnalyzer.Services.VK
             var targetGroupsToDeserialize = GetJsonFromResponse(json);
             var targetGroupsDeserialized = JsonConvert.DeserializeObject<List<AdsRetargetGroup>>(targetGroupsToDeserialize);
             var correctTargetGroups =
-                targetGroupsDeserialized.Where(g => !g.name.Contains("EvilMarketing"));
+                targetGroupsDeserialized.Where(g => !g.Name.Contains("EvilMarketing"));
 
             var result = JsonConvert.SerializeObject(new
             {
@@ -69,7 +77,7 @@ namespace VKAnalyzer.Services.VK
         {
             using (var wc = new WebClient())
             {
-                var requestUrl = String.Format("https://api.vk.com/api.php?oauth=1&method=ads.getSuggestions&section=interest_categories&lang=ru&access_token={0}", accessToken);
+                var requestUrl = String.Format("{0}&method=ads.getSuggestions&section=interest_categories&lang=ru&access_token={1}", BaseUrl, accessToken);
                 var result = wc.DownloadData(requestUrl);
                 var json = Encoding.UTF8.GetString(result);
                 var parsed = JObject.Parse(json);
