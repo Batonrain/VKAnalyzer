@@ -2,10 +2,9 @@
 using Autofac;
 using Autofac.Integration.Mvc;
 using Hangfire;
-using VKAnalyzer.Controllers;
-using VKAnalyzer.Controllers.Vk;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Services.VK;
+using VKAnalyzer.Services.VK.CohortAndSale;
 using VKAnalyzer.Services.VK.Common;
 
 namespace VKAnalyzer.Utils
@@ -18,22 +17,21 @@ namespace VKAnalyzer.Utils
             var builder = new ContainerBuilder();
 
             // регистрируем контроллер в текущей сборке
-            //builder.RegisterControllers(typeof(MvcApplication).Assembly);
-            builder.RegisterType<HomeController>().InstancePerRequest();
-            builder.RegisterType<MemologyController>().InstancePerRequest();
-            builder.RegisterType<AffinityIndexController>().InstancePerRequest();
-            builder.RegisterType<VkController>().InstancePerRequest();
-            builder.RegisterType<AccountController>().InstancePerRequest();
-            builder.RegisterType<ServiceController>().InstancePerRequest();
+            builder.RegisterControllers(typeof(MvcApplication).Assembly);
 
             // регистрируем споставление типов
-            builder.RegisterType<BaseDb>().AsImplementedInterfaces();
+            builder.RegisterType<BaseDb>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<VkBaseService>().InstancePerLifetimeScope();
             builder.RegisterType<VkDatabaseService>().InstancePerLifetimeScope();
             builder.RegisterType<VkAdsRequestService>().InstancePerLifetimeScope();
             builder.RegisterType<VkUrlService>().InstancePerLifetimeScope();
             builder.RegisterType<VkDbService>().InstancePerLifetimeScope();
+            
+            builder.RegisterType<VkRequestService>().InstancePerLifetimeScope();
 
+            builder.RegisterType<VkService>().InstancePerLifetimeScope();
+
+            builder.RegisterType<VkSalesAnalysisService>().InstancePerLifetimeScope();
             builder.RegisterType<AffinityIndexService>().InstancePerLifetimeScope();
 
             // создаем новый контейнер с теми зависимостями, которые определены выше

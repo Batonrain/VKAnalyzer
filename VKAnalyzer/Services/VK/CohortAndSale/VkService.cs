@@ -9,7 +9,6 @@ using VKAnalyzer.BusinessLogic.CohortAnalyser;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.BusinessLogic.VK.Models;
 using VKAnalyzer.Models.VKModels;
-using VKAnalyzer.Models.VKModels.JsonModels;
 using VKAnalyzer.Services.VK.CohortAndSale;
 
 namespace VKAnalyzer.Services.VK
@@ -34,6 +33,15 @@ namespace VKAnalyzer.Services.VK
             RequestService = new VkRequestService();
             _cohortAnalyser = new CohortAnalyser();
         }
+
+        //public VkService(VkDbService vkDbService, VkMemasService vkMemasService, VkSalesAnalysisService vkSalesAnalysisService, VkRequestService vkRequestService, CohortAnalyser cohortAnalyser)
+        //{
+        //    _vkDbService = vkDbService;
+        //    _vkMemasService = vkMemasService;
+        //    _vkSalesAnalysisService = vkSalesAnalysisService;
+        //    RequestService = vkRequestService;
+        //    _cohortAnalyser = cohortAnalyser;
+        //}
 
         public void AnalyzeActivities(CohortAnalysysInputModel model, string accessToken, string userId)
         {
@@ -65,7 +73,7 @@ namespace VKAnalyzer.Services.VK
             else
             {
                 //Создание групп ретаргета для каждого поста
-                var retargetsInfo = _vkSalesAnalysisService.CreateRetargets(analyzeModels, model.AccountId, model.ExcludeTargetGroup, AccessToken);
+                var retargetsInfo = _vkSalesAnalysisService.CreateRetargets(analyzeModels, model.AccountId, model.ClientId, model.ExcludeTargetGroup, AccessToken);
                 var result = _cohortAnalyser.AnalyzeAcitivitySalesWithRetargetsInfo(retargetsInfo, model.Step, model.StartDate, model.EndDate, model.GroupId);
 
                 _vkDbService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);
@@ -374,11 +382,6 @@ namespace VKAnalyzer.Services.VK
         public string GetClients(string accountId, string accessToken)
         {
             return _vkSalesAnalysisService.GetClients(accountId, accessToken);
-        }
-
-        public string GetTargetGroups(string accountId, string clientId, string accessToken)
-        {
-            return _vkSalesAnalysisService.GetAccountGroups(accountId, clientId, accessToken);
         }
     }
 }

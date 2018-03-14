@@ -14,10 +14,10 @@ namespace VKAnalyzer.Controllers
         private readonly VkService _vkService;
         private readonly VkDatabaseService _vkDatabaseService;
 
-        public VkController()
+        public VkController(VkService vkService, VkDatabaseService vkDatabaseService)
         {
-            _vkService = new VkService();
-            _vkDatabaseService = new VkDatabaseService();
+            _vkService = vkService;
+            _vkDatabaseService = vkDatabaseService;
         }
 
         public ActionResult Index()

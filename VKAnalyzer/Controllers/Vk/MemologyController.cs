@@ -19,10 +19,10 @@ namespace VKAnalyzer.Controllers.Vk
         private readonly VkService _vkService;
         private readonly BaseDb _dbContext;
 
-        public MemologyController()
+        public MemologyController(BaseDb baseDb, VkService vkService)
         {
-            _dbContext = new BaseDb();
-            _vkService = new VkService();
+            _dbContext = baseDb;
+            _vkService = vkService;
         }
 
         public ActionResult Index()

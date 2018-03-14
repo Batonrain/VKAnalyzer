@@ -16,59 +16,33 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private VkAdsRequestService VkAdsRequestService { get; set; }
         private VkRequestService VkRequestService { get; set; }
+        private VkUrlService VkUrlService { get; set; }
 
         public VkSalesAnalysisService()
         {
             VkAdsRequestService = new VkAdsRequestService();
             VkRequestService = new VkRequestService();
+            VkUrlService = new VkUrlService();
         }
 
-        public IEnumerable<VkAnalyseSalesResultModel> CreateRetargets(List<CohortAnalysisModel> posts, string accountId, string excludeTargetGroupdId, string accessToken)
+        public IEnumerable<VkAnalyseSalesResultModel> CreateRetargets(List<CohortAnalysisModel> posts, string accountId, string clientId, string excludeTargetGroupdId, string accessToken)
         {
-            var accountsJson = VkAdsRequestService.GetAccounts(accessToken);
-
-            var accountsToDeserialize = GetJsonFromResponse(accountsJson);
-
-            var accsDeserialized = JsonConvert.DeserializeObject<List<AdsAccount>>(accountsToDeserialize);
-
-            var needClientId =
-                accsDeserialized.Any(a => a.AccountType == "agency" && a.AccountId == accountId);
-
-            var clientId = string.Empty;
-
-            if (needClientId)
-            {
-                var clientsJson = VkAdsRequestService.GetClients(accountId, accessToken);
-                var clientsToDeserialize = GetJsonFromResponse(clientsJson);
-                var clntsDeserialized = JsonConvert.DeserializeObject<List<AdsClient>>(clientsToDeserialize);
-
-                var firstOrDefault = clntsDeserialized.FirstOrDefault();
-                if (firstOrDefault != null) clientId = firstOrDefault.Id;
-            }
-
-            CleanupRetargets(accountId, clientId, accessToken);
-
             var results = new List<VkAnalyseSalesResultModel>();
+
+            // Создание группы ретаргета
+            var retargetJson = VkAdsRequestService.RequestJs(VkUrlService.CreateRetargetGroupUrl(accountId, clientId, accessToken));
+            var retargetGroup = JsonConvert.DeserializeObject<AdsRetargetGroup>(retargetJson);
+
             for (var i = 0; i < posts.Count(); i = i + 30)
             {
                 var items = posts.Skip(i).Take(30).ToList();
                 var campaignIds = new List<string>();
                 var adIds = new List<string>();
-                var retargetGroupsIds = new List<string>();
 
                 foreach (var item in items)
                 {
                     try
                     {
-                        var retargetXml = VkAdsRequestService.Request(CreateRetargetGroupUrl(accountId, clientId, item.PostId, accessToken));
-
-                        if (retargetXml.Descendants("id").FirstOrDefault() == null)
-                        {
-                            continue;
-                        }
-                        var retrgetId = retargetXml.Descendants("id").FirstOrDefault().Value;
-                        retargetGroupsIds.Add(retrgetId);
-
                         //Если при создании группы ретаргетинга в ней меньше 100 человек, мы добавляем совершенно левых, чтобы удовлетворять требуемым условиям
                         if (item.LikedIds.Count() < 100)
                         {
@@ -79,20 +53,20 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
                         var contacts = item.LikedIds.Aggregate(string.Empty, (current, id) => current + string.Format("{0},", id));
 
                         //Добавляем пользователей в группу ретаргета
-                        VkAdsRequestService.Request(CreateImportRetargetContactsUrl(accountId, clientId, retrgetId, contacts, accessToken));
+                        var updatedGroup = VkAdsRequestService.RequestJs(VkUrlService.CreateImportRetargetContactsUrl(accountId, clientId, retargetGroup.Id, contacts, accessToken));
 
                         //Создаём рекламную кампанию
-                        var campaignXml = VkAdsRequestService.Request(CreateCampaignUrl(accountId, clientId, string.Format("EvilMarkettingServiceForPost_Campaign_{0}", item.PostId), accessToken));
+                        var campaignJson = VkAdsRequestService.RequestJs(VkUrlService.CreateCampaignUrl(accountId, clientId, string.Format("EvilMarkettingServiceForPost_Campaign_{0}", item.PostId), accessToken));
+                        var campaign = JsonConvert.DeserializeObject<List<VkCampaignSuccess>>(JObject.Parse(campaignJson)["data"].ToString());
 
-                        if (campaignXml.Descendants("id").FirstOrDefault() == null)
+                        if (campaign != null && campaign.FirstOrDefault().ErrorCode != 0 && string.IsNullOrEmpty(campaign.FirstOrDefault().ErrorDesc))
                         {
                             continue;
                         }
-                        var campaignId = campaignXml.Descendants("id").FirstOrDefault().Value;
-                        campaignIds.Add(campaignId);
+                        var campaignId = campaign.FirstOrDefault().Id;
 
                         //Создаём рекламное объявление
-                        var adsXml = VkAdsRequestService.Request(CreateAdUrl(accountId, campaignId, retrgetId, string.Format("EM_Ad_{0}", item.PostId), accessToken));
+                        var adsXml = VkAdsRequestService.Request(CreateAdUrl(accountId, campaignId.ToString(), retargetGroup.Id, string.Format("EM_Ad_{0}", item.PostId), accessToken));
 
                         if (adsXml.Descendants("id").FirstOrDefault() == null)
                         {
@@ -148,9 +122,8 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
                     }
                 }
 
-                DeleteAds(accountId, adIds, accessToken);
-                DeleteCampaigns(accountId, campaignIds, accessToken);
-                DeleteTargetGroup(accountId, clientId, retargetGroupsIds, accessToken);
+                //DeleteAds(accountId, adIds, accessToken);
+                //DeleteCampaigns(accountId, campaignIds, accessToken);
             }
 
             return results;
@@ -166,21 +139,6 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
             return VkAdsRequestService.GetClients(accountId, accessToken);
         }
 
-        public string GetAccountGroups(string accountId, string clientId, string accessToken)
-        {
-            var targetGroupsJson = VkAdsRequestService.RequestJson(CreateGetRetargetGroupsUrl(accountId, clientId, accessToken));
-            var targetGroupsToDeserialize = GetJsonFromResponse(targetGroupsJson);
-            var targetGroupsDeserialized = JsonConvert.DeserializeObject<List<AdsRetargetGroup>>(targetGroupsToDeserialize);
-            var correctTargetGroups =
-                targetGroupsDeserialized.Where(g => !g.Name.Contains("EvilMarketingServiceForPost"));
-
-            var json = JsonConvert.SerializeObject(new
-            {
-                response = correctTargetGroups
-            });
-            return json;
-        }
-
         private string UpdateAd(string accountId, string adId, string excludeTargetGroupId, string accessToken)
         {
             var json = JsonConvert.SerializeObject(new
@@ -194,14 +152,6 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
                 accessToken, accountId, string.Format("[{0}]", json));
         }
 
-        private void DeleteTargetGroup(string accountId, string clientId, IEnumerable<string> retrgetIds, string accessToken)
-        {
-            foreach (var retargetId in retrgetIds)
-            {
-                var result = VkAdsRequestService.Request(CreateDeleteRetargetGroupUrl(accountId, clientId, retargetId, accessToken));
-            }
-        }
-
         private void DeleteCampaigns(string accountId, IEnumerable<string> campaignIds, string accessToken)
         {
             VkAdsRequestService.DeleteCampaigns(accountId, GenerateJsonArray(campaignIds), accessToken);
@@ -210,73 +160,6 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
         private void DeleteAds(string accountId, IEnumerable<string> adsId, string accessToken)
         {
             VkAdsRequestService.DeleteAds(accountId, GenerateJsonArray(adsId), accessToken);
-        }
-        private void CleanupRetargets(string accountId, string clientId, string accessToken)
-        {
-            var retargetsXml = VkAdsRequestService.Request(CreateCleanupRetargetGroupUrl(accountId, clientId, accessToken));
-
-            var ids = retargetsXml.Descendants("target_group")
-                .Where(x => x.Element("name").Value.Contains("EvilMarketingService"))
-                .Select(s => s.Element("id").Value)
-                .ToList();
-
-            DeleteTargetGroup(accountId, clientId, ids, accessToken);
-        }
-
-        private string CreateGetRetargetGroupsUrl(string accountId, string clientId, string accessToken)
-        {
-            var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
-
-            return string.Format(
-                "https://api.vk.com/api.php?oauth=1&method=ads.getTargetGroups&access_token={0}&account_id={1}{2}",
-                accessToken, accountId, client);
-        }
-
-        private string CreateRetargetGroupUrl(string accountId, string clientId, string name, string accessToken)
-        {
-            var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
-
-            return string.Format("https://api.vk.com/api.php?oauth=1&method=ads.createTargetGroup.xml&account_id={0}{1}&name={2}&access_token={3}",
-                                  accountId, client, string.Format("EvilMarketingServiceForPost_{0}", name), accessToken);
-        }
-
-        private string CreateCleanupRetargetGroupUrl(string accountId, string clientId, string accessToken)
-        {
-            var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
-
-            return string.Format("https://api.vk.com/api.php?oauth=1&method=ads.getTargetGroups.xml&account_id={0}{1}&access_token={2}",
-                                  accountId, client, accessToken);
-        }
-
-        private string CreateImportRetargetContactsUrl(string accountId, string clientId, string targetGroupId, string contacts, string accessToken)
-        {
-            var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
-
-            return string.Format("https://api.vk.com/api.php?oauth=1&method=ads.importTargetContacts.xml&access_token={0}&account_id={1}{2}&target_group_id={3}&contacts={4}",
-                                   accessToken, accountId, client, targetGroupId, contacts);
-        }
-
-        private string CreateDeleteRetargetGroupUrl(string accountId, string clientId, string targetGroup, string accessToken)
-        {
-            var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
-
-            return string.Format(
-                    "https://api.vk.com/api.php?oauth=1&method=ads.deleteTargetGroup.xml&access_token={0}&account_id={1}{2}&target_group_id={3}",
-                    accessToken, accountId, client, targetGroup);
-        }
-
-
-        private string CreateCampaignUrl(string accountId, string clientId, string name, string accessToken)
-        {
-            var json = JsonConvert.SerializeObject(new
-            {
-                client_id = clientId,
-                type = "normal",
-                name = name
-            });
-
-            return string.Format("https://api.vk.com/api.php?oauth=1&method=ads.createCampaigns.xml&access_token={0}&account_id={1}&data={2}",
-                                  accessToken, accountId, string.Format("[{0}]", json));
         }
 
         private string CreateAdUrl(string accountId, string campaignId, string targetGroupId, string name, string accessToken)

@@ -21,7 +21,6 @@ namespace VKAnalyzer.Models.VKModels
         [Display(Name = "Группа ретаргета для исключения")]
         public string ExcludeTargetGroup { get; set; }
 
-        [Required]
         [Display(Name = "Клиент рекламного кабинета")]
         public string ClientId { get; set; }
 

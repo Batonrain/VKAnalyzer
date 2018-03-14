@@ -20,10 +20,10 @@ namespace VKAnalyzer.Controllers.Vk
         private readonly VkService _vkService;
         private readonly BaseDb _dbContext;
 
-        public SalesAnalysisController()
+        public SalesAnalysisController(VkService vkService)
         {
             _dbContext = new BaseDb();
-            _vkService = new VkService();
+            _vkService = vkService;
         }
 
         public ActionResult Index()

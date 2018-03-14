@@ -79,5 +79,38 @@ namespace VKAnalyzer.Services.VK.Common
                 "{0}&method=ads.getAdsTargeting&access_token={1}&account_id={2}{3}&ad_ids={4}",
                 BaseUrl, accessToken, accountId, client, adsIds);
         }
+
+        public string CreateRetargetGroupUrl(string accountId, string clientId, string accessToken)
+        {
+            var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
+
+            return string.Format("{0}&method=ads.createTargetGroup&account_id={1}{2}&name={3}&access_token={4}", BaseUrl,
+                                  accountId, client, string.Format("EM_SalesAnalyse_RG_{0}", accountId), accessToken);
+        }
+
+        public string CreateCleanupRetargetGroupUrl(string accountId, string clientId, string accessToken)
+        {
+            var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
+
+            return string.Format("{0}&method=ads.getTargetGroups&account_id={1}{2}&access_token={3}", BaseUrl,
+                                  accountId, client, accessToken);
+        }
+
+        public string CreateImportRetargetContactsUrl(string accountId, string clientId, string targetGroupId, string contacts, string accessToken)
+        {
+            var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
+
+            return string.Format("{0}&method=ads.importTargetContacts&access_token={1}&account_id={2}{3}&target_group_id={4}&contacts={5}", BaseUrl,
+                                   accessToken, accountId, client, targetGroupId, contacts);
+        }
+
+        public string CreateDeleteRetargetGroupUrl(string accountId, string clientId, string targetGroup, string accessToken)
+        {
+            var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
+
+            return string.Format(
+                    "{0}&method=ads.deleteTargetGroup&access_token={1}&account_id={2}{3}&target_group_id={4}", BaseUrl,
+                    accessToken, accountId, client, targetGroup);
+        }
     }
 }

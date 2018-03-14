@@ -36,7 +36,7 @@ namespace VKAnalyzer.Models.VKModels.JsonModels
         public string AllLimits { get; set; }
     }
 
-    public class AdsRetargetGroup
+    public class AdsRetargetGroup : Error
     {
         [JsonProperty("id")]
         public string Id { get; set; }
