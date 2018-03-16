@@ -109,6 +109,18 @@ namespace VKAnalyzer.Models.VKModels.JsonModels
         public string ErrorDesc { get; set; }
     }
 
+    public class VkTargetGroupSuccess
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("error_code")]
+        public int ErrorCode { get; set; }
+
+        [JsonProperty("error_desc")]
+        public string ErrorDesc { get; set; }
+    }
+
     public class VkAdSuccess
     {
         [JsonProperty("id")]
@@ -140,6 +152,36 @@ namespace VKAnalyzer.Models.VKModels.JsonModels
 
         [JsonProperty("count")]
         public int Count { get; set; }
+
+        [JsonProperty("error_code")]
+        public int ErrorCode { get; set; }
+
+        [JsonProperty("error_desc")]
+        public string ErrorDesc { get; set; }
+    }
+
+    public class VkAdTargeting
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("campaign_id")]
+        public string CampaignId { get; set; }
+
+        [JsonProperty("country")]
+        public int Country { get; set; }
+
+        [JsonProperty("cities")]
+        public int Cities { get; set; }
+
+        [JsonProperty("cities_not")]
+        public string CitiesNot { get; set; }
+
+        [JsonProperty("count")]
+        public int Count { get; set; }
+
+        [JsonProperty("statuses")]
+        public int Statuses { get; set; }
 
         [JsonProperty("error_code")]
         public int ErrorCode { get; set; }

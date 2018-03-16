@@ -71,6 +71,38 @@ namespace VKAnalyzer.Services.VK.Common
                     "{0}&method=ads.createAds&access_token={1}&account_id={2}&data={3}", BaseUrl, accessToken, accountId, string.Format("[{0}]", json));
         }
 
+        public string CreateAdUrl(string accountId, string campaignId, string targetGroupId, string name, string accessToken)
+        {
+            var json = JsonConvert.SerializeObject(new
+            {
+                campaign_id = campaignId,
+                ad_format = 1,
+                cost_type = 1,
+                cpm = 6.00,
+                link_url = "www.mysite.com",
+                retargeting_groups = string.IsNullOrEmpty(targetGroupId) ? string.Empty : targetGroupId,
+                title = name,
+                photo = @"size:s|server:841422|photo_data:eyJrIjp7InZvbHVtZV9pZCI6Ijg0MTQyMjg3NiIsImxvY2FsX2lkIjoiMzgyMGYiLCJzZWNyZXQiOiJGaHJwelBySmxHcyIsIndpZHRoIjoxNDUsImhlaWdodCI6ODV9LCJsIjp7InZvbHVtZV9pZCI6Ijg0MTQyMjAzOCIsImxvY2FsX2lkIjoiM2Q0NjkiLCJzZWNyZXQiOiJKeEgzVHFQWDRMTSIsIndpZHRoIjoyOTAsImhlaWdodCI6MTcwfX0=|width:145|height:85|kid:5658351b3aac2f8717d72354bff2d437|hash:e80d823db405786d52607ee9c3ecad7a",
+                description = name
+            });
+
+            return string.Format(
+                    "{0}&method=ads.createAds&access_token={1}&account_id={2}&data={3}", BaseUrl, accessToken, accountId, string.Format("[{0}]", json));
+        }
+
+        public string UpdateAd(string accountId, string adId, string excludeTargetGroupId, string accessToken)
+        {
+            var json = JsonConvert.SerializeObject(new
+            {
+                ad_id = adId,
+                retargeting_groups_not = excludeTargetGroupId,
+            });
+
+            return string.Format(
+                "{0}&method=ads.updateAds&access_token={1}&account_id={2}&data={3}", BaseUrl,
+                accessToken, accountId, string.Format("[{0}]", json));
+        }
+
         public string CreateGetAdsTargetingUrl(string accountId, string clientId, string adsIds, string accessToken)
         {
             var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);

@@ -27,8 +27,8 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
 
                     foreach (var sr in ordered)
                     {
-                        var dt1 = dt;
-                        foreach (var resultModel in sr.Where(s => s.Date == dt1))
+                        var dt1 = dt.ToShortDateString();
+                        foreach (var resultModel in sr.Where(s => s.Date.ToShortDateString() == dt1))
                         {
                             stepResults.Values.Add(new SalesActivitiesRetargetPostResult
                             {

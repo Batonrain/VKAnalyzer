@@ -73,11 +73,14 @@ namespace VKAnalyzer.Services.VK
             else
             {
                 //Создание групп ретаргета для каждого поста
-                var retargetsInfo = _vkSalesAnalysisService.CreateRetargets(analyzeModels, model.AccountId, model.ClientId, model.ExcludeTargetGroup, AccessToken);
-                var result = _cohortAnalyser.AnalyzeAcitivitySalesWithRetargetsInfo(retargetsInfo, model.Step, model.StartDate, model.EndDate, model.GroupId);
+                if (analyzeModels.Any())
+                {
+                    var retargetsInfo = _vkSalesAnalysisService.CreateRetargets(analyzeModels, model.AccountId, model.ClientId, model.ExcludeTargetGroup, AccessToken);
+                    var result = _cohortAnalyser.AnalyzeAcitivitySalesWithRetargetsInfo(retargetsInfo, model.Step, model.StartDate, model.EndDate, model.GroupId);
 
-                _vkDbService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);
-            }
+                    _vkDbService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);
+                }
+                }
         }
 
         public void AnalyzeMemas(string accessToken, string userId)
@@ -274,7 +277,7 @@ namespace VKAnalyzer.Services.VK
             {
                 // получить список людей лайкнувших пост
                 users = RequestService.GetListOfLikedUsers(groupId, postId);
-                result = users.Descendants("users").Elements("uid").Select(p => p.Value).ToList();
+                result = users.Descendants("items").Elements("item").Select(p => p.Value).ToList();
             }
             catch (Exception exception)
             {
