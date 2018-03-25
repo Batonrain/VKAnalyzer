@@ -1,4 +1,5 @@
-﻿using System.Web.Configuration;
+﻿using System.Collections.Generic;
+using System.Web.Configuration;
 using Newtonsoft.Json;
 
 namespace VKAnalyzer.Services.VK.Common
@@ -120,14 +121,6 @@ namespace VKAnalyzer.Services.VK.Common
                                   accountId, client, string.Format("EM_SalesAnalyse_RG_{0}", accountId), accessToken);
         }
 
-        public string CreateCleanupRetargetGroupUrl(string accountId, string clientId, string accessToken)
-        {
-            var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
-
-            return string.Format("{0}&method=ads.getTargetGroups&account_id={1}{2}&access_token={3}", BaseUrl,
-                                  accountId, client, accessToken);
-        }
-
         public string CreateImportRetargetContactsUrl(string accountId, string clientId, string targetGroupId, string contacts, string accessToken)
         {
             var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
@@ -143,6 +136,14 @@ namespace VKAnalyzer.Services.VK.Common
             return string.Format(
                     "{0}&method=ads.deleteTargetGroup&access_token={1}&account_id={2}{3}&target_group_id={4}", BaseUrl,
                     accessToken, accountId, client, targetGroup);
+        }
+
+        public string CreateDeleteAdsUrl(string accountId, IEnumerable<int> ids, string accessToken)
+        {
+            var jsonArray = JsonConvert.SerializeObject(ids);
+
+            return string.Format("{0}&method=ads.deleteAds&access_token={1}&account_id={2}&ids={3}",
+                                  BaseUrl, accessToken, accountId, jsonArray);
         }
     }
 }

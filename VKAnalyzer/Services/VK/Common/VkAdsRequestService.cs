@@ -15,7 +15,7 @@ namespace VKAnalyzer.Services.VK.Common
 {
     public class VkAdsRequestService
     {
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private string BaseUrl { get; set; }
         private const int SleepTime = 5000;
         private const int SleepTimeLong = 10000;
@@ -27,51 +27,13 @@ namespace VKAnalyzer.Services.VK.Common
                 WebConfigurationManager.AppSettings["VkApiActualVersion"]);
         }
 
-        public XDocument Request(string requestString)
-        {
-            var tryingCount = 10;
-            var floodControlTimer = 0;
-            while (true)
-            {
-                Thread.Sleep(SleepTime);
-                var result = XDocument.Load(requestString);
-
-                if (!result.Descendants("error_code").Any())
-                {
-                    return result;
-                }
-                else
-                {
-                    var errorCode = result.Descendants("error_code").FirstOrDefault();
-                    if (errorCode != null && errorCode.Value == "9")
-                    {
-                        floodControlTimer++;
-                        Thread.Sleep(SleepTimeLong);
-                    }
-                    tryingCount--;
-                    if (floodControlTimer == 7)
-                    {
-                        _logger.Error("Flood control. Request string is");
-                        _logger.Error(requestString);
-                        _logger.Error("Result is");
-                        _logger.Error(result);
-                        Thread.Sleep(SleepTimeDay);
-                        return result;
-                    }
-                    if (tryingCount == 0)
-                    {
-                        return result;
-                    }
-                }
-            }
-        }
-
-        public string RequestJs(string requestString)
+        public string RequestJs(string requestString, bool sleepLong = false)
         {
             var tryingCount = 10;
             while (true)
             {
-                Thread.Sleep(SleepTime);
+                Thread.Sleep(sleepLong ? SleepTimeLong : SleepTime);
+
                 using (var wc = new WebClient())
                 {
                     var result = wc.DownloadData(requestString);
@@ -92,6 +54,10 @@ namespace VKAnalyzer.Services.VK.Common
 
                         if (error.ErrorCode == 9)
                         {
+                            Logger.Error("Flood control. Request string is");
+                            Logger.Error(requestString);
+                            Logger.Error("Result is");
+                            Logger.Error(result);
                             Thread.Sleep(SleepTimeLong);
                         }
 
@@ -99,25 +65,14 @@ namespace VKAnalyzer.Services.VK.Common
 
                         if (tryingCount == 0)
                         {
+                            Logger.Error("Flood control. TryingCount is 0");
+                            Logger.Error(requestString);
+                            Logger.Error("Result is");
+                            Logger.Error(result);
                             return json;
                         }
                     }
                     
-                }
-            }
-        }
-
-        public string RequestJson(string requestString)
-        {
-            while (true)
-            {
-                Thread.Sleep(SleepTime);
-                using (var wc = new WebClient())
-                {
-                    var result = wc.DownloadData(requestString);
-                    var json = Encoding.UTF8.GetString(result);
-
-                    return json;
                 }
             }
         }

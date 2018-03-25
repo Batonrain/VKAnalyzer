@@ -75,7 +75,7 @@ namespace VKAnalyzer.Services.VK
                 //Создание групп ретаргета для каждого поста
                 if (analyzeModels.Any())
                 {
-                    var retargetsInfo = _vkSalesAnalysisService.CreateRetargets(analyzeModels, model.AccountId, model.ClientId, model.ExcludeTargetGroup, AccessToken);
+                    var retargetsInfo = _vkSalesAnalysisService.CreateRetargets(analyzeModels, model.AccountId, model.ClientId, model.ExcludeTargetGroup, AccessToken).ToList();
                     var result = _cohortAnalyser.AnalyzeAcitivitySalesWithRetargetsInfo(retargetsInfo, model.Step, model.StartDate, model.EndDate, model.GroupId);
 
                     _vkDbService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);

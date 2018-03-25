@@ -8,7 +8,7 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
 {
     public class CohortAnalyser
     {
-        public SalesActivitiesRetargetResult AnalyzeAcitivitySalesWithRetargetsInfo(IEnumerable<VkAnalyseSalesResultModel> model, int step, DateTime dateOfTheBeginning, DateTime dateOfTheEnd, string groupId)
+        public SalesActivitiesRetargetResult AnalyzeAcitivitySalesWithRetargetsInfo(List<VkAnalyseSalesResultModel> model, int step, DateTime dateOfTheBeginning, DateTime dateOfTheEnd, string groupId)
         {
             var result = new SalesActivitiesRetargetResult();
             result.GroupId = groupId;
@@ -23,17 +23,20 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
 
                 for (var dt = dateOfTheBeginning; dt < dateOfTheEnd; dt = dt.AddDays(1))
                 {
-                    var stepResults = new SalesActivitiesRetargetStepData();
+                    var stepResults = new SalesActivitiesRetargetStepData
+                    {
+                        Date = dt.ToShortDateString()
+                    };
 
                     foreach (var sr in ordered)
                     {
-                        var dt1 = dt.ToShortDateString();
-                        foreach (var resultModel in sr.Where(s => s.Date.ToShortDateString() == dt1))
+                        foreach (var resultModel in sr.Where(s => s.Date.ToShortDateString() == stepResults.Date))
                         {
                             stepResults.Values.Add(new SalesActivitiesRetargetPostResult
                             {
                                 PostId = resultModel.PostId,
-                                Result = resultModel.Result
+                                Result = resultModel.Result,
+                                
                             });
                         }
                     }

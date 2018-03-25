@@ -253,6 +253,7 @@
     <Compile Include="Models\VKModels\VkMemasAnalyzeResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\VK\AffinityIndexService.cs" />
+    <Compile Include="Services\VK\Common\VkApiExecuteService.cs" />
     <Compile Include="Services\VK\Common\VkUrlService.cs" />
     <Compile Include="Services\VK\Common\VkAdsRequestService.cs" />
     <Compile Include="Services\VK\VkAuthService.cs" />
