@@ -74,16 +74,16 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
 
                         //Создаём рекламное объявление
                         var adsJson = VkAdsRequestService.RequestJs(VkUrlService.CreateAdUrl(accountId, campaign.FirstOrDefault().Id.ToString(), retargetGroup.Id.ToString(), string.Format("EM_Ad_{0}", item.PostId), accessToken));
-                        var ad = JsonConvert.DeserializeObject<List<VkAdSuccess>>(JObject.Parse(adsJson)["response"].ToString());
+                        var newAds = JsonConvert.DeserializeObject<List<VkAdSuccess>>(JObject.Parse(adsJson)["response"].ToString());
 
-                        var chk = ad.FirstOrDefault();
-                        if (chk.Id == 0 || chk.ErrorCode != 0)
+                        var newAd = newAds.FirstOrDefault();
+                        if (newAd.Id == 0 || newAd.ErrorCode != 0)
                         {
                             continue;
                         }
 
                         //Получаем охват текущей рекламной кампании
-                        var adTargetInfoJson = VkAdsRequestService.RequestJs(VkUrlService.CreateGetAdsTargetingUrl(accountId, clientId, string.Format("[{0}]", chk.Id), accessToken));
+                        var adTargetInfoJson = VkAdsRequestService.RequestJs(VkUrlService.CreateGetAdsTargetingUrl(accountId, clientId, string.Format("[{0}]", newAd.Id), accessToken));
                         var adTargeting = JsonConvert.DeserializeObject<List<VkAdTargeting>>(JObject.Parse(adTargetInfoJson)["response"].ToString());
 
                         var adChk = adTargeting.FirstOrDefault();
@@ -94,7 +94,7 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
                         fCount = adChk.Count;
 
                         //Добавляем в исключение выбранную пользователем группу ретаргета
-                        var updatedInfoJson = VkAdsRequestService.RequestJs(VkUrlService.UpdateAd(accountId, chk.Id.ToString(), excludeTargetGroupdId, accessToken));
+                        var updatedInfoJson = VkAdsRequestService.RequestJs(VkUrlService.UpdateAd(accountId, newAd.Id.ToString(), excludeTargetGroupdId, accessToken));
                         var updatedInfo = JsonConvert.DeserializeObject<List<VkAdSuccess>>(JObject.Parse(updatedInfoJson)["response"].ToString());
 
                         var result = new VkAnalyseSalesResultModel
@@ -121,8 +121,8 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
                             result.Result = (Math.Abs(Convert.ToInt32(fCount) - Convert.ToInt32(uCount))).ToString();
                         }
 
-                        var deleteAdsResult = VkAdsRequestService.RequestJs(VkUrlService.CreateDeleteAdsUrl(accountId, new[] {chk.Id}, accessToken));
-                        var deleteResult = VkAdsRequestService.RequestJs(VkUrlService.CreateDeleteRetargetGroupUrl(accountId, clientId, retargetGroup.Id.ToString(), accessToken));
+                        //var deleteAdsResult = VkAdsRequestService.RequestJs(VkUrlService.CreateDeleteAdsUrl(accountId, new[] {chk.Id}, accessToken));
+                        //var deleteResult = VkAdsRequestService.RequestJs(VkUrlService.CreateDeleteRetargetGroupUrl(accountId, clientId, retargetGroup.Id.ToString(), accessToken));
 
                         results.Add(result);
                     }
@@ -136,9 +136,6 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
 
                     ++iterationCount;
                 }
-
-                //DeleteAds(accountId, adIds, accessToken);
-                //DeleteCampaigns(accountId, campaignIds, accessToken);
             }
 
             return results;
@@ -152,32 +149,6 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
         public string GetClients(string accountId, string accessToken)
         {
             return VkAdsRequestService.GetClients(accountId, accessToken);
-        }
-
-        private void DeleteCampaigns(string accountId, IEnumerable<string> campaignIds, string accessToken)
-        {
-            VkAdsRequestService.DeleteCampaigns(accountId, GenerateJsonArray(campaignIds), accessToken);
-        }
-
-        private void DeleteAds(string accountId, IEnumerable<string> adsId, string accessToken)
-        {
-            VkAdsRequestService.DeleteAds(accountId, GenerateJsonArray(adsId), accessToken);
-        }
-
-        private string GenerateJsonArray(IEnumerable<string> values)
-        {
-            var array = new JArray();
-            foreach (var value in values)
-            {
-                array.Add(new JValue(value));
-            }
-            return array.ToString();
-        }
-
-        private string GetJsonFromResponse(string json)
-        {
-            var parsed = JObject.Parse(json);
-            return parsed["response"].ToString();
         }
 
         private IEnumerable<string> GetRandomUsers(int count, string accessToken)
