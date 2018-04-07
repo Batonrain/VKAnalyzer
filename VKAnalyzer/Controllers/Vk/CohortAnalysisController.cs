@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Web;
 using System.Web.Mvc;
 using Hangfire;
 using Microsoft.AspNet.Identity;
@@ -11,7 +9,7 @@ using NLog;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels;
-using VKAnalyzer.Services.VK;
+using VKAnalyzer.Services.VK.CohortAndSale;
 
 namespace VKAnalyzer.Controllers.Vk
 {
@@ -22,10 +20,10 @@ namespace VKAnalyzer.Controllers.Vk
         private readonly VkService _vkService;
         private readonly BaseDb _dbContext;
 
-        public CohortAnalysisController(BaseDb baseDb, VkService vkService)
+        public CohortAnalysisController()
         {
-            _dbContext = baseDb;
-            _vkService = vkService;
+            _dbContext = new BaseDb();
+            _vkService = new VkService();
         }
 
         public ActionResult Index()

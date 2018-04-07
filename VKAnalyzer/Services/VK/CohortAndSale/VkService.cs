@@ -9,9 +9,8 @@ using VKAnalyzer.BusinessLogic.CohortAnalyser;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.BusinessLogic.VK.Models;
 using VKAnalyzer.Models.VKModels;
-using VKAnalyzer.Services.VK.CohortAndSale;
 
-namespace VKAnalyzer.Services.VK
+namespace VKAnalyzer.Services.VK.CohortAndSale
 {
     public class VkService : VkBaseService
     {
@@ -68,7 +67,7 @@ namespace VKAnalyzer.Services.VK
                 var result = _cohortAnalyser.Analyze(analyzeModels, model.Step, model.StartDate,
                 model.EndDate, model.GroupId);
 
-                _vkDbService.SaveAnalyzeOfSalesWithRetarget(result, userId, model.Name, model.GroupId);
+                _vkDbService.SaveAnalyzeOfSalesWithList(result, userId, model.Name, model.GroupId);
             }
             else
             {

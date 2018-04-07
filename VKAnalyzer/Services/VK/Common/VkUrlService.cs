@@ -113,12 +113,12 @@ namespace VKAnalyzer.Services.VK.Common
                 BaseUrl, accessToken, accountId, client, adsIds);
         }
 
-        public string CreateRetargetGroupUrl(string accountId, string clientId, string accessToken)
+        public string CreateRetargetGroupUrl(string accountId, string clientId, string accessToken, string postId)
         {
             var client = string.IsNullOrEmpty(clientId) ? string.Empty : string.Format("&client_id={0}", clientId);
 
             return string.Format("{0}&method=ads.createTargetGroup&account_id={1}{2}&name={3}&access_token={4}", BaseUrl,
-                                  accountId, client, string.Format("EM_SalesAnalyse_RG_{0}", accountId), accessToken);
+                                  accountId, client, string.Format("EM_SalesAnalyse_RG_{0}", postId), accessToken);
         }
 
         public string CreateImportRetargetContactsUrl(string accountId, string clientId, string targetGroupId, string contacts, string accessToken)

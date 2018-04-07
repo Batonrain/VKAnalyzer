@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using WebGrease.Css.Extensions;
 
 namespace VKAnalyzer.Services.VK
 {
@@ -17,8 +18,8 @@ namespace VKAnalyzer.Services.VK
 
         public IEnumerable<string> ConvertstringToList(string input)
         {
-            var result = input.Split(new[] { "\r\n", ";" }, StringSplitOptions.RemoveEmptyEntries);
-            return input.Replace("\r\n", "").Split(';').ToList();
+            var result = input.Split(new[] { "\r\n", ";", "," }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToList();;
+            return result;
         }
 
         public string GetJsonFromResponse(string json)

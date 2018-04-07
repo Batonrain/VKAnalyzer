@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity;
 using NLog;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Services.VK;
+using VKAnalyzer.Services.VK.CohortAndSale;
 
 namespace VKAnalyzer.Controllers
 {

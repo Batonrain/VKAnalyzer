@@ -246,6 +246,7 @@
     <Compile Include="Models\VKModels\AnalyseResultsViewModel.cs" />
     <Compile Include="Models\VKModels\CohortAnalysysInputModel.cs" />
     <Compile Include="Models\VKModels\JsonModels\Ads.cs" />
+    <Compile Include="Models\VKModels\JsonModels\Wall.cs" />
     <Compile Include="Models\VKModels\ListOfResults.cs" />
     <Compile Include="Models\VKModels\Memas\MemasAnalyzeResultModel.cs" />
     <Compile Include="Models\VKModels\VkAnalyseSalesModel.cs" />

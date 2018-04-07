@@ -50,8 +50,9 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
                         int fCount = 0;
                         int uCount = 0;
 
+                        //TODO: добавлять номер поста
                         // Создание группы ретаргета
-                        var retargetGroupJson = VkAdsRequestService.RequestJs(VkUrlService.CreateRetargetGroupUrl(accountId, clientId, accessToken));
+                        var retargetGroupJson = VkAdsRequestService.RequestJs(VkUrlService.CreateRetargetGroupUrl(accountId, clientId, accessToken, item.PostId));
 
                         var retargetGroup = JsonConvert.DeserializeObject<VkTargetGroupSuccess>(JObject.Parse(retargetGroupJson)["response"].ToString());
                         if (retargetGroup.Id == 0 || retargetGroup.ErrorCode != 0)
@@ -60,11 +61,13 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
                         }
 
                         //Если при создании группы ретаргетинга в ней меньше 100 человек, мы добавляем совершенно левых, чтобы удовлетворять требуемым условиям
-                        if (item.LikedIds.Count() < 100)
-                        {
-                            var needToAdd = 150 - item.LikedIds.Count();
-                            item.LikedIds.AddRange(GetRandomUsers(needToAdd, accessToken));
-                        }
+                        //if (item.LikedIds.Count() < 100)
+                        //{
+                        //    var needToAdd = 300;
+                        //    item.LikedIds.AddRange(GetRandomUsers(300, accessToken));
+                        //}
+
+                        item.LikedIds.AddRange(GetRandomUsers(300, accessToken));
 
 
                         var contacts = item.LikedIds.Aggregate(string.Empty, (current, id) => current + string.Format("{0},", id));

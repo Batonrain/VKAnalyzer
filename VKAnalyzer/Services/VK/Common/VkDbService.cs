@@ -66,7 +66,7 @@ namespace VKAnalyzer.Services.VK
             }
         }
 
-        public void SaveAnalyzeOfSalesWithRetarget(CohortAnalysisResultModel result, string userId, string name, string groupId)
+        public void SaveAnalyzeOfSalesWithList(CohortAnalysisResultModel result, string userId, string name, string groupId)
         {
             using (var ms = new MemoryStream())
             {

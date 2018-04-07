@@ -9,6 +9,7 @@ using NLog;
 using VKAnalyzer.DBContexts;
 using VKAnalyzer.Models.VKModels.Memas;
 using VKAnalyzer.Services.VK;
+using VKAnalyzer.Services.VK.CohortAndSale;
 
 namespace VKAnalyzer.Controllers.Vk
 {
