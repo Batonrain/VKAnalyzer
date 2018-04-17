@@ -161,7 +161,7 @@ namespace VKAnalyzer.Services.VK
 
         private VkCampaignSuccess CreateCampaign(string accountId, string clientId, string accessToken, string name)
         {
-            var reqString = _vkUrlService.CreateCampaignUrl(accountId, clientId,
+            var reqString = _vkUrlService.CreateCampaign(accountId, clientId,
                     string.Format("EvilMarketingAffinity_Campaign_{0}", name), accessToken);
 
             var campaign = _vkBaseService.GetJsonFromResponse(_vkAdsRequestService.RequestJs(reqString));
@@ -174,7 +174,7 @@ namespace VKAnalyzer.Services.VK
                                      string excludedGroupds = "", string interestCategories = "", string country = "", string cities = "", string excludedCities = "",
                                      string retargetGroups = "", string excludedRetargetGroups = "")
         {
-            var reqString = _vkUrlService.CreateAdUrl(accountId: accountId, campaignId: campaignId, accessToken: accessToken, name: "EvilMarketing_Affinity_Ad",
+            var reqString = _vkUrlService.CreateAd(accountId: accountId, campaignId: campaignId, accessToken: accessToken, name: "EvilMarketing_Affinity_Ad",
                 sex: sex, ageFrom: Convert.ToInt32(ageFrom), ageUpTo: Convert.ToInt32(ageUpTo), status: status, groups: groups, excludedGroups: excludedGroupds, interestCategories: interestCategories,
                 country: country, cities: cities, excludedCities: excludedCities, retargetGroups: retargetGroups, excludedRetargetGroups: excludedRetargetGroups);
 
@@ -186,7 +186,7 @@ namespace VKAnalyzer.Services.VK
 
         private VkAdTargetInfo GetAdTarget(string accountId, string clientId, string adIds, string accessToken)
         {
-            var reqString = _vkUrlService.CreateGetAdsTargetingUrl(accountId, clientId, adIds, accessToken);
+            var reqString = _vkUrlService.GetAdsTargeting(accountId, clientId, adIds, accessToken);
             var ad = _vkBaseService.GetJsonFromResponse(_vkAdsRequestService.RequestJs(reqString));
             var result = JsonConvert.DeserializeObject<List<VkAdTargetInfo>>(ad).FirstOrDefault();
 

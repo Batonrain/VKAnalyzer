@@ -2,7 +2,7 @@
 
 namespace VKAnalyzer.BusinessLogic.CohortAnalyser.Models
 {
-    public class GetWallPostsParametersModel
+    public class VkWallParametersModel
     {
         public string GroupId { get; set; }
 

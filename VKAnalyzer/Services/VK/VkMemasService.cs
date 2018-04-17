@@ -7,6 +7,7 @@ using System.Web;
 using System.Xml.Linq;
 using NLog;
 using VKAnalyzer.Models.VKModels.Memas;
+using VKAnalyzer.Services.VK.Common;
 
 namespace VKAnalyzer.Services.VK
 {

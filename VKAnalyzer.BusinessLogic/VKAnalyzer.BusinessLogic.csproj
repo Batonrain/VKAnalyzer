@@ -55,7 +55,7 @@
     <Compile Include="CohortAnalyser\AnalyseStep.cs" />
     <Compile Include="CohortAnalyser\CohortAnalyser.cs" />
     <Compile Include="CohortAnalyser\Models\CohortAnalysisModel.cs" />
-    <Compile Include="CohortAnalyser\Models\GetWallPostsParametersModel.cs" />
+    <Compile Include="CohortAnalyser\Models\VkWallParametersModel.cs" />
     <Compile Include="Extensions\AnalyserExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

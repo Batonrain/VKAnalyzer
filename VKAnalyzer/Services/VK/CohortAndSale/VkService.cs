@@ -9,6 +9,7 @@ using VKAnalyzer.BusinessLogic.CohortAnalyser;
 using VKAnalyzer.BusinessLogic.CohortAnalyser.Models;
 using VKAnalyzer.BusinessLogic.VK.Models;
 using VKAnalyzer.Models.VKModels;
+using VKAnalyzer.Services.VK.Common;
 
 namespace VKAnalyzer.Services.VK.CohortAndSale
 {
@@ -138,7 +139,7 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
             var maxCount = GetPostsCount(groupId);
             var cc = (decimal)maxCount / 100;
 
-            var allPostsParametersModel = new GetWallPostsParametersModel()
+            var allPostsParametersModel = new VkWallParametersModel()
             {
                 InnerStep = 100,
                 OuterStep = 0,
@@ -155,11 +156,11 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
             return allActiveUsers;
         }
 
-        private GetWallPostsParametersModel PrepareGetParameters(string groupId, DateTime startDate, DateTime endDate)
+        private VkWallParametersModel PrepareGetParameters(string groupId, DateTime startDate, DateTime endDate)
         {
             var needToParseCount = (endDate - startDate).Days*4;
 
-            var parametersModel = new GetWallPostsParametersModel
+            var parametersModel = new VkWallParametersModel
             {
                 // Внутренний шаг для поиска постов, параметр count
                 InnerStep = 100,
@@ -178,7 +179,7 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
             return parametersModel;
         }
 
-        private IEnumerable<XDocument> GetPosts(GetWallPostsParametersModel model)
+        private IEnumerable<XDocument> GetPosts(VkWallParametersModel model)
         {
             var posts = new List<XDocument>();
             var count = model.InnerStep;
@@ -340,7 +341,7 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
             return 500000;
         }
 
-        private IEnumerable<string> GetAllGroupUsers(GetWallPostsParametersModel model)
+        private IEnumerable<string> GetAllGroupUsers(VkWallParametersModel model)
         {
             var users = new List<string>();
             var userCounts = GetAllGroupUsersCount(model.GroupId);
