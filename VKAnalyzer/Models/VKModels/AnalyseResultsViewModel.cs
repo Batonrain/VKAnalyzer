@@ -9,5 +9,12 @@ namespace VKAnalyzer.Models.VKModels
         public string GroupId { get; set; }
         public DateTime DateOfCollection { get; set; }
         public string AnalyseType { get; set; }
+        public Types? Type { get; set; }
+    }
+
+    public enum Types
+    {
+        CohortWithRetarget = 1,
+        CohortWithList = 2
     }
 }

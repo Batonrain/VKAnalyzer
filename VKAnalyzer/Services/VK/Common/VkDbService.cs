@@ -75,7 +75,7 @@ namespace VKAnalyzer.Services.VK
                 byte[] rr = ms.GetBuffer();
 
                 var cntx = new BaseDb();
-                cntx.VkCohortAnalyseResults.Add(new VkCohortAnalyseResult
+                cntx.VkCohortSalesAnalyseWithListResults.Add(new VkCohortSalesAnalyseWithListResults
                 {
                     UserId = userId,
                     Name = name,
@@ -108,7 +108,7 @@ namespace VKAnalyzer.Services.VK
             }
         }
 
-        public void SaveAddinityIndex(AffinityIndexResult result, string userId, string name)
+        public void SaveAffinityIndex(AffinityIndexResult result, string userId, string name)
         {
             using (var ms = new MemoryStream())
             {

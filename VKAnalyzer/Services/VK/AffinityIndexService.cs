@@ -130,7 +130,7 @@ namespace VKAnalyzer.Services.VK
 
             result.DateOfCollection = DateTime.Now;
 
-            _vkDbService.SaveAddinityIndex(result, userId, name);
+            _vkDbService.SaveAffinityIndex(result, userId, name);
         }
 
         public List<AffinityIndexResultsViewModel> GetResults(string userId)

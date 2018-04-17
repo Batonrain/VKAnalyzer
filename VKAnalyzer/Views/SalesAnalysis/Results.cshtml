@@ -1,4 +1,6 @@
-﻿@model List<VKAnalyzer.Models.VKModels.AnalyseResultsViewModel>
+﻿@using System.Web.Services.Description
+@using Types = VKAnalyzer.Models.VKModels.Types
+@model List<VKAnalyzer.Models.VKModels.AnalyseResultsViewModel>
 @{
     ViewBag.Title = "Список результатов";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -25,7 +27,15 @@
                     @result.DateOfCollection.ToString("dd-MM-yyyy HH:mm")
                 </th>
                 <th>
-                    @Html.ActionLink("Результаты", "Result", new { id = result.Id })
+                    @if(result.Type == Types.CohortWithRetarget)
+                    {
+                        @Html.ActionLink("Результаты", "Result", new {id = result.Id});
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Результаты", "ResultWithList", new { id = result.Id });
+                    }
+                    
                 </th>
             </tr>
         }

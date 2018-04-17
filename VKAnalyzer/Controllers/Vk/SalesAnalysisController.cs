@@ -69,6 +69,26 @@ namespace VKAnalyzer.Controllers.Vk
             return View(result);
         }
 
+        public ActionResult ResultWithList(int id)
+        {
+            var resultDb = _dbContext.VkCohortSalesAnalyseWithListResults.FirstOrDefault(rest => rest.Id == id);
+            var result = new CohortAnalysisResultModel();
+            try
+            {
+                var formatter = new BinaryFormatter();
+                using (var ms = new MemoryStream(resultDb.Result))
+                {
+                    result = (CohortAnalysisResultModel)formatter.Deserialize(ms);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(string.Format("Error: {0}", ex));
+            }
+
+            return View(result);
+        }
+
         public ActionResult Results()
         {
             var userId = User.Identity.GetUserId();
@@ -80,9 +100,24 @@ namespace VKAnalyzer.Controllers.Vk
                     Id = rest.Id,
                     Name = rest.Name,
                     DateOfCollection = rest.CollectionDate,
-                    AnalyseType = "Анализ продаж",
+                    AnalyseType = "Анализ продаж с ретаргетом",
+                    Type = Types.CohortWithRetarget
                 })
                 .ToList();
+
+            var listModels = _dbContext.VkCohortSalesAnalyseWithListResults.Where(x => x.UserId == userId)
+                .OrderByDescending(order => order.CollectionDate)
+                .Select(rest => new AnalyseResultsViewModel()
+                {
+                    Id = rest.Id,
+                    Name = rest.Name,
+                    DateOfCollection = rest.CollectionDate,
+                    AnalyseType = "Анализ продаж со списком покупателей",
+                    Type = Types.CohortWithList
+                })
+                .ToList();
+
+            model.AddRange(listModels);
 
             return View(model);
         } 
