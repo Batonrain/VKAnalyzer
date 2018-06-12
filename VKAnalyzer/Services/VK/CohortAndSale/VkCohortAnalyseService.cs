@@ -27,10 +27,16 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
             _vkBaseService = vkBaseService;
         }
 
-        public void GetPosts(CohortAnalysysInputModel model)
+        public void AnalyzeActivities(CohortAnalysysInputModel model)
         {
             // Создание модели с параметрами для запроса всех постов за определённую дату
             var parametersModel = PrepareParameters(model.GroupId, model.StartDate, model.EndDate);
+
+            // Получение постов
+            var posts = GetPosts(parametersModel);
+
+
+            var users = GetAlreadyActiveUsers(posts, model.StartDate, model.GroupId);
         }
 
         private List<Post> GetPosts(VkWallParametersModel model)
@@ -84,6 +90,41 @@ namespace VKAnalyzer.Services.VK.CohortAndSale
             }
 
             return parametersModel;
+        }
+
+        private IEnumerable<Like> GetAlreadyActiveUsers(IEnumerable<Post> allRawPosts, DateTime dateOfTheBeginning, string groupId)
+        {
+            var result = new List<Like>();
+
+            foreach (var post in allRawPosts.Where(arp => DateTime.Parse(arp.Date) < dateOfTheBeginning))
+            {
+                result.AddRange(GetListOfLikedUsers(groupId, post.Id));
+            }
+
+            return result.Distinct();
+        }
+
+        private IEnumerable<Like> GetListOfLikedUsers(string groupId, int postId)
+        {
+            var result = new List<Like>();
+            try
+            {
+                // получить список людей лайкнувших пост
+                var requestString = _vkUrlService.GetListOfLikedUsers(groupId, postId);
+                var resultJson = _vkBaseService.GetJsonFromResponse(_vkWallRequestService.Request(requestString));
+                var likes = JsonConvert.DeserializeObject<List<Like>>(resultJson);
+
+                result.AddRange(likes);
+            }
+            catch (Exception exception)
+            {
+                Logger.Error("Error in GetListOfLikedUsers {0}: {1}", postId, exception.Message);
+                Logger.Error("Error in GetListOfLikedUsers {0}: {1}", postId, exception.InnerException);
+
+                throw new HttpException(500, "Во время скачивания лайков произошла ошибка");
+            }
+
+            return result;
         }
     }
 }

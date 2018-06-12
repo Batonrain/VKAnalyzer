@@ -163,7 +163,7 @@ namespace VKAnalyzer.Services.VK.Common
             return string.Format("{0}&method=wall.get.xml&offset={1}&count={2}&domain={3}&access_token={4}", BaseUrl, offset, count, domain, accessToken);
         }
 
-        public string GetListOfLikedUsers(string groupId, string postId)
+        public string GetListOfLikedUsers(string groupId, int postId)
         {
             return string.Format("{0}&method=likes.getList.xml&owner_id=-{1}&item_id={2}&type=post", BaseUrl, groupId, postId);
         }
