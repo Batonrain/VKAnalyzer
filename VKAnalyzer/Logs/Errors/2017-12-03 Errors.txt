@@ -1,0 +1,2 @@
+2017-12-03 00:45:13.7184|ERROR|VKAnalyzer.Services.VK.VkSalesAnalysisService|System.NullReferenceException: Object reference not set to an instance of an object.
+   at VKAnalyzer.Services.VK.VkSalesAnalysisService.CreateRetargets(List`1 posts, String accountId, String clientId, String excludeTargetGroupdId, String accessToken) in d:\Work\VKAnalyzer\VKAnalyzer\Services\VK\VkSalesAnalysisService.cs:line 90

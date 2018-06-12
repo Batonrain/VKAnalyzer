@@ -1,0 +1,2 @@
+2017-06-19 22:32:36.0444|ERROR|VKAnalyzer.Services.VkService|Error in GetPostsCount: Object reference not set to an instance of an object.
+2017-06-19 22:32:36.0634|ERROR|VKAnalyzer.Services.VkService|Error in GetPostsCount: {0}

@@ -142,14 +142,9 @@ namespace VKAnalyzer.Models.VKModels.JsonModels
         public int Online { get; set; }
     }
 
-//    "id": 97649,
-//"first_name": "Юлия",
-//"last_name": "Блинничева",
-//"sex": 1,
-//"screen_name": "july2789",
-//"photo_50": "https://pp.userap...487/_JXuh_0anAw.jpg",
-//"photo_100": "https://pp.userap...486/XF2pawadGCc.jpg",
-//"online": 1
-
-
+    public class Like
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+    }
 }

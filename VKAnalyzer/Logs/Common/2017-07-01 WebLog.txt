@@ -1,0 +1,2 @@
+2017-07-01 17:09:23.8228|ERROR|VKAnalyzer.Services.VkAuthService|Error during working with Entity: Unable to determine composite primary key ordering for type 'VKAnalyzer.Models.VKModels.VkCohortAnalyseResult'. Use the ColumnAttribute (see http://go.microsoft.com/fwlink/?LinkId=386388) or the HasKey method (see http://go.microsoft.com/fwlink/?LinkId=386387) to specify an order for composite primary keys.
+2017-07-01 17:09:23.8378|ERROR|VKAnalyzer.Services.VkAuthService|Error during working with Entity: 

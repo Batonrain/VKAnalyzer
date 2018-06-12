@@ -12,7 +12,6 @@ namespace VKAnalyzer.Services.VK.Common
     {
         public string Request(string requestString, bool sleepLong = false)
         {
-            var tryingCount = 10;
             while (true)
             {
                 using (var wc = new WebClient())

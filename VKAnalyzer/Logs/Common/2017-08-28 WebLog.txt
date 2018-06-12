@@ -1,0 +1,2 @@
+2017-08-28 14:56:06.0441|ERROR|VKAnalyzer.Services.VkService|Error in GetListOfLikedUsers 5444: The remote server returned an error: (502) Bad Gateway.
+2017-08-28 14:56:06.0641|ERROR|VKAnalyzer.Services.VkService|Error in GetListOfLikedUsers 5444: 

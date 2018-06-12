@@ -1,0 +1,28 @@
+2017-12-08 01:45:23.5390|ERROR|VKAnalyzer.Controllers.VkController|Error: System.NullReferenceException: Object reference not set to an instance of an object.
+   at VKAnalyzer.Controllers.VkController.MemasResult(Int32 id) in d:\Work\VKAnalyzer\VKAnalyzer\Controllers\VkController.cs:line 104
+2017-12-08 01:46:23.9151|ERROR|VKAnalyzer.Controllers.VkController|Error: System.NullReferenceException: Object reference not set to an instance of an object.
+   at VKAnalyzer.Controllers.VkController.MemasResult(Int32 id) in d:\Work\VKAnalyzer\VKAnalyzer\Controllers\VkController.cs:line 104
+2017-12-08 01:46:38.0889|ERROR|VKAnalyzer.Controllers.VkController|Error: System.NullReferenceException: Object reference not set to an instance of an object.
+   at VKAnalyzer.Controllers.VkController.MemasResult(Int32 id) in d:\Work\VKAnalyzer\VKAnalyzer\Controllers\VkController.cs:line 104
+2017-12-08 01:46:50.6115|ERROR|VKAnalyzer.Controllers.VkController|Error: System.InvalidCastException: Unable to cast object of type 'VKAnalyzer.BusinessLogic.CohortAnalyser.Models.SalesActivitiesRetargetResult' to type 'VKAnalyzer.Models.VKModels.VkCohortSalesAnalyseResults'.
+   at VKAnalyzer.Controllers.VkController.CohortSalesResult(Int32 id) in d:\Work\VKAnalyzer\VKAnalyzer\Controllers\VkController.cs:line 127
+2017-12-08 02:19:05.7296|ERROR|VKAnalyzer.Controllers.VkController|Error: System.ArgumentException: Object of type 'System.Collections.Generic.List`1[System.String]' cannot be converted to type 'System.Collections.Generic.List`1[VKAnalyzer.BusinessLogic.CohortAnalyser.Models.SalesActivitiesRetargetPostResult]'.
+   at System.RuntimeType.TryChangeType(Object value, Binder binder, CultureInfo culture, Boolean needsSpecialCast)
+   at System.RuntimeType.CheckValue(Object value, Binder binder, CultureInfo culture, BindingFlags invokeAttr)
+   at System.Reflection.RtFieldInfo.UnsafeSetValue(Object obj, Object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
+   at System.Runtime.Serialization.FormatterServices.SerializationSetValue(MemberInfo fi, Object target, Object value)
+   at System.Runtime.Serialization.ObjectManager.CompleteObject(ObjectHolder holder, Boolean bObjectFullyComplete)
+   at System.Runtime.Serialization.ObjectManager.DoNewlyRegisteredObjectFixups(ObjectHolder holder)
+   at System.Runtime.Serialization.ObjectManager.RegisterObject(Object obj, Int64 objectID, SerializationInfo info, Int64 idOfContainingObj, MemberInfo member, Int32[] arrayIndex)
+   at System.Runtime.Serialization.Formatters.Binary.ObjectReader.RegisterObject(Object obj, ParseRecord pr, ParseRecord objectPr, Boolean bIsString)
+   at System.Runtime.Serialization.Formatters.Binary.ObjectReader.ParseObjectEnd(ParseRecord pr)
+   at System.Runtime.Serialization.Formatters.Binary.ObjectReader.Parse(ParseRecord pr)
+   at System.Runtime.Serialization.Formatters.Binary.__BinaryParser.Run()
+   at System.Runtime.Serialization.Formatters.Binary.ObjectReader.Deserialize(HeaderHandler handler, __BinaryParser serParser, Boolean fCheck, Boolean isCrossAppDomain, IMethodCallMessage methodCallMessage)
+   at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream, HeaderHandler handler, Boolean fCheck, Boolean isCrossAppDomain, IMethodCallMessage methodCallMessage)
+   at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream)
+   at VKAnalyzer.Controllers.VkController.CohortSalesResult(Int32 id) in d:\Work\VKAnalyzer\VKAnalyzer\Controllers\VkController.cs:line 127
+2017-12-08 02:28:18.6715|ERROR|VKAnalyzer.Services.VK.VkSalesAnalysisService|System.NullReferenceException: Object reference not set to an instance of an object.
+   at VKAnalyzer.Services.VK.VkSalesAnalysisService.CreateRetargets(List`1 posts, String accountId, String clientId, String excludeTargetGroupdId, String accessToken) in d:\Work\VKAnalyzer\VKAnalyzer\Services\VK\VkSalesAnalysisService.cs:line 90
+2017-12-08 02:51:07.3487|ERROR|VKAnalyzer.Services.VK.VkSalesAnalysisService|System.NullReferenceException: Object reference not set to an instance of an object.
+   at VKAnalyzer.Services.VK.VkSalesAnalysisService.CreateRetargets(List`1 posts, String accountId, String clientId, String excludeTargetGroupdId, String accessToken) in d:\Work\VKAnalyzer\VKAnalyzer\Services\VK\VkSalesAnalysisService.cs:line 90

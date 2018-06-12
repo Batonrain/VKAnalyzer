@@ -1,0 +1,18 @@
+2017-12-30 14:12:05.4070|ERROR|VKAnalyzer.Services.VK.VkSalesAnalysisService|System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at VKAnalyzer.Services.VK.VkSalesAnalysisService.UpdateAd(String accountId, String adId, String excludeTargetGroupId, String accessToken) in d:\Work\VKAnalyzer\VKAnalyzer\Services\VK\VkSalesAnalysisService.cs:line 183
+   at VKAnalyzer.Services.VK.VkSalesAnalysisService.CreateRetargets(List`1 posts, String accountId, String excludeTargetGroupdId, String accessToken) in d:\Work\VKAnalyzer\VKAnalyzer\Services\VK\VkSalesAnalysisService.cs:line 115
+2017-12-30 14:12:24.1551|ERROR|VKAnalyzer.Services.VK.VkSalesAnalysisService|System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at VKAnalyzer.Services.VK.VkSalesAnalysisService.UpdateAd(String accountId, String adId, String excludeTargetGroupId, String accessToken) in d:\Work\VKAnalyzer\VKAnalyzer\Services\VK\VkSalesAnalysisService.cs:line 183
+   at VKAnalyzer.Services.VK.VkSalesAnalysisService.CreateRetargets(List`1 posts, String accountId, String excludeTargetGroupdId, String accessToken) in d:\Work\VKAnalyzer\VKAnalyzer\Services\VK\VkSalesAnalysisService.cs:line 115
+2017-12-30 14:13:39.3944|ERROR|VKAnalyzer.Services.VK.VkSalesAnalysisService|System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at VKAnalyzer.Services.VK.VkSalesAnalysisService.UpdateAd(String accountId, String adId, String excludeTargetGroupId, String accessToken) in d:\Work\VKAnalyzer\VKAnalyzer\Services\VK\VkSalesAnalysisService.cs:line 183
+   at VKAnalyzer.Services.VK.VkSalesAnalysisService.CreateRetargets(List`1 posts, String accountId, String excludeTargetGroupdId, String accessToken) in d:\Work\VKAnalyzer\VKAnalyzer\Services\VK\VkSalesAnalysisService.cs:line 115

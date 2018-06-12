@@ -1,0 +1,8 @@
+2018-03-16 11:29:43.5381|ERROR|VKAnalyzer.Services.VK.VkService|Error in GetPostsCount: Object reference not set to an instance of an object.
+2018-03-16 11:29:43.7342|ERROR|VKAnalyzer.Services.VK.VkService|Error in GetPostsCount: 
+2018-03-16 11:32:55.0570|ERROR|VKAnalyzer.Services.VK.VkService|Error in GetPostsCount: Object reference not set to an instance of an object.
+2018-03-16 11:32:55.0730|ERROR|VKAnalyzer.Services.VK.VkService|Error in GetPostsCount: 
+2018-03-16 11:33:52.9437|ERROR|VKAnalyzer.Services.VK.VkService|Error in GetPostsCount: Object reference not set to an instance of an object.
+2018-03-16 11:33:52.9537|ERROR|VKAnalyzer.Services.VK.VkService|Error in GetPostsCount: 
+2018-03-16 11:34:30.2571|ERROR|VKAnalyzer.Services.VK.VkService|Error in GetPostsCount: Object reference not set to an instance of an object.
+2018-03-16 11:34:30.2571|ERROR|VKAnalyzer.Services.VK.VkService|Error in GetPostsCount: 

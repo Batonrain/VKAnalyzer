@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Brik.Security.VkontakteMiddleware</name>
+    </assembly>
+    <members>
+        <member name="T:Brik.Security.VkontakteMiddleware.VkontakteHelper">
+            <summary>
+            Contains static methods that allow to extract user's information from a <see cref="T:Newtonsoft.Json.Linq.JObject"/>
+            instance retrieved from Facebook after a successful authentication process.
+            </summary>
+        </member>
+        <member name="M:Brik.Security.VkontakteMiddleware.VkontakteHelper.GetId(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Gets the user ID.
+            </summary>
+        </member>
+        <member name="M:Brik.Security.VkontakteMiddleware.VkontakteHelper.GetFirstName(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Gets the first name.
+            </summary>
+        </member>
+        <member name="M:Brik.Security.VkontakteMiddleware.VkontakteHelper.GetLastName(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Gets the last name.
+            </summary>
+        </member>
+        <member name="M:Brik.Security.VkontakteMiddleware.VkontakteHelper.GetScreenName(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Gets the screen name.
+            </summary>
+        </member>
+        <member name="M:Brik.Security.VkontakteMiddleware.VkontakteHelper.GetPhoto(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Get photo
+            </summary>
+        </member>
+        <member name="T:Brik.Security.VkontakteMiddleware.VkontakteMiddleware">
+            <summary>
+            An ASP.NET Core middleware for authenticating users using Vkontakte
+            </summary>
+        </member>
+        <member name="M:Brik.Security.VkontakteMiddleware.VkontakteMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.AspNetCore.DataProtection.IDataProtectionProvider,Microsoft.Extensions.Logging.ILoggerFactory,System.Text.Encodings.Web.UrlEncoder,Microsoft.Extensions.Options.IOptions{Microsoft.AspNetCore.Authentication.SharedAuthenticationOptions},Microsoft.Extensions.Options.IOptions{Brik.Security.VkontakteMiddleware.VkontakteOptions})">
+            <summary>
+            Initializes a new <see cref="T:Brik.Security.VkontakteMiddleware.VkontakteMiddleware"/>.
+            </summary>
+            <param name="next">The next middleware in the HTTP pipeline to invoke.</param>
+            <param name="dataProtectionProvider"></param>
+            <param name="loggerFactory"></param>
+            <param name="encoder"></param>
+            <param name="sharedOptions"></param>
+            <param name="options">Configuration options for the middleware.</param>
+        </member>
+        <member name="M:Brik.Security.VkontakteMiddleware.VkontakteMiddleware.CreateHandler">
+            <summary>
+            Provides the <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationHandler`1"/> object for processing authentication-related requests.
+            </summary>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Authentication.AuthenticationHandler`1"/> configured with the <see cref="T:Brik.Security.VkontakteMiddleware.VkontakteOptions"/> supplied to the constructor.</returns>
+        </member>
+        <member name="T:Brik.Security.VkontakteMiddleware.VkontakteOptions">
+            <summary>
+            Configuration options for <see cref="T:Brik.Security.VkontakteMiddleware.VkontakteMiddleware"/>.
+            </summary>
+        </member>
+        <member name="M:Brik.Security.VkontakteMiddleware.VkontakteOptions.#ctor">
+            <summary>
+            Initializes a new <see cref="T:Brik.Security.VkontakteMiddleware.VkontakteOptions"/>.
+            </summary>
+        </member>
+        <member name="P:Brik.Security.VkontakteMiddleware.VkontakteOptions.Fields">
+            <summary>
+            The list of fields to retrieve from the UserInformationEndpoint.
+            https://vk.com/dev/fields
+            </summary>
+        </member>
+        <member name="P:Brik.Security.VkontakteMiddleware.Resources.Exception_OptionMustBeProvided">
+            <summary>
+            The '{0}' option must be provided.
+            </summary>
+        </member>
+        <member name="M:Brik.Security.VkontakteMiddleware.Resources.FormatException_OptionMustBeProvided(System.Object)">
+            <summary>
+            The '{0}' option must be provided.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.VkontakteAppBuilderExtensions.UseVkontakteAuthentication(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds the <see cref="T:Brik.Security.VkontakteMiddleware.VkontakteMiddleware"/> middleware to the specified <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>, which enables Vkontakte authentication capabilities.
+            </summary>
+            <param name="app">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to add the middleware to.</param>
+            <returns>A reference to this instance after the operation has completed.</returns>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.VkontakteAppBuilderExtensions.UseVkontakteAuthentication(Microsoft.AspNetCore.Builder.IApplicationBuilder,Brik.Security.VkontakteMiddleware.VkontakteOptions)">
+            <summary>
+            Adds the <see cref="T:Brik.Security.VkontakteMiddleware.VkontakteMiddleware"/> middleware to the specified <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>, which enables Vkontakte authentication capabilities.
+            </summary>
+            <param name="app">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to add the middleware to.</param>
+            <param name="options">A <see cref="T:Brik.Security.VkontakteMiddleware.VkontakteOptions"/> that specifies options for the middleware.</param>
+            <returns>A reference to this instance after the operation has completed.</returns>
+        </member>
+    </members>
+</doc>

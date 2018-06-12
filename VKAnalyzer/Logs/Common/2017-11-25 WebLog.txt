@@ -1,0 +1,1 @@
+2017-11-25 04:56:03.8028|ERROR|VKAnalyzer.Services.VK.VkMemasService|Ошибка во время создания моделей для групп: 

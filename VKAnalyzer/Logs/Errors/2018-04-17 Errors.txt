@@ -1,0 +1,18 @@
+2018-04-17 22:29:10.6979|ERROR|VKAnalyzer.Controllers.Vk.SalesAnalysisController|Error: System.ArgumentException: Object of type 'System.Collections.Generic.List`1[System.String]' cannot be converted to type 'System.Collections.Generic.List`1[VKAnalyzer.BusinessLogic.CohortAnalyser.Models.SalesActivitiesRetargetPostResult]'.
+   at System.RuntimeType.TryChangeType(Object value, Binder binder, CultureInfo culture, Boolean needsSpecialCast)
+   at System.RuntimeType.CheckValue(Object value, Binder binder, CultureInfo culture, BindingFlags invokeAttr)
+   at System.Reflection.RtFieldInfo.UnsafeSetValue(Object obj, Object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
+   at System.Runtime.Serialization.FormatterServices.SerializationSetValue(MemberInfo fi, Object target, Object value)
+   at System.Runtime.Serialization.ObjectManager.CompleteObject(ObjectHolder holder, Boolean bObjectFullyComplete)
+   at System.Runtime.Serialization.ObjectManager.DoNewlyRegisteredObjectFixups(ObjectHolder holder)
+   at System.Runtime.Serialization.ObjectManager.RegisterObject(Object obj, Int64 objectID, SerializationInfo info, Int64 idOfContainingObj, MemberInfo member, Int32[] arrayIndex)
+   at System.Runtime.Serialization.Formatters.Binary.ObjectReader.RegisterObject(Object obj, ParseRecord pr, ParseRecord objectPr, Boolean bIsString)
+   at System.Runtime.Serialization.Formatters.Binary.ObjectReader.ParseObjectEnd(ParseRecord pr)
+   at System.Runtime.Serialization.Formatters.Binary.ObjectReader.Parse(ParseRecord pr)
+   at System.Runtime.Serialization.Formatters.Binary.__BinaryParser.Run()
+   at System.Runtime.Serialization.Formatters.Binary.ObjectReader.Deserialize(HeaderHandler handler, __BinaryParser serParser, Boolean fCheck, Boolean isCrossAppDomain, IMethodCallMessage methodCallMessage)
+   at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream, HeaderHandler handler, Boolean fCheck, Boolean isCrossAppDomain, IMethodCallMessage methodCallMessage)
+   at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream)
+   at VKAnalyzer.Controllers.Vk.SalesAnalysisController.Result(Int32 id) in d:\Work\VKAnalyzer\VKAnalyzer\Controllers\Vk\SalesAnalysisController.cs:line 61
+2018-04-17 22:52:34.4888|ERROR|VKAnalyzer.Controllers.Vk.SalesAnalysisController|Error: System.InvalidCastException: Unable to cast object of type 'VKAnalyzer.BusinessLogic.CohortAnalyser.Models.CohortAnalysisResultModel' to type 'VKAnalyzer.BusinessLogic.CohortAnalyser.Models.SalesActivitiesRetargetResult'.
+   at VKAnalyzer.Controllers.Vk.SalesAnalysisController.ResultWithList(Int32 id) in d:\Work\VKAnalyzer\VKAnalyzer\Controllers\Vk\SalesAnalysisController.cs:line 81

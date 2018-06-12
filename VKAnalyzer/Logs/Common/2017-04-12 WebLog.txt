@@ -1,0 +1,6 @@
+2017-04-12 01:42:24.9302|ERROR|VKAnalyzer.Controllers.VkController|Ошибка получения постов со стены группы: A node of type Document cannot be added to content.
+2017-04-12 01:42:24.9532|ERROR|VKAnalyzer.Controllers.VkController|Ошибка получения постов со стены группы: {0}
+2017-04-12 01:54:30.1801|ERROR|VKAnalyzer.Controllers.VkController|Ошибка получения постов со стены группы: A node of type Document cannot be added to content.
+2017-04-12 01:54:30.1951|ERROR|VKAnalyzer.Controllers.VkController|Ошибка получения постов со стены группы: {0}
+2017-04-12 22:21:12.5493|ERROR|VKAnalyzer.Controllers.VkController|Dates between DS: 01.04.2017 0:00:00 | DE: 02.04.2017 0:00:00 | DIFF: 0
+2017-04-12 22:21:21.2196|ERROR|VKAnalyzer.Controllers.VkController|Dates between DS: 01.04.2017 0:00:00 | DE: 02.04.2017 0:00:00 | DIFF: 0

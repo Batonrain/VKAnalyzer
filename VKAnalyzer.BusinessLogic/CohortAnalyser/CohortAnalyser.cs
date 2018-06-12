@@ -64,8 +64,7 @@ namespace VKAnalyzer.BusinessLogic.CohortAnalyser
                     {
                         endDate = dateOfTheEnd;
                     }
-                    stepResults.Date = string.Format("{0} - {1}", startDate.ToShortDateString(),
-                        endDate.ToShortDateString());
+                    stepResults.Date = $"{startDate.ToShortDateString()} - {endDate.ToShortDateString()}";
                     foreach (var sr in ordered[i])
                     {
                         stepResults.Values.Add(new SalesActivitiesRetargetPostResult
